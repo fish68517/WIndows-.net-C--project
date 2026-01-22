@@ -17,6 +17,7 @@ body {
     max-width: 250px;
     min-height: 100vh; /* 高度撑满屏幕 */
     background-color: #4794e0; /* 深黑背景 */
+    
     color: #fff;
     transition: margin 0.25s ease-out;
 }

@@ -6,10 +6,10 @@ namespace TourismPlatform.Models
         public string Name { get; set; }
         public string Description { get; set; }
 
-        // --- 新增缺失的属性 ---
-        public string ImageUrl { get; set; } // 酒店图片
-        public int StarRating { get; set; }  // 酒店星级 (1-5)
-        // -----------------------
+       // --- 核心修复：对应数据库中存在的字段 ---
+        public string ImageUrl { get; set; } // 对应数据库 IS_NULLABLE: NO
+        public int StarRating { get; set; }  // 对应数据库 IS_NULLABLE: NO
+        // ------------------------------------
 
         
         public int? AttractionId { get; set; }
