@@ -1,0 +1,163 @@
+@model TourismPlatform.Models.Hotel
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="position-relative mb-5">
+    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+    {
+        <div class="ratio ratio-21x9 rounded-3 overflow-hidden shadow-sm">
+            <img src="@Model.ImageUrl" alt="@Model.Name" style="object-fit: cover; filter: brightness(0.8);">
+        </div>
+    }
+    else
+    {
+        <div class="ratio ratio-21x9 bg-secondary rounded-3"></div>
+    }
+    
+    <div class="position-absolute bottom-0 start-0 w-100 p-4 bg-gradient-dark text-white" 
+         style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
+        <div class="container">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> @Model.StarRating 星级</span>
+                <span class="badge bg-light text-dark"><i class="bi bi-geo-alt-fill"></i> @(Model.District?.Name ?? "济南")</span>
+            </div>
+            <h1 class="display-5 fw-bold text-white text-shadow">@Model.Name</h1>
+            <p class="lead mb-0 text-white-50"><i class="bi bi-pin-map me-1"></i> @Model.Address</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3">酒店简介</h4>
+                    <p class="text-muted leading-relaxed">@Model.Description</p>
+                    <div class="d-flex gap-4 mt-3 pt-3 border-top">
+                        <div class="text-center">
+                            <i class="bi bi-wifi fs-4 text-primary"></i>
+                            <div class="small text-muted mt-1">免费WiFi</div>
+                        </div>
+                        <div class="text-center">
+                            <i class="bi bi-p-square fs-4 text-primary"></i>
+                            <div class="small text-muted mt-1">免费停车</div>
+                        </div>
+                        <div class="text-center">
+                            <i class="bi bi-cup-hot fs-4 text-primary"></i>
+                            <div class="small text-muted mt-1">含早餐</div>
+                        </div>
+                        <div class="text-center">
+                            <i class="bi bi-wind fs-4 text-primary"></i>
+                            <div class="small text-muted mt-1">空调</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="fw-bold mb-3"><i class="bi bi-door-open me-2"></i>选择房型</h4>
+            <div class="vstack gap-3">
+                @if (Model.RoomTypes != null && Model.RoomTypes.Any())
+                {
+                    @foreach (var room in Model.RoomTypes)
+                    {
+                        <div class="card border-0 shadow-sm hover-shadow transition">
+                            <div class="card-body p-3">
+                                <div class="row align-items-center">
+                                    <div class="col-md-7">
+                                        <h5 class="fw-bold text-primary mb-1">@room.RoomTypeName</h5>
+                                        <div class="text-muted small mb-2">
+                                            @room.Description
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <span class="badge bg-light text-dark border">
+                                                <i class="bi bi-people"></i> 可住 @room.Capacity 人
+                                            </span>
+                                            <span class="badge bg-light text-dark border">
+                                                <i class="bi bi-check-circle"></i> 立即确认
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 text-end border-start ps-4 mt-3 mt-md-0">
+                                        <div class="mb-2">
+                                            <small class="text-muted text-decoration-line-through">¥@(room.PricePerNight * 1.2m)</small>
+                                            <div class="text-danger fw-bold fs-4">
+                                                ¥@room.PricePerNight.ToString("F0")
+                                                <small class="fs-6 text-muted fw-normal">/晚</small>
+                                            </div>
+                                        </div>
+                                        <a asp-controller="Orders" asp-action="CreateHotel" 
+                                           asp-route-hotelId="@Model.HotelId" 
+                                           asp-route-roomTypeId="@room.RoomTypeId"
+                                           class="btn btn-primary w-100 rounded-pill">
+                                            预订此房
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-circle me-2"></i> 暂无房型信息，请联系酒店前台。
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">联系方式</h5>
+                    <ul class="list-unstyled mb-0 vstack gap-3">
+                        <li class="d-flex">
+                            <i class="bi bi-telephone-fill text-primary me-3 mt-1"></i>
+                            <div>
+                                <div class="fw-bold">预订电话</div>
+                                <div class="text-muted">@Model.ContactPhone</div>
+                            </div>
+                        </li>
+                        <li class="d-flex">
+                            <i class="bi bi-geo-alt-fill text-primary me-3 mt-1"></i>
+                            <div>
+                                <div class="fw-bold">详细地址</div>
+                                <div class="text-muted">@Model.Address</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            @if (Model.Attraction != null)
+            {
+                <div class="card border-0 shadow-sm bg-light">
+                    <div class="card-body">
+                        <h6 class="fw-bold text-muted text-uppercase mb-3">毗邻景点</h6>
+                        <div class="d-flex align-items-center bg-white p-3 rounded shadow-sm">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-tree-fill text-success fs-1"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0 fw-bold">@Model.Attraction.Name</h6>
+                                <small class="text-muted">距离酒店很近</small>
+                            </div>
+                            <a asp-controller="Attractions" asp-action="Detail" asp-route-id="@Model.Attraction.AttractionId" class="btn btn-sm btn-outline-primary rounded-circle">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    .hover-shadow:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
+    .transition { transition: all 0.3s ease; }
+</style>

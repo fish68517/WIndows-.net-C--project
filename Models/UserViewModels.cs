@@ -207,4 +207,14 @@ namespace TourismPlatform.Models
         [StringLength(5000, MinimumLength = 1, ErrorMessage = "内容长度必须在1-5000字符之间")]
         public string Content { get; set; }
     }
+
+
+
+    public class ErrorViewModel
+    {
+        public string RequestId { get; set; }
+
+        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+    }
+
 }

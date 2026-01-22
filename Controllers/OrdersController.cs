@@ -224,7 +224,6 @@ namespace TourismPlatform.Controllers
                 return View(model);
             }
         }
-
         [HttpGet]
         public async Task<IActionResult> Detail(int orderId)
         {

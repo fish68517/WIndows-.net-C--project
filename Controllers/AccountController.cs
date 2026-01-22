@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using TourismPlatform.Models;
 using TourismPlatform.Services;
+using TourismPlatform.Data; // 1. 引入 Data 命名空间
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
+using System.Security.Cryptography; // 2. 引入加密命名空间
+using System.Text;
 
 namespace TourismPlatform.Controllers
 {
@@ -13,11 +16,14 @@ namespace TourismPlatform.Controllers
     {
         private readonly IUserService _userService;
         private readonly ILogger<AccountController> _logger;
+        private readonly MyDbContext _context; // 3. 定义数据库上下文
 
-        public AccountController(IUserService userService, ILogger<AccountController> logger)
+        // 4. 在构造函数中注入 MyDbContext
+        public AccountController(IUserService userService, ILogger<AccountController> logger, MyDbContext context)
         {
             _userService = userService;
             _logger = logger;
+            _context = context;
         }
 
         // GET: /Account/Register
@@ -45,8 +51,6 @@ namespace TourismPlatform.Controllers
 
             try
             {
-                // 修复点1：直接调用，不再使用解构 (success, message)
-                // Service 层会在失败时直接抛出 InvalidOperationException 异常
                 var user = await _userService.RegisterAsync(model.Email, model.Password, model.Nickname);
 
                 if (user != null)
@@ -56,12 +60,12 @@ namespace TourismPlatform.Controllers
                     return RedirectToAction("Login");
                 }
             }
-            catch (InvalidOperationException ex) // 捕获业务逻辑错误（如：邮箱已存在、密码太弱）
+            catch (InvalidOperationException ex)
             {
                 _logger.LogWarning("注册被业务层拒绝: {Message}", ex.Message);
-                ModelState.AddModelError(string.Empty, ex.Message); // 将错误显示给用户
+                ModelState.AddModelError(string.Empty, ex.Message);
             }
-            catch (Exception ex) // 捕获其他未预料的系统错误
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "注册发生系统异常");
                 ModelState.AddModelError(string.Empty, "注册服务暂时不可用，请稍后重试。");
@@ -89,6 +93,47 @@ namespace TourismPlatform.Controllers
                 return View(model);
             }
 
+            // ==========================================
+            // 5. 管理员登录逻辑 (Admin)
+            // ==========================================
+            if (model.Email == "admin@tourism.com")
+            {
+                // 1. 在 AdminUsers 表中查找
+                var admin = _context.AdminUsers.FirstOrDefault(a => a.Email == model.Email);
+                
+                if (admin != null)
+                {
+                    // 2. 验证密码 (使用 SHA256 哈希匹配)
+                    var inputHash = HashPassword(model.Password);
+                    if (admin.PasswordHash == inputHash)
+                    {
+                        if (!admin.IsActive)
+                        {
+                            ModelState.AddModelError(string.Empty, "管理员账号已被禁用");
+                            return View(model);
+                        }
+
+                        // 3. 写入管理员 Session
+                        HttpContext.Session.SetInt32("AdminUserId", admin.AdminUserId); // 设置后台专用ID
+                        HttpContext.Session.SetString("UserEmail", admin.Email);
+                        HttpContext.Session.SetString("UserNickname", admin.Username);
+                        HttpContext.Session.SetString("UserRole", "Admin"); // 关键：标记为管理员角色
+
+                        _logger.LogInformation("管理员登录成功: {Email}", model.Email);
+
+                        // 4. 跳转到后台区域 (Areas/Admin)
+                        return RedirectToAction("Index", "AdminHome", new { area = "Admin" });
+                    }
+                }
+
+                _logger.LogWarning("管理员登录失败 - 密码错误");
+                ModelState.AddModelError(string.Empty, "管理员密码错误");
+                return View(model);
+            }
+
+            // ==========================================
+            // 6. 普通用户登录逻辑 (User)
+            // ==========================================
             var user = await _userService.LoginAsync(model.Email, model.Password);
             if (user != null)
             {
@@ -102,9 +147,7 @@ namespace TourismPlatform.Controllers
                 HttpContext.Session.SetInt32("UserId", user.UserId);
                 HttpContext.Session.SetString("UserNickname", user.Nickname);
                 HttpContext.Session.SetString("UserEmail", user.Email);
-                
-                // 修复点2：User 模型没有 Role 字段，且这是前台用户，直接标记为 "User"
-                HttpContext.Session.SetString("UserRole", "User"); 
+                HttpContext.Session.SetString("UserRole", "User"); // 标记为普通用户
 
                 _logger.LogInformation("登录成功: {Email}", model.Email);
                 return RedirectToAction("Index", "Home");
@@ -125,6 +168,18 @@ namespace TourismPlatform.Controllers
 
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
+        }
+
+        // ==========================================
+        // 7. 辅助方法：SHA256 密码哈希
+        // ==========================================
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(hashedBytes);
+            }
         }
     }
 }
