@@ -5,6 +5,13 @@ namespace TourismPlatform.Models
         public int HotelId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+
+        // --- 新增缺失的属性 ---
+        public string ImageUrl { get; set; } // 酒店图片
+        public int StarRating { get; set; }  // 酒店星级 (1-5)
+        // -----------------------
+
+        
         public int? AttractionId { get; set; }
         public int DistrictId { get; set; }
         public string Address { get; set; }

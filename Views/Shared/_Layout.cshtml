@@ -1,89 +1,117 @@
+@using Microsoft.AspNetCore.Http
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - 智慧旅游平台</title>
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body class="d-flex flex-column min-vh-100">
-    
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm fixed-top">
-            <div class="container">
-                <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-airplane-engines-fill me-2"></i>旅游平台
+<body>
+
+    <div class="d-flex" id="wrapper">
+        <div class="border-end bg-dark text-white" id="sidebar-wrapper">
+            <div class="sidebar-heading border-bottom bg-danger text-center py-3">
+                <i class="bi bi-airplane-fill me-2"></i>旅游平台
+            </div>
+            <div class="list-group list-group-flush">
+                
+                <div class="text-white-50 small text-uppercase px-3 mt-3 mb-1">浏览业务</div>
+                <a asp-controller="Home" asp-action="Index" class="list-group-item list-group-item-action bg-dark text-white border-0">
+                    <i class="bi bi-speedometer2 me-2"></i>首页概览
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">首页</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Attractions" asp-action="Index">景点门票</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Hotels" asp-action="Index">酒店预订</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Diaries" asp-action="Index">游记攻略</a>
-                        </li>
-                    </ul>
+                <a asp-controller="Attractions" asp-action="Index" class="list-group-item list-group-item-action bg-dark text-white border-0">
+                    <i class="bi bi-geo-alt me-2"></i>景点门票
+                </a>
+                <a asp-controller="Hotels" asp-action="Index" class="list-group-item list-group-item-action bg-dark text-white border-0">
+                    <i class="bi bi-building me-2"></i>酒店预订
+                </a>
+                <a asp-controller="Diaries" asp-action="Index" class="list-group-item list-group-item-action bg-dark text-white border-0">
+                    <i class="bi bi-journal-richtext me-2"></i>游记攻略
+                </a>
+                <a asp-controller="Announcements" asp-action="Index" class="list-group-item list-group-item-action bg-dark text-white border-0">
+                    <i class="bi bi-megaphone me-2"></i>平台公告
+                </a>
+
+                <div class="text-white-50 small text-uppercase px-3 mt-3 mb-1">个人中心</div>
+                
+                @{
+                    // 获取 Session 中的用户 ID，判断是否登录
+                    var userId = Context.Session.GetInt32("UserId");
+                    var userName = Context.Session.GetString("UserNickname") ?? "未登录";
+                }
+
+                @if (userId != null)
+                {
+                    <a asp-controller="Me" asp-action="Dashboard" class="list-group-item list-group-item-action bg-dark text-white border-0">
+                        <i class="bi bi-person-circle me-2"></i>我的仪表盘
+                    </a>
+                    <a asp-controller="Me" asp-action="Tickets" class="list-group-item list-group-item-action bg-dark text-white border-0">
+                        <i class="bi bi-ticket-perforated me-2"></i>我的门票
+                    </a>
+                    <a asp-controller="Me" asp-action="Hotels" class="list-group-item list-group-item-action bg-dark text-white border-0">
+                        <i class="bi bi-houses me-2"></i>我的酒店
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login" class="list-group-item list-group-item-action bg-dark text-white border-0">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>登录 / 注册
+                    </a>
+                }
+
+                <div class="text-white-50 small text-uppercase px-3 mt-3 mb-1">系统管理</div>
+                <a asp-area="Admin" asp-controller="AdminHome" asp-action="Index" class="list-group-item list-group-item-action bg-dark text-white border-0">
+                    <i class="bi bi-shield-lock me-2"></i>后台管理
+                </a>
+            </div>
+        </div>
+
+        <div id="page-content-wrapper" class="w-100 bg-light">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-3 shadow-sm">
+                <div class="container-fluid">
+                    <span class="navbar-text fw-bold text-primary">
+                        当前位置：@ViewData["Title"]
+                    </span>
                     
-                    <ul class="navbar-nav">
-                        @{
-                            var userId = Context.Session.GetInt32("UserId");
-                            var userNickname = Context.Session.GetString("UserNickname");
-                        }
+                    <div class="ms-auto d-flex align-items-center">
                         @if (userId != null)
                         {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-person-circle me-1"></i> @userNickname
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item" asp-controller="Me" asp-action="Dashboard">个人中心</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Me" asp-action="Tickets">我的门票</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                            <button type="submit" class="dropdown-item text-danger">退出登录</button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </li>
+                            <span class="me-3 text-dark">欢迎, <strong>@userName</strong></span>
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">退出</button>
+                            </form>
                         }
                         else
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-controller="Account" asp-action="Login">登录</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-light text-primary ms-2 rounded-pill px-3" asp-controller="Account" asp-action="Register">注册</a>
-                            </li>
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-primary">登录</a>
                         }
-                    </ul>
+                    </div>
                 </div>
+            </nav>
+
+            <div class="container-fluid p-4">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @RenderBody()
             </div>
-        </nav>
-    </header>
-
-    <main role="main" class="flex-shrink-0" style="margin-top: 70px;">
-        @RenderBody()
-    </main>
-
-    <footer class="footer mt-auto py-4 bg-dark text-white-50">
-        <div class="container text-center">
-            <p class="mb-1">&copy; 2026 - 旅游平台 TourismPlatform - 探索世界之美</p>
-            <small>联系我们要：contact@tourism.com</small>
         </div>
-    </footer>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

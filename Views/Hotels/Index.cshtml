@@ -1,0 +1,88 @@
+@model IEnumerable<TourismPlatform.Models.Hotel>
+
+@{
+    ViewData["Title"] = "酒店预订";
+}
+
+<div class="container py-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h2 class="fw-bold text-primary"><i class="bi bi-building-check me-2"></i>精选酒店</h2>
+            <p class="text-muted">找到您旅途中的舒适港湾</p>
+        </div>
+        <div class="col-md-6">
+            <form method="get" asp-action="Index" class="d-flex">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0" placeholder="搜索酒店名称或地址..." value="@Context.Request.Query["search"]">
+                    <button class="btn btn-primary" type="submit">搜索</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var hotel in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 hover-card">
+                        <div class="position-relative">
+                            @if (!string.IsNullOrEmpty(hotel.ImageUrl))
+                            {
+                                <img src="@hotel.ImageUrl" class="card-img-top" alt="@hotel.Name" style="height: 200px; object-fit: cover;">
+                            }
+                            else
+                            {
+                                <div class="bg-light d-flex align-items-center justify-content-center text-muted" style="height: 200px;">
+                                    <i class="bi bi-image fs-1"></i>
+                                </div>
+                            }
+                            <span class="position-absolute top-0 end-0 bg-warning text-dark badge m-2">
+                                <i class="bi bi-star-fill"></i> @(hotel.StarRating)星级
+                            </span>
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-truncate">@hotel.Name</h5>
+                            <p class="card-text text-muted small mb-2">
+                                <i class="bi bi-geo-alt-fill text-danger"></i> @(hotel.District?.Name ?? "未知区域") · @hotel.Address
+                            </p>
+                            <p class="card-text text-truncate-2 small">
+                                @(hotel.Description?.Length > 50 ? hotel.Description.Substring(0, 50) + "..." : hotel.Description)
+                            </p>
+                        </div>
+
+                        <div class="card-footer bg-white border-top-0 pb-3">
+                            <div class="d-grid">
+                                <a asp-action="Detail" asp-route-id="@hotel.HotelId" class="btn btn-outline-primary stretched-link">
+                                    查看详情 & 预订
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="mb-3">
+                <i class="bi bi-inbox fs-1 text-muted"></i>
+            </div>
+            <h4 class="text-muted">暂时没有找到相关酒店</h4>
+            <a asp-action="Index" class="btn btn-link">查看所有酒店</a>
+        </div>
+    }
+</div>
+
+<style>
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
