@@ -1,0 +1,47 @@
+@model TourismPlatform.Models.EditDiaryViewModel
+
+@{
+    ViewData["Title"] = "编辑游记";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">编辑游记</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" asp-route-id="@Model.DiaryId" method="post">
+                        <input type="hidden" asp-for="DiaryId" />
+                        
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">标题 <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control" placeholder="请输入游记标题..." />
+                            <small class="form-text text-muted">最多200个字符</small>
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Content" class="form-label">内容 <span class="text-danger">*</span></label>
+                            <textarea asp-for="Content" class="form-control" rows="10" placeholder="请输入游记内容..."></textarea>
+                            <small class="form-text text-muted">最多5000个字符</small>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-end">
+                            <button type="submit" class="btn btn-primary">保存修改</button>
+                            <a asp-action="Detail" asp-route-id="@Model.DiaryId" class="btn btn-secondary">取消</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

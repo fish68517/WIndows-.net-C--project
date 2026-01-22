@@ -1,0 +1,222 @@
+@model TourismPlatform.Models.AdminVerifyDetailViewModel
+
+@{
+    ViewData["Title"] = "核销码详情";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1>核销码详情</h1>
+    <a asp-area="Admin" asp-controller="AdminVerify" asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> 返回列表
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">核销码信息</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">核销码</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-lg" value="@Model.Code" readonly />
+                            <button class="btn btn-outline-secondary" type="button" id="copyBtn">
+                                <i class="bi bi-clipboard"></i> 复制
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">核销状态</label>
+                        <div>
+                            @{
+                                var statusBadgeClass = Model.VerifyStatus == "Used" ? "bg-success" : "bg-warning";
+                                var statusText = Model.VerifyStatus == "Used" ? "已使用" : "未使用";
+                            }
+                            <span class="badge @statusBadgeClass" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                                @statusText
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">生成时间</label>
+                        <p class="form-control-plaintext">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">使用时间</label>
+                        <p class="form-control-plaintext">
+                            @(Model.UsedAt.HasValue ? Model.UsedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "未使用")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">@(Model.OrderType == "Ticket" ? "门票订单" : "酒店订单")信息</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">用户昵称</label>
+                        <p class="form-control-plaintext">@Model.UserNickname</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">用户邮箱</label>
+                        <p class="form-control-plaintext">@Model.UserEmail</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">@(Model.OrderType == "Ticket" ? "景点" : "酒店")名称</label>
+                        <p class="form-control-plaintext">@Model.ItemName</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">订单状态</label>
+                        <p class="form-control-plaintext">
+                            @{
+                                var orderStatusBadgeClass = Model.OrderStatus switch
+                                {
+                                    "PendingPay" => "bg-warning",
+                                    "Paid" => "bg-info",
+                                    "ToUse" => "bg-primary",
+                                    "Used" => "bg-success",
+                                    "CheckedIn" => "bg-success",
+                                    "Cancelled" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+                                var orderStatusText = Model.OrderStatus switch
+                                {
+                                    "PendingPay" => "待支付",
+                                    "Paid" => "已支付",
+                                    "ToUse" => "待使用",
+                                    "Used" => "已使用",
+                                    "CheckedIn" => "已入住",
+                                    "Cancelled" => "已取消",
+                                    _ => Model.OrderStatus
+                                };
+                            }
+                            <span class="badge @orderStatusBadgeClass">@orderStatusText</span>
+                        </p>
+                    </div>
+                </div>
+
+                @if (Model.OrderType == "Ticket")
+                {
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">访问日期</label>
+                            <p class="form-control-plaintext">@Model.VisitDate?.ToString("yyyy-MM-dd")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">购票数量</label>
+                            <p class="form-control-plaintext">@Model.Quantity 张</p>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">入住日期</label>
+                            <p class="form-control-plaintext">@Model.CheckInDate?.ToString("yyyy-MM-dd")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted">离店日期</label>
+                            <p class="form-control-plaintext">@Model.CheckOutDate?.ToString("yyyy-MM-dd")</p>
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted">订单金额</label>
+                        <p class="form-control-plaintext">
+                            <span class="badge bg-success" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                                ¥@Model.TotalPrice.ToString("F2")
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">快速操作</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.VerifyStatus == "Unused")
+                {
+                    <p class="text-muted mb-3">此核销码尚未使用，可以进行核销操作。</p>
+                    <button type="button" class="btn btn-success w-100 btn-lg" id="quickVerifyBtn">
+                        <i class="bi bi-check-circle"></i> 立即核销
+                    </button>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 此核销码已于 @Model.UsedAt?.ToString("yyyy-MM-dd HH:mm:ss") 使用
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card shadow-sm mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">说明</h5>
+            </div>
+            <div class="card-body">
+                <ul class="small">
+                    <li>核销码用于验证用户的订单</li>
+                    <li>每个核销码只能使用一次</li>
+                    <li>核销后订单状态将变为"已使用"</li>
+                    <li>用户可在订单详情页查看核销码</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('copyBtn').addEventListener('click', function() {
+    const code = '@Model.Code';
+    navigator.clipboard.writeText(code).then(() => {
+        alert('核销码已复制到剪贴板');
+    });
+});
+
+document.getElementById('quickVerifyBtn').addEventListener('click', function() {
+    if (confirm('确定要核销此订单吗？')) {
+        fetch('@Url.Action("Verify", "AdminVerify", new { area = "Admin" })', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+            },
+            body: 'code=@Model.Code'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('核销失败: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('核销失败: ' + error);
+        });
+    }
+});
+</script>

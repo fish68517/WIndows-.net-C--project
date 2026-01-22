@@ -1,0 +1,80 @@
+@model TourismPlatform.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "用户注册";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-4">用户注册</h2>
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>注册失败</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            <ul class="mb-0">
+                                @foreach (var modelState in ViewData.ModelState.Values)
+                                {
+                                    @foreach (var error in modelState.Errors)
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <form method="post" asp-action="Register">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">邮箱地址</label>
+                            <input asp-for="Email" class="form-control" placeholder="请输入邮箱地址" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Nickname" class="form-label">昵称</label>
+                            <input asp-for="Nickname" class="form-control" placeholder="请输入昵称（2-50个字符）" />
+                            <span asp-validation-for="Nickname" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">密码</label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="请输入密码（至少8个字符）" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                            <small class="form-text text-muted d-block mt-2">
+                                密码要求：至少8个字符，包含大小写字母和数字
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ConfirmPassword" class="form-label">确认密码</label>
+                            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="请再次输入密码" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mb-3">注册</button>
+
+                        <div class="text-center">
+                            <p class="mb-0">
+                                已有账户？
+                                <a asp-controller="Account" asp-action="Login">立即登录</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

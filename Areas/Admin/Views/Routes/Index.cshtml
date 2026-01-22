@@ -1,0 +1,121 @@
+@model IEnumerable<TourismPlatform.Models.TravelRoute>
+
+@{
+    ViewData["Title"] = "线路管理";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1>官方线路管理</h1>
+    <a asp-area="Admin" asp-controller="AdminRoutes" asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> 新增线路
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>线路名称</th>
+                    <th>描述</th>
+                    <th>创建时间</th>
+                    <th>更新时间</th>
+                    <th style="width: 150px;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var route in Model)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@route.Name</strong>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(route.Description))
+                                {
+                                    <span>@(route.Description.Length > 50 ? route.Description.Substring(0, 50) + "..." : route.Description)</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">无描述</span>
+                                }
+                            </td>
+                            <td>
+                                <small>@route.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
+                            </td>
+                            <td>
+                                <small>@route.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</small>
+                            </td>
+                            <td>
+                                <a asp-area="Admin" asp-controller="AdminRoutes" asp-action="Edit" asp-route-id="@route.RouteId" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil"></i> 编辑
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteRoute(@route.RouteId)">
+                                    <i class="bi bi-trash"></i> 删除
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox"></i> 暂无线路数据
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function deleteRoute(routeId) {
+            if (!confirm('确定要删除该线路吗？')) {
+                return;
+            }
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '@Url.Action("Delete", "AdminRoutes", new { area = "Admin" })';
+
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'id';
+            input.value = routeId;
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+            if (token) {
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                tokenInput.value = token;
+                form.appendChild(tokenInput);
+            }
+
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+}

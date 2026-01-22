@@ -1,0 +1,196 @@
+@model TourismPlatform.Models.PayHotelOrderViewModel
+
+@{
+    ViewData["Title"] = "支付订单 - " + Model.HotelName;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-credit-card"></i> 模拟支付
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Order Summary -->
+                    <div class="alert alert-info mb-4">
+                        <h5 class="mb-3">订单信息</h5>
+                        <div class="row mb-2">
+                            <div class="col-6">订单号：</div>
+                            <div class="col-6 text-end"><code>@Model.HotelOrderId</code></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6">酒店：</div>
+                            <div class="col-6 text-end">@Model.HotelName</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6">房型：</div>
+                            <div class="col-6 text-end">@Model.RoomTypeName</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6">入住日期：</div>
+                            <div class="col-6 text-end">@Model.CheckInDate.ToString("yyyy-MM-dd")</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6">离店日期：</div>
+                            <div class="col-6 text-end">@Model.CheckOutDate.ToString("yyyy-MM-dd")</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6">住宿晚数：</div>
+                            <div class="col-6 text-end">@((Model.CheckOutDate - Model.CheckInDate).Days) 晚</div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-6"><strong>应付金额：</strong></div>
+                            <div class="col-6 text-end">
+                                <strong class="text-danger h5">¥@Model.TotalPrice.ToString("F2")</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Form -->
+                    <form method="post" asp-action="PayHotel">
+                        <input type="hidden" name="orderId" value="@Model.HotelOrderId" />
+
+                        <!-- Payment Method -->
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="bi bi-wallet2"></i> 支付方式
+                            </label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="wechat" value="wechat" checked />
+                                <label class="form-check-label" for="wechat">
+                                    微信支付
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="alipay" value="alipay" />
+                                <label class="form-check-label" for="alipay">
+                                    支付宝
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="card" value="card" />
+                                <label class="form-check-label" for="card">
+                                    银行卡
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Cardholder Info (for demo) -->
+                        <div class="mb-3">
+                            <label for="cardholderName" class="form-label">持卡人姓名</label>
+                            <input type="text" class="form-control" id="cardholderName" name="cardholderName" placeholder="请输入持卡人姓名" />
+                        </div>
+
+                        <!-- Card Number (for demo) -->
+                        <div class="mb-3">
+                            <label for="cardNumber" class="form-label">卡号</label>
+                            <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="请输入卡号" maxlength="19" />
+                        </div>
+
+                        <!-- Expiry and CVV -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="expiry" class="form-label">有效期</label>
+                                <input type="text" class="form-control" id="expiry" name="expiry" placeholder="MM/YY" maxlength="5" />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cvv" name="cvv" placeholder="CVV" maxlength="3" />
+                            </div>
+                        </div>
+
+                        <!-- Terms -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="terms" name="terms" required />
+                            <label class="form-check-label" for="terms">
+                                我已阅读并同意<a href="#" target="_blank">支付协议</a>
+                            </label>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg" id="payBtn">
+                                <i class="bi bi-check-circle"></i> 确认支付 ¥@Model.TotalPrice.ToString("F2")
+                            </button>
+                            <a asp-controller="Hotels" asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> 返回
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="alert alert-warning mt-4" role="alert">
+                <h6 class="alert-heading">
+                    <i class="bi bi-shield-check"></i> 安全提示
+                </h6>
+                <ul class="mb-0 small">
+                    <li>这是一个模拟支付页面，用于演示目的</li>
+                    <li>请勿输入真实的银行卡信息</li>
+                    <li>支付成功后将立即生成核销码</li>
+                    <li>您可以在个人中心查看订单详情</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cardNumberInput = document.getElementById('cardNumber');
+            const expiryInput = document.getElementById('expiry');
+            const cvvInput = document.getElementById('cvv');
+            const payBtn = document.getElementById('payBtn');
+
+            // Format card number with spaces
+            cardNumberInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s/g, '');
+                let formattedValue = value.replace(/(\d{4})/g, '$1 ').trim();
+                e.target.value = formattedValue;
+            });
+
+            // Format expiry date
+            expiryInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                e.target.value = value;
+            });
+
+            // Only allow numbers for CVV
+            cvvInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+
+            // Handle payment button
+            payBtn.addEventListener('click', function(e) {
+                // Disable button during submission
+                payBtn.disabled = true;
+                payBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>处理中...';
+            });
+        });
+    </script>
+}
+
+<style>
+    .bi {
+        margin-right: 5px;
+    }
+
+    .card-header {
+        border-bottom: 2px solid #198754;
+    }
+
+    code {
+        background-color: #f5f5f5;
+        padding: 2px 6px;
+        border-radius: 3px;
+    }
+</style>

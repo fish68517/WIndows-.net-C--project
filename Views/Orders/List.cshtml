@@ -1,0 +1,179 @@
+@model TourismPlatform.Models.UserOrderListViewModel
+
+@{
+    ViewData["Title"] = "我的订单";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>我的订单</h2>
+            <hr />
+
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" id="orderTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="ticket-tab" data-bs-toggle="tab" data-bs-target="#ticket-content" type="button" role="tab" aria-controls="ticket-content" aria-selected="true">
+                        门票订单 (@Model.TicketOrders.Count)
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="hotel-tab" data-bs-toggle="tab" data-bs-target="#hotel-content" type="button" role="tab" aria-controls="hotel-content" aria-selected="false">
+                        酒店订单 (@Model.HotelOrders.Count)
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab content -->
+            <div class="tab-content" id="orderTabContent">
+                <!-- Ticket Orders Tab -->
+                <div class="tab-pane fade show active" id="ticket-content" role="tabpanel" aria-labelledby="ticket-tab">
+                    <div class="mt-4">
+                        @if (Model.TicketOrders.Count == 0)
+                        {
+                            <div class="alert alert-info">
+                                暂无门票订单
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>订单号</th>
+                                            <th>景点名称</th>
+                                            <th>访问日期</th>
+                                            <th>数量</th>
+                                            <th>总价</th>
+                                            <th>状态</th>
+                                            <th>创建时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var order in Model.TicketOrders)
+                                        {
+                                            <tr>
+                                                <td>@order.TicketOrderId</td>
+                                                <td>@order.AttractionName</td>
+                                                <td>@order.VisitDate.ToString("yyyy-MM-dd")</td>
+                                                <td>@order.Quantity</td>
+                                                <td>¥@order.TotalPrice.ToString("F2")</td>
+                                                <td>
+                                                    @{
+                                                        var statusClass = order.Status switch
+                                                        {
+                                                            "PendingPay" => "badge bg-warning",
+                                                            "Paid" => "badge bg-info",
+                                                            "ToUse" => "badge bg-primary",
+                                                            "Used" => "badge bg-success",
+                                                            "Cancelled" => "badge bg-danger",
+                                                            _ => "badge bg-secondary"
+                                                        };
+                                                        var statusText = order.Status switch
+                                                        {
+                                                            "PendingPay" => "待支付",
+                                                            "Paid" => "已支付",
+                                                            "ToUse" => "待使用",
+                                                            "Used" => "已使用",
+                                                            "Cancelled" => "已取消",
+                                                            _ => "未知"
+                                                        };
+                                                    }
+                                                    <span class="@statusClass">@statusText</span>
+                                                </td>
+                                                <td>@order.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                                <td>
+                                                    <a href="@Url.Action("Detail", new { orderId = order.TicketOrderId })" class="btn btn-sm btn-primary">
+                                                        查看详情
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Hotel Orders Tab -->
+                <div class="tab-pane fade" id="hotel-content" role="tabpanel" aria-labelledby="hotel-tab">
+                    <div class="mt-4">
+                        @if (Model.HotelOrders.Count == 0)
+                        {
+                            <div class="alert alert-info">
+                                暂无酒店订单
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>订单号</th>
+                                            <th>酒店名称</th>
+                                            <th>房型</th>
+                                            <th>入住日期</th>
+                                            <th>离店日期</th>
+                                            <th>总价</th>
+                                            <th>状态</th>
+                                            <th>创建时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var order in Model.HotelOrders)
+                                        {
+                                            <tr>
+                                                <td>@order.HotelOrderId</td>
+                                                <td>@order.HotelName</td>
+                                                <td>@order.RoomTypeName</td>
+                                                <td>@order.CheckInDate.ToString("yyyy-MM-dd")</td>
+                                                <td>@order.CheckOutDate.ToString("yyyy-MM-dd")</td>
+                                                <td>¥@order.TotalPrice.ToString("F2")</td>
+                                                <td>
+                                                    @{
+                                                        var statusClass = order.Status switch
+                                                        {
+                                                            "PendingPay" => "badge bg-warning",
+                                                            "Paid" => "badge bg-info",
+                                                            "ToUse" => "badge bg-primary",
+                                                            "Used" => "badge bg-success",
+                                                            "CheckedIn" => "badge bg-success",
+                                                            "Cancelled" => "badge bg-danger",
+                                                            _ => "badge bg-secondary"
+                                                        };
+                                                        var statusText = order.Status switch
+                                                        {
+                                                            "PendingPay" => "待支付",
+                                                            "Paid" => "已支付",
+                                                            "ToUse" => "待使用",
+                                                            "Used" => "已使用",
+                                                            "CheckedIn" => "已入住",
+                                                            "Cancelled" => "已取消",
+                                                            _ => "未知"
+                                                        };
+                                                    }
+                                                    <span class="@statusClass">@statusText</span>
+                                                </td>
+                                                <td>@order.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                                <td>
+                                                    <a href="@Url.Action("DetailHotel", new { orderId = order.HotelOrderId })" class="btn btn-sm btn-primary">
+                                                        查看详情
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

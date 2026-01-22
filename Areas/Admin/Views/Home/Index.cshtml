@@ -1,0 +1,131 @@
+@model TourismPlatform.Models.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "后台管理首页";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1>后台管理首页</h1>
+    <span class="text-muted">欢迎，@Model.AdminUsername</span>
+</div>
+
+<!-- Quick Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">总用户数</h5>
+                <p class="card-text display-4">@Model.TotalUsers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">总景点数</h5>
+                <p class="card-text display-4">@Model.TotalAttractions</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">总游记数</h5>
+                <p class="card-text display-4">@Model.TotalDiaries</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h5 class="card-title">总收入</h5>
+                <p class="card-text display-4">¥@Model.TotalRevenue.ToString("F0")</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Statistics -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">门票订单</h5>
+                <p class="card-text">
+                    <strong>总订单数：</strong>@Model.TotalTicketOrders<br />
+                    <strong>待支付：</strong><span class="badge bg-danger">@Model.PendingTicketOrders</span>
+                </p>
+                <a href="@Url.Action("Index", "AdminOrders", new { area = "Admin" })" class="btn btn-sm btn-primary">查看详情</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">酒店订单</h5>
+                <p class="card-text">
+                    <strong>总订单数：</strong>@Model.TotalHotelOrders<br />
+                    <strong>待支付：</strong><span class="badge bg-danger">@Model.PendingHotelOrders</span>
+                </p>
+                <a href="@Url.Action("Index", "AdminOrders", new { area = "Admin" })" class="btn btn-sm btn-primary">查看详情</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">快速操作</h5>
+                <p class="card-text">
+                    <a href="@Url.Action("Index", "AdminAttractions", new { area = "Admin" })" class="btn btn-sm btn-outline-primary mb-2 w-100">景点管理</a>
+                    <a href="@Url.Action("Index", "AdminUsers", new { area = "Admin" })" class="btn btn-sm btn-outline-primary mb-2 w-100">用户管理</a>
+                    <a href="@Url.Action("Index", "AdminVerify", new { area = "Admin" })" class="btn btn-sm btn-outline-primary w-100">核销管理</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation Menu -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">管理菜单</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6>内容管理</h6>
+                <ul class="list-unstyled">
+                    <li><a href="@Url.Action("Index", "AdminAttractions", new { area = "Admin" })">景点管理</a></li>
+                    <li><a href="@Url.Action("Index", "AdminHotels", new { area = "Admin" })">酒店管理</a></li>
+                    <li><a href="@Url.Action("Index", "AdminFoods", new { area = "Admin" })">美食管理</a></li>
+                    <li><a href="@Url.Action("Index", "AdminRoutes", new { area = "Admin" })">线路管理</a></li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6>审核与管理</h6>
+                <ul class="list-unstyled">
+                    <li><a href="@Url.Action("Index", "AdminComments", new { area = "Admin" })">评论审核</a></li>
+                    <li><a href="@Url.Action("Index", "AdminDiaries", new { area = "Admin" })">游记审核</a></li>
+                    <li><a href="@Url.Action("Index", "AdminUsers", new { area = "Admin" })">用户管理</a></li>
+                    <li><a href="@Url.Action("Index", "AdminAnnouncements", new { area = "Admin" })">公告管理</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-6">
+                <h6>订单与核销</h6>
+                <ul class="list-unstyled">
+                    <li><a href="@Url.Action("Index", "AdminOrders", new { area = "Admin" })">订单管理</a></li>
+                    <li><a href="@Url.Action("Index", "AdminVerify", new { area = "Admin" })">核销管理</a></li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6>数据统计</h6>
+                <ul class="list-unstyled">
+                    <li><a href="@Url.Action("Index", "AdminStats", new { area = "Admin" })">数据统计</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

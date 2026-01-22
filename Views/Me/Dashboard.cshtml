@@ -1,0 +1,188 @@
+@model TourismPlatform.Models.PersonalDashboardViewModel
+
+@{
+    ViewData["Title"] = "个人中心";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    @if (!string.IsNullOrEmpty(Model.User.AvatarUrl))
+                    {
+                        <img src="@Model.User.AvatarUrl" alt="头像" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 120px; height: 120px; margin: 0 auto;">
+                            <span class="text-muted">无头像</span>
+                        </div>
+                    }
+                    <h5 class="card-title">@Model.User.Nickname</h5>
+                    <p class="text-muted small">@Model.User.Email</p>
+                    <p class="text-muted small">注册于 @Model.User.CreatedAt.ToString("yyyy-MM-dd")</p>
+                    <a asp-controller="Profile" asp-action="Index" class="btn btn-sm btn-primary w-100 mt-3">查看资料</a>
+                    <a asp-controller="Profile" asp-action="Edit" class="btn btn-sm btn-outline-primary w-100 mt-2">编辑资料</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <h3 class="text-primary">@Model.TicketOrderCount</h3>
+                            <p class="text-muted mb-0">门票订单</p>
+                            <a asp-controller="Me" asp-action="Tickets" class="btn btn-sm btn-link mt-2">查看</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <h3 class="text-success">@Model.HotelOrderCount</h3>
+                            <p class="text-muted mb-0">酒店订单</p>
+                            <a asp-controller="Me" asp-action="Hotels" class="btn btn-sm btn-link mt-2">查看</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <h3 class="text-info">@Model.DiaryCount</h3>
+                            <p class="text-muted mb-0">我的游记</p>
+                            <a asp-controller="Me" asp-action="MyDiaries" class="btn btn-sm btn-link mt-2">查看</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <h3 class="text-warning">@Model.FavoriteCount</h3>
+                            <p class="text-muted mb-0">我的收藏</p>
+                            <a asp-controller="Me" asp-action="Favorites" class="btn btn-sm btn-link mt-2">查看</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">快速导航</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <a asp-controller="Diaries" asp-action="Create" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-pencil"></i> 发布游记
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a asp-controller="Me" asp-action="MyComments" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-chat"></i> 我的评论
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a asp-controller="Attractions" asp-action="Index" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-compass"></i> 浏览景点
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.RecentTicketOrders != null && Model.RecentTicketOrders.Any())
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">最近的门票订单</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>订单号</th>
+                                        <th>景点</th>
+                                        <th>日期</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.RecentTicketOrders)
+                                    {
+                                        <tr>
+                                            <td>@order.TicketOrderId</td>
+                                            <td>@(order.Attraction?.Name ?? "N/A")</td>
+                                            <td>@order.VisitDate.ToString("yyyy-MM-dd")</td>
+                                            <td>
+                                                <span class="badge bg-@GetStatusBadgeClass(order.Status.ToString())">@GetStatusText(order.Status.ToString())</span>
+                                            </td>
+                                            <td>
+                                                <a asp-controller="Orders" asp-action="Detail" asp-route-id="@order.TicketOrderId" class="btn btn-sm btn-primary">详情</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <a asp-controller="Me" asp-action="Tickets" class="btn btn-sm btn-link mt-3">查看全部门票订单</a>
+                    </div>
+                </div>
+            }
+
+            @if (Model.RecentDiaries != null && Model.RecentDiaries.Any())
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">最近的游记</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            @foreach (var diary in Model.RecentDiaries)
+                            {
+                                <a asp-controller="Diaries" asp-action="Detail" asp-route-id="@diary.DiaryId" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">@diary.Title</h6>
+                                        <small>@diary.CreatedAt.ToString("yyyy-MM-dd")</small>
+                                    </div>
+                                    <p class="mb-1 text-muted">@(diary.Content.Length > 100 ? diary.Content.Substring(0, 100) + "..." : diary.Content)</p>
+                                </a>
+                            }
+                        </div>
+                        <a asp-controller="Me" asp-action="MyDiaries" class="btn btn-sm btn-link mt-3">查看全部游记</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Paid" => "success",
+            "PendingPay" => "warning",
+            "Used" => "info",
+            "Cancelled" => "danger",
+            _ => "secondary"
+        };
+    }
+
+    private string GetStatusText(string status)
+    {
+        return status switch
+        {
+            "Paid" => "已支付",
+            "PendingPay" => "待支付",
+            "Used" => "已使用",
+            "Cancelled" => "已取消",
+            _ => status
+        };
+    }
+}

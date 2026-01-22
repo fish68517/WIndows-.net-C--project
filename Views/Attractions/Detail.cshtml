@@ -1,0 +1,415 @@
+@model TourismPlatform.Models.Attraction
+
+@{
+    ViewData["Title"] = Model?.Name ?? "景点详情";
+}
+
+<div class="container mt-5">
+    @if (Model != null)
+    {
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">首页</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Attractions" asp-action="Index">景点列表</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <!-- Image Gallery -->
+                <div class="card shadow-sm mb-4">
+                    <div class="position-relative" style="height: 400px; overflow: hidden; background-color: #f5f5f5;">
+                        @if (Model.Images != null && Model.Images.Any())
+                        {
+                            <div id="attractionCarousel" class="carousel slide h-100" data-bs-ride="carousel">
+                                <div class="carousel-inner h-100">
+                                    @foreach (var (image, index) in Model.Images.OrderBy(i => i.DisplayOrder).Select((img, idx) => (img, idx)))
+                                    {
+                                        <div class="carousel-item @(index == 0 ? "active" : "") h-100">
+                                            <img src="@image.ImageUrl" 
+                                                 class="d-block w-100 h-100" 
+                                                 alt="@Model.Name"
+                                                 style="object-fit: cover;" />
+                                        </div>
+                                    }
+                                </div>
+                                @if (Model.Images.Count > 1)
+                                {
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#attractionCarousel" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#attractionCarousel" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center justify-content-center h-100">
+                                <span class="text-muted">暂无图片</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Attraction Information -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <!-- Title and Category -->
+                        <div class="mb-3">
+                            <h1 class="mb-2">@Model.Name</h1>
+                            @if (Model.Category != null)
+                            {
+                                <span class="badge bg-primary">@Model.Category.Name</span>
+                            }
+                            @if (Model.District != null)
+                            {
+                                <span class="badge bg-secondary">@Model.District.Name</span>
+                            }
+                        </div>
+
+                        <!-- Description -->
+                        @if (!string.IsNullOrWhiteSpace(Model.Description))
+                        {
+                            <div class="mb-4">
+                                <h5>景点介绍</h5>
+                                <p class="text-muted">@Model.Description</p>
+                            </div>
+                        }
+
+                        <!-- Key Information -->
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted">门票价格</h6>
+                                <p class="h5 text-danger">¥@Model.TicketPrice.ToString("F2")</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted">浏览次数</h6>
+                                <p class="h5">@Model.ViewCount</p>
+                            </div>
+                        </div>
+
+                        <!-- Opening Hours -->
+                        @if (!string.IsNullOrWhiteSpace(Model.OpeningHours))
+                        {
+                            <div class="mb-3">
+                                <h6 class="text-muted">
+                                    <i class="bi bi-clock"></i> 开放时间
+                                </h6>
+                                <p>@Model.OpeningHours</p>
+                            </div>
+                        }
+
+                        <!-- Address -->
+                        @if (!string.IsNullOrWhiteSpace(Model.Address))
+                        {
+                            <div class="mb-3">
+                                <h6 class="text-muted">
+                                    <i class="bi bi-geo-alt"></i> 地址
+                                </h6>
+                                <p>@Model.Address</p>
+                            </div>
+                        }
+
+                        <!-- Transport Info -->
+                        @if (!string.IsNullOrWhiteSpace(Model.TransportInfo))
+                        {
+                            <div class="mb-3">
+                                <h6 class="text-muted">
+                                    <i class="bi bi-bus-front"></i> 交通方式
+                                </h6>
+                                <p>@Model.TransportInfo</p>
+                            </div>
+                        }
+
+                        <!-- Contact Phone -->
+                        @if (!string.IsNullOrWhiteSpace(Model.ContactPhone))
+                        {
+                            <div class="mb-3">
+                                <h6 class="text-muted">
+                                    <i class="bi bi-telephone"></i> 联系方式
+                                </h6>
+                                <p>@Model.ContactPhone</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Nearby Foods Section -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">周边美食</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="foodList">
+                            <div class="text-center">
+                                <div class="spinner-border spinner-border-sm" role="status">
+                                    <span class="visually-hidden">加载中...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nearby Hotels Section -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">周边酒店</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="hotelList">
+                            <div class="text-center">
+                                <div class="spinner-border spinner-border-sm" role="status">
+                                    <span class="visually-hidden">加载中...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments Section -->
+                @if (Model.Comments != null && Model.Comments.Any())
+                {
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">用户评论 (@Model.Comments.Count)</h5>
+                        </div>
+                        <div class="card-body">
+                            @foreach (var comment in Model.Comments.OrderByDescending(c => c.CreatedAt))
+                            {
+                                <div class="mb-3 pb-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6 class="mb-1">@comment.User?.Nickname ?? "匿名用户"</h6>
+                                            @if (comment.Rating.HasValue)
+                                            {
+                                                <div class="mb-2">
+                                                    @for (int i = 0; i < comment.Rating.Value; i++)
+                                                    {
+                                                        <i class="bi bi-star-fill text-warning"></i>
+                                                    }
+                                                    @for (int i = comment.Rating.Value; i < 5; i++)
+                                                    {
+                                                        <i class="bi bi-star text-warning"></i>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                        <small class="text-muted">@comment.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
+                                    </div>
+                                    <p class="mb-0">@comment.Content</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- Related Recommendations Section -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">相关推荐</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="relatedRecommendations">
+                            <div class="text-center">
+                                <div class="spinner-border spinner-border-sm" role="status">
+                                    <span class="visually-hidden">加载中...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Action Card -->
+                <div class="card shadow-sm mb-4 sticky-top" style="top: 20px;">
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a asp-controller="Orders" asp-action="CreateTicket" asp-route-attractionId="@Model.AttractionId" class="btn btn-primary btn-lg">
+                                <i class="bi bi-ticket-perforated"></i> 购买门票
+                            </a>
+                            <button type="button" id="favoriteBtn" class="btn btn-outline-secondary" onclick="toggleFavorite(@Model.AttractionId)">
+                                <i class="bi bi-heart" id="favoriteIcon"></i> <span id="favoriteText">收藏</span>
+                            </button>
+                            <a asp-controller="Comments" asp-action="Create" asp-route-attractionId="@Model.AttractionId" class="btn btn-outline-info">
+                                <i class="bi bi-chat-left-text"></i> 发表评论
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Info Card -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">快速信息</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <small class="text-muted d-block">景点类型</small>
+                            <p class="mb-0">@(Model.Category?.Name ?? "未分类")</p>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">所属区域</small>
+                            <p class="mb-0">@(Model.District?.Name ?? "未知")</p>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">门票价格</small>
+                            <p class="mb-0 h5 text-danger">¥@Model.TicketPrice.ToString("F2")</p>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">浏览次数</small>
+                            <p class="mb-0">@Model.ViewCount 次</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">景点不存在</h4>
+            <p>抱歉，您访问的景点不存在或已被删除。</p>
+            <a asp-controller="Attractions" asp-action="Index" class="btn btn-primary">返回景点列表</a>
+        </div>
+    }
+</div>
+
+<style>
+    .carousel-item img {
+        object-fit: cover;
+    }
+
+    .sticky-top {
+        z-index: 100;
+    }
+
+    .badge {
+        margin-right: 5px;
+        margin-bottom: 10px;
+    }
+
+    .bi {
+        margin-right: 5px;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        let isFavorited = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const attractionId = @Model.AttractionId;
+            const foodListContainer = document.getElementById('foodList');
+            const hotelListContainer = document.getElementById('hotelList');
+            const relatedRecommendationsContainer = document.getElementById('relatedRecommendations');
+            
+            // Load favorite status
+            checkFavoriteStatus(attractionId);
+            
+            if (foodListContainer) {
+                fetch(`/Foods/ListByAttraction?attractionId=${attractionId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        foodListContainer.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Error loading foods:', error);
+                        foodListContainer.innerHTML = '<div class="alert alert-danger">加载美食列表失败</div>';
+                    });
+            }
+
+            if (hotelListContainer) {
+                fetch(`/Hotels/ListByAttraction?attractionId=${attractionId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        hotelListContainer.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Error loading hotels:', error);
+                        hotelListContainer.innerHTML = '<div class="alert alert-danger">加载酒店列表失败</div>';
+                    });
+            }
+
+            if (relatedRecommendationsContainer) {
+                fetch(`/Recommend/ForAttraction?attractionId=${attractionId}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        relatedRecommendationsContainer.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Error loading related recommendations:', error);
+                        relatedRecommendationsContainer.innerHTML = '<div class="alert alert-danger">加载相关推荐失败</div>';
+                    });
+            }
+        });
+
+        function checkFavoriteStatus(attractionId) {
+            fetch(`/Favorites/IsFavorited?attractionId=${attractionId}`)
+                .then(response => response.json())
+                .then(data => {
+                    isFavorited = data.isFavorited;
+                    updateFavoriteButton();
+                })
+                .catch(error => {
+                    console.error('Error checking favorite status:', error);
+                });
+        }
+
+        function toggleFavorite(attractionId) {
+            const url = isFavorited ? '/Favorites/Remove' : '/Favorites/Add';
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                },
+                body: `attractionId=${attractionId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    isFavorited = !isFavorited;
+                    updateFavoriteButton();
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error toggling favorite:', error);
+                alert('操作失败，请稍后重试');
+            });
+        }
+
+        function updateFavoriteButton() {
+            const btn = document.getElementById('favoriteBtn');
+            const icon = document.getElementById('favoriteIcon');
+            const text = document.getElementById('favoriteText');
+            
+            if (isFavorited) {
+                btn.classList.remove('btn-outline-secondary');
+                btn.classList.add('btn-danger');
+                icon.classList.add('bi-heart-fill');
+                icon.classList.remove('bi-heart');
+                text.textContent = '已收藏';
+            } else {
+                btn.classList.remove('btn-danger');
+                btn.classList.add('btn-outline-secondary');
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+                text.textContent = '收藏';
+            }
+        }
+    </script>
+}
+

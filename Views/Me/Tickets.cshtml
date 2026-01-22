@@ -1,0 +1,182 @@
+@model TourismPlatform.Models.TicketOrdersViewModel
+
+@{
+    ViewData["Title"] = "我的门票订单";
+}
+
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2>我的门票订单</h2>
+            <p class="text-muted">查看和管理您的所有门票订单</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <a asp-controller="Attractions" asp-action="Index" class="btn btn-primary">
+                <i class="bi bi-compass"></i> 浏览景点
+            </a>
+        </div>
+    </div>
+
+    <!-- Status Filter -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="btn-group" role="group">
+                <a asp-controller="Me" asp-action="Tickets" asp-route-status="" 
+                   class="btn btn-outline-primary @(string.IsNullOrEmpty(Model.SelectedStatus) ? "active" : "")">
+                    全部订单
+                </a>
+                <a asp-controller="Me" asp-action="Tickets" asp-route-status="PendingPay" 
+                   class="btn btn-outline-warning @(Model.SelectedStatus == "PendingPay" ? "active" : "")">
+                    待支付
+                </a>
+                <a asp-controller="Me" asp-action="Tickets" asp-route-status="Paid" 
+                   class="btn btn-outline-success @(Model.SelectedStatus == "Paid" ? "active" : "")">
+                    已支付
+                </a>
+                <a asp-controller="Me" asp-action="Tickets" asp-route-status="ToUse" 
+                   class="btn btn-outline-info @(Model.SelectedStatus == "ToUse" ? "active" : "")">
+                    待使用
+                </a>
+                <a asp-controller="Me" asp-action="Tickets" asp-route-status="Used" 
+                   class="btn btn-outline-secondary @(Model.SelectedStatus == "Used" ? "active" : "")">
+                    已使用
+                </a>
+                <a asp-controller="Me" asp-action="Tickets" asp-route-status="Cancelled" 
+                   class="btn btn-outline-danger @(Model.SelectedStatus == "Cancelled" ? "active" : "")">
+                    已取消
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Orders != null && Model.Orders.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover shadow-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>订单号</th>
+                        <th>景点名称</th>
+                        <th>访问日期</th>
+                        <th>数量</th>
+                        <th>总价</th>
+                        <th>状态</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.Orders)
+                    {
+                        <tr>
+                            <td>
+                                <strong>#@order.TicketOrderId</strong>
+                            </td>
+                            <td>
+                                @if (order.Attraction != null)
+                                {
+                                    <a asp-controller="Attractions" asp-action="Detail" asp-route-id="@order.AttractionId" class="text-decoration-none">
+                                        @order.Attraction.Name
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>未知景点</span>
+                                }
+                            </td>
+                            <td>@order.VisitDate.ToString("yyyy-MM-dd")</td>
+                            <td>@order.Quantity 张</td>
+                            <td>
+                                <strong class="text-danger">¥@order.TotalPrice.ToString("F2")</strong>
+                            </td>
+                            <td>
+                                <span class="badge bg-@GetStatusBadgeClass(order.Status)">
+                                    @GetStatusText(order.Status)
+                                </span>
+                            </td>
+                            <td>@order.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a asp-controller="Orders" asp-action="Detail" asp-route-orderId="@order.TicketOrderId" 
+                                       class="btn btn-outline-primary">
+                                        详情
+                                    </a>
+                                    @if (order.Status.ToString() == "PendingPay")
+                                    {
+                                        <a asp-controller="Orders" asp-action="PayTicket" asp-route-orderId="@order.TicketOrderId" 
+                                           class="btn btn-outline-success">
+                                            支付
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <h4 class="alert-heading">暂无订单</h4>
+            <p>
+                @if (string.IsNullOrEmpty(Model.SelectedStatus))
+                {
+                    <span>您还没有购买任何门票。</span>
+                }
+                else
+                {
+                    <span>您没有状态为"@GetStatusText(Model.SelectedStatus)"的订单。</span>
+                }
+            </p>
+            <hr>
+            <p class="mb-0">
+                <a asp-controller="Attractions" asp-action="Index" class="btn btn-primary btn-sm">
+                    去浏览景点并购买门票吧！
+                </a>
+            </p>
+        </div>
+    }
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+</style>
+
+@functions {
+    private string GetStatusBadgeClass(object status)
+    {
+        var statusStr = status?.ToString() ?? "";
+        return statusStr switch
+        {
+            "Paid" => "success",
+            "PendingPay" => "warning",
+            "ToUse" => "info",
+            "Used" => "secondary",
+            "Cancelled" => "danger",
+            _ => "secondary"
+        };
+    }
+
+    private string GetStatusText(object status)
+    {
+        var statusStr = status?.ToString() ?? "";
+        return statusStr switch
+        {
+            "Paid" => "已支付",
+            "PendingPay" => "待支付",
+            "ToUse" => "待使用",
+            "Used" => "已使用",
+            "Cancelled" => "已取消",
+            _ => statusStr
+        };
+    }
+}

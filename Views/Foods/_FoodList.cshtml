@@ -1,0 +1,40 @@
+@model IEnumerable<TourismPlatform.Models.Food>
+
+@if (Model != null && Model.Any())
+{
+    <div class="row">
+        @foreach (var food in Model)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="card-title">@food.Name</h6>
+                        @if (!string.IsNullOrWhiteSpace(food.Description))
+                        {
+                            <p class="card-text text-muted small">@food.Description</p>
+                        }
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="h6 text-danger mb-0">¥@food.ReferencePrice.ToString("F2")</span>
+                                <small class="text-muted d-block">参考价格</small>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(food.ContactPhone))
+                            {
+                                <div class="text-end">
+                                    <small class="text-muted d-block">联系方式</small>
+                                    <small>@food.ContactPhone</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        <p class="mb-0">暂无周边美食信息</p>
+    </div>
+}

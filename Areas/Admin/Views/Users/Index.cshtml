@@ -1,0 +1,129 @@
+@model IEnumerable<TourismPlatform.Models.User>
+
+@{
+    ViewData["Title"] = "用户管理";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1>用户管理</h1>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5 class="card-title">筛选条件</h5>
+        <form method="get" asp-area="Admin" asp-controller="AdminUsers" asp-action="Index" class="row g-3">
+            <div class="col-md-4">
+                <label for="nickname" class="form-label">用户昵称</label>
+                <input type="text" class="form-control" id="nickname" name="nickname" placeholder="输入用户昵称" value="@ViewBag.FilterNickname">
+            </div>
+            <div class="col-md-4">
+                <label for="registeredAfter" class="form-label">注册时间从</label>
+                <input type="date" class="form-control" id="registeredAfter" name="registeredAfter" value="@ViewBag.FilterRegisteredAfter">
+            </div>
+            <div class="col-md-4">
+                <label for="registeredBefore" class="form-label">注册时间到</label>
+                <input type="date" class="form-control" id="registeredBefore" name="registeredBefore" value="@ViewBag.FilterRegisteredBefore">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> 搜索
+                </button>
+                <a asp-area="Admin" asp-controller="AdminUsers" asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-clockwise"></i> 重置
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>用户昵称</th>
+                            <th>邮箱</th>
+                            <th>注册时间</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@user.Nickname</strong>
+                                </td>
+                                <td>
+                                    @user.Email
+                                </td>
+                                <td>
+                                    <small class="text-muted">@user.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
+                                </td>
+                                <td>
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> 正常
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle"></i> 已禁用
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.IsActive)
+                                    {
+                                        <form method="post" asp-area="Admin" asp-controller="AdminUsers" asp-action="Disable" asp-route-id="@user.UserId" style="display: inline;" onsubmit="return confirm('确定要禁用该用户吗？');">
+                                            <button type="submit" class="btn btn-sm btn-warning">
+                                                <i class="bi bi-lock"></i> 禁用
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form method="post" asp-area="Admin" asp-controller="AdminUsers" asp-action="Enable" asp-route-id="@user.UserId" style="display: inline;" onsubmit="return confirm('确定要启用该用户吗？');">
+                                            <button type="submit" class="btn btn-sm btn-success">
+                                                <i class="bi bi-unlock"></i> 启用
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">暂无用户</h4>
+                <p>目前还没有任何用户信息。</p>
+            </div>
+        }
+    </div>
+</div>

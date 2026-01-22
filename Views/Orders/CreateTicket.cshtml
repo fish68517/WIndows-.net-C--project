@@ -1,0 +1,181 @@
+@model TourismPlatform.Models.CreateTicketOrderViewModel
+
+@{
+    ViewData["Title"] = "购买门票 - " + Model.AttractionName;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-ticket-perforated"></i> 购买门票
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Attraction Info -->
+                    <div class="alert alert-info mb-4">
+                        <h5 class="mb-2">@Model.AttractionName</h5>
+                        <p class="mb-0">
+                            <strong>门票价格：</strong>
+                            <span class="text-danger h5">¥@Model.TicketPrice.ToString("F2")</span>
+                        </p>
+                    </div>
+
+                    <!-- Order Form -->
+                    <form method="post" asp-action="CreateTicket">
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong>表单验证失败</strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                <ul class="mb-0 mt-2">
+                                    @foreach (var modelState in ViewData.ModelState.Values)
+                                    {
+                                        @foreach (var error in modelState.Errors)
+                                        {
+                                            <li>@error.ErrorMessage</li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <!-- Hidden Fields -->
+                        <input type="hidden" asp-for="AttractionId" />
+                        <input type="hidden" asp-for="AttractionName" />
+                        <input type="hidden" asp-for="TicketPrice" />
+
+                        <!-- Visit Date -->
+                        <div class="mb-3">
+                            <label asp-for="VisitDate" class="form-label">
+                                <i class="bi bi-calendar-event"></i> 访问日期
+                            </label>
+                            <input type="date" asp-for="VisitDate" class="form-control" required />
+                            <span asp-validation-for="VisitDate" class="text-danger small"></span>
+                            <small class="form-text text-muted">请选择您计划访问的日期</small>
+                        </div>
+
+                        <!-- Quantity -->
+                        <div class="mb-4">
+                            <label asp-for="Quantity" class="form-label">
+                                <i class="bi bi-bag"></i> 购票数量
+                            </label>
+                            <div class="input-group">
+                                <button type="button" class="btn btn-outline-secondary" id="decreaseBtn">-</button>
+                                <input type="number" asp-for="Quantity" class="form-control text-center" min="1" max="100" required />
+                                <button type="button" class="btn btn-outline-secondary" id="increaseBtn">+</button>
+                            </div>
+                            <span asp-validation-for="Quantity" class="text-danger small"></span>
+                            <small class="form-text text-muted">每次最多购买100张</small>
+                        </div>
+
+                        <!-- Price Summary -->
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-6">单价：</div>
+                                    <div class="col-6 text-end">¥<span id="unitPrice">@Model.TicketPrice.ToString("F2")</span></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6">数量：</div>
+                                    <div class="col-6 text-end"><span id="quantityDisplay">@Model.Quantity</span> 张</div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                    <div class="col-6"><strong>总价：</strong></div>
+                                    <div class="col-6 text-end">
+                                        <strong class="text-danger h5">¥<span id="totalPrice">@(Model.TicketPrice * Model.Quantity).ToString("F2")</span></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-credit-card"></i> 继续支付
+                            </button>
+                            <a asp-controller="Attractions" asp-action="Detail" asp-route-id="@Model.AttractionId" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> 返回景点详情
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="alert alert-info mt-4" role="alert">
+                <h6 class="alert-heading">
+                    <i class="bi bi-info-circle"></i> 购票提示
+                </h6>
+                <ul class="mb-0 small">
+                    <li>请确保选择的日期在景点开放时间内</li>
+                    <li>支付成功后将获得核销码，凭码入场</li>
+                    <li>订单可在个人中心查看和管理</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const quantityInput = document.querySelector('input[name="Quantity"]');
+            const decreaseBtn = document.getElementById('decreaseBtn');
+            const increaseBtn = document.getElementById('increaseBtn');
+            const unitPrice = parseFloat(document.getElementById('unitPrice').textContent);
+
+            function updateTotal() {
+                const quantity = parseInt(quantityInput.value) || 1;
+                const total = (unitPrice * quantity).toFixed(2);
+                document.getElementById('quantityDisplay').textContent = quantity;
+                document.getElementById('totalPrice').textContent = total;
+            }
+
+            decreaseBtn.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value) || 1;
+                if (quantity > 1) {
+                    quantityInput.value = quantity - 1;
+                    updateTotal();
+                }
+            });
+
+            increaseBtn.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value) || 1;
+                if (quantity < 100) {
+                    quantityInput.value = quantity + 1;
+                    updateTotal();
+                }
+            });
+
+            quantityInput.addEventListener('change', updateTotal);
+        });
+    </script>
+}
+
+<style>
+    .input-group .btn {
+        border-color: #dee2e6;
+    }
+
+    .input-group .form-control {
+        border-left: none;
+        border-right: none;
+    }
+
+    .input-group .form-control:focus {
+        border-color: #dee2e6;
+        box-shadow: none;
+    }
+
+    .card-header {
+        border-bottom: 2px solid #0d6efd;
+    }
+
+    .bi {
+        margin-right: 5px;
+    }
+</style>

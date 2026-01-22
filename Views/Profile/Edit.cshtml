@@ -1,0 +1,74 @@
+@model TourismPlatform.Models.EditProfileViewModel
+
+@{
+    ViewData["Title"] = "编辑个人资料";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">编辑个人资料</h4>
+                </div>
+                <div class="card-body">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>编辑失败</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            <ul class="mb-0">
+                                @foreach (var modelState in ViewData.ModelState.Values)
+                                {
+                                    @foreach (var error in modelState.Errors)
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <form method="post" asp-action="Edit" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Nickname" class="form-label">昵称</label>
+                            <input asp-for="Nickname" class="form-control" placeholder="请输入昵称（2-50个字符）" />
+                            <span asp-validation-for="Nickname" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Bio" class="form-label">个人简介</label>
+                            <textarea asp-for="Bio" class="form-control" rows="4" placeholder="请输入个人简介（可选）"></textarea>
+                            <span asp-validation-for="Bio" class="text-danger small"></span>
+                            <small class="form-text text-muted d-block mt-2">
+                                最多500个字符
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Avatar" class="form-label">头像</label>
+                            <input asp-for="Avatar" type="file" class="form-control" accept="image/*" />
+                            <span asp-validation-for="Avatar" class="text-danger small"></span>
+                            <small class="form-text text-muted d-block mt-2">
+                                支持 JPG、PNG 等图片格式，文件大小不超过 5MB
+                            </small>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">保存更改</button>
+                            <a asp-action="Index" class="btn btn-secondary">取消</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

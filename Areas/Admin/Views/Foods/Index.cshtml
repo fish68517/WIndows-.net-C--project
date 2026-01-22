@@ -1,0 +1,93 @@
+@model IEnumerable<TourismPlatform.Models.Food>
+
+@{
+    ViewData["Title"] = "美食管理";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1>美食管理</h1>
+    <a asp-area="Admin" asp-controller="AdminFoods" asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> 新增美食
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>美食名称</th>
+                            <th>所属景点</th>
+                            <th>所属区域</th>
+                            <th>参考价格</th>
+                            <th>联系方式</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var food in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@food.Name</strong>
+                                </td>
+                                <td>
+                                    @(food.Attraction?.Name ?? "未关联")
+                                </td>
+                                <td>
+                                    @(food.District?.Name ?? "未分类")
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">¥@food.ReferencePrice.ToString("F2")</span>
+                                </td>
+                                <td>
+                                    @(string.IsNullOrEmpty(food.ContactPhone) ? "-" : food.ContactPhone)
+                                </td>
+                                <td>
+                                    <small class="text-muted">@food.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
+                                </td>
+                                <td>
+                                    <a asp-area="Admin" asp-controller="AdminFoods" asp-action="Edit" asp-route-id="@food.FoodId" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil"></i> 编辑
+                                    </a>
+                                    <form method="post" asp-area="Admin" asp-controller="AdminFoods" asp-action="Delete" asp-route-id="@food.FoodId" style="display: inline;" onsubmit="return confirm('确定要删除该美食吗？');">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> 删除
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">暂无美食</h4>
+                <p>目前还没有任何美食信息。<a asp-area="Admin" asp-controller="AdminFoods" asp-action="Create">点击这里</a>创建第一个美食。</p>
+            </div>
+        }
+    </div>
+</div>

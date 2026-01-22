@@ -1,0 +1,164 @@
+@model IEnumerable<TourismPlatform.Models.Attraction>
+
+@{
+    ViewData["Title"] = "景点列表";
+}
+
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1>景点列表</h1>
+            <p class="text-muted">发现济南最美的旅游目的地</p>
+        </div>
+    </div>
+
+    <!-- Search and Filter Form -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Search Bar -->
+                    <form method="get" asp-action="Index" class="mb-3">
+                        <div class="input-group">
+                            <input type="text" 
+                                   class="form-control" 
+                                   placeholder="搜索景点名称..." 
+                                   name="searchKeyword"
+                                   value="@ViewBag.SearchKeyword">
+                            <button class="btn btn-outline-primary" type="submit">
+                                <i class="bi bi-search"></i> 搜索
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Filter Form -->
+                    <form method="get" asp-action="Index" class="row g-3">
+                        <div class="col-md-5">
+                            <label for="districtFilter" class="form-label">行政区</label>
+                            <select class="form-select" id="districtFilter" name="districtId">
+                                <option value="">-- 全部行政区 --</option>
+                                @if (ViewBag.Districts != null)
+                                {
+                                    @foreach (var district in ViewBag.Districts)
+                                    {
+                                        <option value="@district.DistrictId" 
+                                                selected="@(ViewBag.SelectedDistrictId == district.DistrictId ? "selected" : "")">
+                                            @district.Name
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="categoryFilter" class="form-label">景点类型</label>
+                            <select class="form-select" id="categoryFilter" name="categoryId">
+                                <option value="">-- 全部类型 --</option>
+                                @if (ViewBag.Categories != null)
+                                {
+                                    @foreach (var category in ViewBag.Categories)
+                                    {
+                                        <option value="@category.CategoryId" 
+                                                selected="@(ViewBag.SelectedCategoryId == category.CategoryId ? "selected" : "")">
+                                            @category.Name
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">筛选</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row">
+            @foreach (var attraction in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <!-- Attraction Image -->
+                        <div class="position-relative" style="height: 250px; overflow: hidden;">
+                            @if (attraction.Images != null && attraction.Images.Any())
+                            {
+                                <img src="@attraction.Images.FirstOrDefault()?.ImageUrl" 
+                                     class="card-img-top" 
+                                     alt="@attraction.Name"
+                                     style="width: 100%; height: 100%; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="bg-light d-flex align-items-center justify-content-center" 
+                                     style="width: 100%; height: 100%;">
+                                    <span class="text-muted">暂无图片</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="card-body">
+                            <!-- Attraction Name -->
+                            <h5 class="card-title">@attraction.Name</h5>
+
+                            <!-- District -->
+                            @if (attraction.District != null)
+                            {
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <i class="bi bi-geo-alt"></i> @attraction.District.Name
+                                    </small>
+                                </p>
+                            }
+
+                            <!-- Ticket Price -->
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0 text-danger">¥@attraction.TicketPrice.ToString("F2")</span>
+                                <small class="text-muted">门票价格</small>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-white border-top">
+                            <a asp-controller="Attractions" 
+                               asp-action="Detail" 
+                               asp-route-id="@attraction.AttractionId"
+                               class="btn btn-primary btn-sm w-100">
+                                查看详情
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <h4 class="alert-heading">暂无景点</h4>
+            <p>目前还没有符合条件的景点信息，请尝试其他筛选条件。</p>
+        </div>
+    }
+</div>
+
+<style>
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .card-title {
+        font-weight: 600;
+        color: #333;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
