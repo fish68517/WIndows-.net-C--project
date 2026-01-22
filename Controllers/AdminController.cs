@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace TourismPlatform.Controllers
 {
-    public class AttractionsController : Controller
+    public class AdminController : Controller
     {
         public IActionResult Index()
         {
-            return View(); // 对应 Views/Attractions/Index.cshtml
+            return View();
         }
     }
 }

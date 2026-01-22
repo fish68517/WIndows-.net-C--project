@@ -11,7 +11,7 @@ namespace TourismPlatform.Data
         }
 
         // User and Account
-        public DbSet<User> Users { get; set; }
+        public new DbSet<User> Users { get; set; }
         public DbSet<AdminUser> AdminUsers { get; set; }
 
         // Location and Category

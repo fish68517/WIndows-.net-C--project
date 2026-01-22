@@ -1,37 +1,23 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using TourismPlatform.Data;
-using TourismPlatform.Repositories;
-using TourismPlatform.Services;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure logging
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.AddDebug();
+// 1. 配置数据库连接
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-if (!builder.Environment.IsDevelopment())
-{
-    builder.Logging.AddEventLog();
-}
-
-// Add services to the container
-builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
-
-// Add DbContext
 builder.Services.AddDbContext<MyDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));
 
-// Add Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+// 2. 配置 Identity (用户认证)
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<MyDbContext>();
 
-// Add Memory Cache
-builder.Services.AddMemoryCache();
-
-// Add Session
+// 3. 添加 Session 支持 (为了保存登录状态和简单的购物车)
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -39,72 +25,37 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Add CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", builder =>
-    {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
-    });
-});
-
-// Add Repository and Unit of Work
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-// Add Services
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IAttractionService, AttractionService>();
-builder.Services.AddScoped<IFoodService, FoodService>();
-builder.Services.AddScoped<IHotelService, HotelService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<ICommentService, CommentService>();
-builder.Services.AddScoped<IDiaryService, DiaryService>();
-builder.Services.AddScoped<IFavoriteService, FavoriteService>();
-builder.Services.AddScoped<IRecommendService, RecommendService>();
-builder.Services.AddScoped<IWeatherService, WeatherService>();
-builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddScoped<IVerifyService, VerifyService>();
-builder.Services.AddScoped<IStatsService, StatsService>();
+// 4. 添加 MVC 控制器和视图支持
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Initialize seed data
-using (var scope = app.Services.CreateScope())
+// 5. 配置 HTTP 请求管道
+if (app.Environment.IsDevelopment())
 {
-    var services = scope.ServiceProvider;
-    SeedData.Initialize(services);
+    app.UseMigrationsEndPoint();
 }
-
-// Configure the HTTP request pipeline
-if (!app.Environment.IsDevelopment())
+else
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    // app.UseHttpsRedirection(); // 注释掉强制 HTTPS 跳转，避免生产环境警告
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseCors("AllowAll");
+app.UseAuthentication(); // 认证
+app.UseAuthorization();  // 授权
 
-app.UseSession();
-
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseSession(); // 开启 Session
 
 app.MapControllerRoute(
-    name: "admin",
+    name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.MapRazorPages();
 
 app.Run();
