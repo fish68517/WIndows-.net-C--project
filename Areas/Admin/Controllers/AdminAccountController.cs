@@ -61,12 +61,26 @@ namespace TourismPlatform.Areas.Admin.Controllers
             return RedirectToAction("Index", "AdminHome");
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        // 修改前：
+        // [HttpPost]
+        // [ValidateAntiForgeryToken]
+        // public IActionResult Logout() { ... }
+
+        // 修改后：允许 GET 请求，这样 <a href="..."> 也能调用
+        [HttpGet] 
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();
-            return RedirectToAction("Login");
+            // 清除管理员的 Session
+            HttpContext.Session.Remove("AdminUserId");
+            HttpContext.Session.Remove("AdminEmail");
+            HttpContext.Session.Remove("UserRole"); // 如果有通用角色字段也清除
+
+            // 或者暴力一点，清除所有：
+            // HttpContext.Session.Clear(); 
+
+            // 跳转回登录页  http://localhost:5000/Account/Login
+            // 正确写法：明确指定 Action, Controller, 和 RouteValues (把 area 设为空)
+            return RedirectToAction("Login", "Account", new { area = "" });
         }
 
         private bool VerifyPassword(string password, string hash)

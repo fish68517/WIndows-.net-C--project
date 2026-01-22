@@ -167,7 +167,8 @@ namespace TourismPlatform.Controllers
             _logger.LogInformation("用户注销: {Email}", email ?? "Unknown");
 
             HttpContext.Session.Clear();
-            return RedirectToAction("Index", "Home");
+            // return RedirectToAction("Index", "Login");
+            return RedirectToAction("Login", "Account", new { area = "" });
         }
 
         // ==========================================
