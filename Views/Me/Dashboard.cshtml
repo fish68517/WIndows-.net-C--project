@@ -108,7 +108,7 @@
                                         <th>景点</th>
                                         <th>日期</th>
                                         <th>状态</th>
-                                        <th>操作</th>
+                                
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -121,9 +121,12 @@
                                             <td>
                                                 <span class="badge bg-@GetStatusBadgeClass(order.Status.ToString())">@GetStatusText(order.Status.ToString())</span>
                                             </td>
-                                            <td>
-                                                <a asp-controller="Orders" asp-action="Detail" asp-route-id="@order.TicketOrderId" class="btn btn-sm btn-primary">详情</a>
-                                            </td>
+                                            @if (false)
+                                            {
+                                                <td>
+                                                    <a asp-controller="Orders" asp-action="Detail" asp-route-id="@order.TicketOrderId" class="btn btn-sm btn-primary">详情</a>
+                                                </td>
+                                            }
                                         </tr>
                                     }
                                 </tbody>

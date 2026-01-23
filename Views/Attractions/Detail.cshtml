@@ -142,7 +142,9 @@
                 </div>
 
                 <!-- Nearby Foods Section -->
-                <div class="card shadow-sm mb-4">
+                @if (false)
+                {
+                    <div class="card shadow-sm mb-4">
                     <div class="card-header bg-light">
                         <h5 class="mb-0">周边美食</h5>
                     </div>
@@ -156,9 +158,13 @@
                         </div>
                     </div>
                 </div>
+                }
+                
 
                 <!-- Nearby Hotels Section -->
-                <div class="card shadow-sm mb-4">
+                @if (false)
+                {
+                    <div class="card shadow-sm mb-4">
                     <div class="card-header bg-light">
                         <h5 class="mb-0">周边酒店</h5>
                     </div>
@@ -172,6 +178,8 @@
                         </div>
                     </div>
                 </div>
+                }
+                
 
                 <!-- Comments Section -->
                 @if (Model.Comments != null && Model.Comments.Any())
@@ -211,7 +219,9 @@
                 }
 
                 <!-- Related Recommendations Section -->
-                <div class="card shadow-sm">
+                @if (false)
+                {
+                    <div class="card shadow-sm">
                     <div class="card-header bg-light">
                         <h5 class="mb-0">相关推荐</h5>
                     </div>
@@ -224,7 +234,9 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                    </div>
+                }
+                
             </div>
 
             <!-- Sidebar -->

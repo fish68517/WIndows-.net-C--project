@@ -17,9 +17,10 @@ namespace TourismPlatform.Services
         public async Task<TicketOrder> CreateTicketOrderAsync(int userId, int attractionId, DateTime visitDate, int quantity)
         {
             var attraction = await _unitOfWork.Attractions.GetByIdAsync(attractionId);
-            if (attraction == null)
-                return null;
+            if (attraction == null) return null;
 
+            // 打印订单信息
+            Console.WriteLine($"用户 {userId} 购买了 {attraction.Name} 景点的 {quantity} 张门票，总价为 {attraction.TicketPrice * quantity} 元");
             var order = new TicketOrder
             {
                 UserId = userId,
@@ -47,16 +48,37 @@ namespace TourismPlatform.Services
             _unitOfWork.TicketOrders.Update(order);
             await _unitOfWork.SaveChangesAsync();
 
-            // Generate verify code
             await _verifyService.GenerateCodeAsync(orderId, "Ticket");
-
             return true;
         }
 
+        // ==========================================
+        // 核心修复：手动加载关联数据 (VerifyCode 和 Attraction)
+        // ==========================================
         public async Task<TicketOrder> GetTicketOrderAsync(int orderId)
         {
-            return await _unitOfWork.TicketOrders.GetByIdAsync(orderId);
+            // 1. 获取主订单
+            var order = await _unitOfWork.TicketOrders.GetByIdAsync(orderId);
+            
+            if (order != null)
+            {
+                // 2. 显式加载关联的 核销码
+                var verifyCodes = await _unitOfWork.VerifyCodes.FindAsync(v => v.TicketOrderId == orderId);
+                order.VerifyCode = verifyCodes.FirstOrDefault();
+
+                // 3. 显式加载关联的 景点信息 (防止页面显示"未知景点")
+                if (order.Attraction == null)
+                {
+                    order.Attraction = await _unitOfWork.Attractions.GetByIdAsync(order.AttractionId);
+                }
+            }
+            return order;
         }
+
+        // public async Task<TicketOrder> GetTicketOrderAsync(int orderId)
+        // {
+        //     return await _unitOfWork.TicketOrders.GetByIdAsync(orderId);
+        // }
 
         public async Task<IEnumerable<TicketOrder>> GetUserTicketOrdersAsync(int userId)
         {
@@ -103,10 +125,30 @@ namespace TourismPlatform.Services
             return true;
         }
 
+        // ==========================================
+        // 顺便修复：Hotel 也要加载 VerifyCode
+        // ==========================================
         public async Task<HotelOrder> GetHotelOrderAsync(int orderId)
         {
-            return await _unitOfWork.HotelOrders.GetByIdAsync(orderId);
+            var order = await _unitOfWork.HotelOrders.GetByIdAsync(orderId);
+            if (order != null)
+            {
+                var verifyCodes = await _unitOfWork.VerifyCodes.FindAsync(v => v.HotelOrderId == orderId);
+                order.VerifyCode = verifyCodes.FirstOrDefault();
+                
+                if (order.RoomType == null)
+                {
+                    order.RoomType = await _unitOfWork.HotelRoomTypes.GetByIdAsync(order.RoomTypeId);
+                     // 如果需要酒店名，还得继续查 Hotel，这里暂略
+                }
+            }
+            return order;
         }
+
+        // public async Task<HotelOrder> GetHotelOrderAsync(int orderId)
+        // {
+        //     return await _unitOfWork.HotelOrders.GetByIdAsync(orderId);
+        // }
 
         public async Task<IEnumerable<HotelOrder>> GetUserHotelOrdersAsync(int userId)
         {

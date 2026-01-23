@@ -1,6 +1,11 @@
 using TourismPlatform.Models;
 using TourismPlatform.Repositories;
 
+using Microsoft.EntityFrameworkCore; // 引入此命名空间以使用 AnyAsync 或 FirstOrDefaultAsync
+using System;
+using System.Linq; // 引入 Linq
+using System.Threading.Tasks;
+
 namespace TourismPlatform.Services
 {
     public class VerifyService : IVerifyService
@@ -12,22 +17,47 @@ namespace TourismPlatform.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<VerifyCode> GenerateCodeAsync(int orderId, string orderType)
+        // 修改：返回类型改为 Task<VerifyCode>
+        public async Task<VerifyCode> GenerateCodeAsync(int orderId, string type)
         {
-            var code = GenerateUniqueCode();
-            
+            // 1. 检查是否已经生成过 (使用 FirstOrDefault)
+            var existingCodes = await _unitOfWork.VerifyCodes.FindAsync(v => 
+                (type == "Ticket" && v.TicketOrderId == orderId) || 
+                (type == "Hotel" && v.HotelOrderId == orderId));
+
+            var existingCode = existingCodes.FirstOrDefault();
+            if (existingCode != null) 
+            {
+                return existingCode; 
+            }
+
+            // 2. 生成唯一的核销码字符串
+            string prefix = type == "Ticket" ? "T" : "H";
+            string datePart = DateTime.Now.ToString("yyyyMMdd");
+            string randomPart = Guid.NewGuid().ToString().Substring(0, 4).ToUpper();
+            string codeStr = $"{prefix}-{datePart}-{randomPart}";
+
+            // 3. 创建实体对象
             var verifyCode = new VerifyCode
             {
-                Code = code,
-                TicketOrderId = orderType == "Ticket" ? orderId : null,
-                HotelOrderId = orderType == "Hotel" ? orderId : null,
-                OrderType = orderType == "Ticket" ? OrderType.Ticket : OrderType.Hotel,
-                Status = VerifyCodeStatus.Unused,
+                Code = codeStr,
+                // ==========================================
+                // 修复点：添加 (OrderType) 强制转换
+                // ==========================================
+                OrderType = (OrderType)(type == "Ticket" ? 1 : 2), 
+                
+                Status = 0, // 0=未使用
                 CreatedAt = DateTime.UtcNow
             };
 
+            if (type == "Ticket") verifyCode.TicketOrderId = orderId;
+            else verifyCode.HotelOrderId = orderId;
+
+            // 4. 保存到数据库
             await _unitOfWork.VerifyCodes.AddAsync(verifyCode);
             await _unitOfWork.SaveChangesAsync();
+
+            // 5. 返回对象
             return verifyCode;
         }
 

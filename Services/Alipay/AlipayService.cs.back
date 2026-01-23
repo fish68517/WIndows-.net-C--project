@@ -1,0 +1,80 @@
+using Aop.Api;
+using Aop.Api.Request;
+using Aop.Api.Domain;  // 引入 Domain 命名空间 (对应 Demo 中的 Model)
+using Aop.Api.Util;    // 引入 Util 命名空间 (用于验签)
+using Microsoft.Extensions.Configuration;
+
+namespace TourismPlatform.Services.Alipay
+{
+    public class AlipayService : IAlipayService
+    {
+        private readonly IConfiguration _configuration;
+        // 使用接口类型 IAopClient (对应 Demo 的写法)
+        private readonly IAopClient _client;
+
+        public AlipayService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            var config = _configuration.GetSection("Alipay");
+
+            // 初始化 SDK
+            // 虽然官方 Demo 用了证书(CertParams)，但沙箱环境通常只给字符串 Key。
+            // 这里我们使用 Key 模式的构造函数，但保持官方的参数顺序规范。
+            _client = new DefaultAopClient(
+                config["GatewayUrl"],       // 1. 网关地址
+                config["AppId"],            // 2. APPID
+                config["PrivateKey"],       // 3. 应用私钥
+                "json",                     // 4. 格式
+                "1.0",                      // 5. 版本
+                "RSA2",                     // 6. 签名类型
+                config["AlipayPublicKey"],  // 7. 支付宝公钥
+                "UTF-8",                    // 8. 编码
+                false                       // 9. 是否加密
+            );
+        }
+
+        public string GeneratePagePayRequest(string outTradeNo, string totalAmount, string subject, string returnUrl)
+        {
+            // 1. 创建 Request 对象 (官方风格)
+            var request = new AlipayTradePagePayRequest();
+            
+            // 2. 设置回调地址
+            request.SetReturnUrl(returnUrl);
+            // request.SetNotifyUrl(""); // 如果有公网回调可以设在这里
+
+            // 3. 创建 Model 对象 (官方 Demo 风格，替代手写 JSON)
+            var model = new AlipayTradePagePayModel
+            {
+                OutTradeNo = outTradeNo,
+                ProductCode = "FAST_INSTANT_TRADE_PAY",
+                TotalAmount = totalAmount,
+                Subject = subject,
+                Body = "旅游平台订单"
+            };
+
+            // 4. 将 Model 设置给 Request
+            request.SetBizModel(model);
+
+            // 5. 调用 SDK 生成表单
+            // 注意：电脑网页支付使用 PageExecute，而不是 CertificateExecute
+            var response = _client.PageExecute(request);
+
+            return response.Body;
+        }
+
+        public bool ValidateCallback(Dictionary<string, string> paramsMap)
+        {
+            if (paramsMap == null || paramsMap.Count == 0) return false;
+            var config = _configuration.GetSection("Alipay");
+
+            // 调用 SDK 验证签名
+            return AlipaySignature.RSACheckV1(
+                paramsMap,
+                config["AlipayPublicKey"],
+                "UTF-8",
+                "RSA2",
+                false
+            );
+        }
+    }
+}

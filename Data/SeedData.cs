@@ -109,7 +109,7 @@ namespace TourismPlatform.Data
                             Name = "大明湖",
                             Description = "济南三大名胜之一，繁华都市中难得的天然湖泊。湖水来源于城内诸泉，有“四面荷花三面柳，一城山色半城湖”的美誉。",
                             Address = "济南市历下区大明湖路271号",
-                            TicketPrice = 0.00m,
+                            TicketPrice = 30.00m,
                             OpeningHours = "全天开放",
                             TransportInfo = "公交：乘坐11、41、K54、K95、K98、K109路公交车可达。",
                             ContactPhone = "0531-86088910",
@@ -360,7 +360,8 @@ namespace TourismPlatform.Data
                     var demoUser = new User
                     {
                         Email = "demo@tourism.com",
-                        PasswordHash = HashPassword("123456"),
+                        // 核心修改：普通用户必须用 BCrypt 加密，否则 UserService 无法登录
+                        PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
                         Nickname = "旅游体验官",
                         Bio = "热爱旅行，热爱生活。",
                         // AvatarUrl 为 nullable，不赋值不会报错

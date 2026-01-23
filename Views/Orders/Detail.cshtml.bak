@@ -1,0 +1,164 @@
+@model TourismPlatform.Models.TicketOrderDetailViewModel
+
+@{
+    ViewData["Title"] = "订单详情 - " + Model.AttractionName;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Success Alert -->
+            @if (Model.Status == "Paid")
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle"></i> <strong>支付成功！</strong> 您的订单已支付，核销码已生成。
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Order Details Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-receipt"></i> 订单详情
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Order Number and Status -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">订单号</h6>
+                            <p class="h5"><code>@Model.TicketOrderId</code></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">订单状态</h6>
+                            <p class="h5">
+                                @if (Model.Status == "Paid")
+                                {
+                                    <span class="badge bg-success">已支付</span>
+                                }
+                                else if (Model.Status == "PendingPay")
+                                {
+                                    <span class="badge bg-warning">待支付</span>
+                                }
+                                else if (Model.Status == "ToUse")
+                                {
+                                    <span class="badge bg-info">待使用</span>
+                                }
+                                else if (Model.Status == "Used")
+                                {
+                                    <span class="badge bg-secondary">已使用</span>
+                                }
+                                else if (Model.Status == "Cancelled")
+                                {
+                                    <span class="badge bg-danger">已取消</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <!-- Attraction Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">景点名称</h6>
+                            <p class="h5">@Model.AttractionName</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">访问日期</h6>
+                            <p class="h5">@Model.VisitDate.ToString("yyyy-MM-dd")</p>
+                        </div>
+                    </div>
+
+                    <!-- Ticket Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">购票数量</h6>
+                            <p class="h5">@Model.Quantity 张</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">应付金额</h6>
+                            <p class="h5 text-danger">¥@Model.TotalPrice.ToString("F2")</p>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <!-- Dates -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">创建时间</h6>
+                            <p>@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">支付时间</h6>
+                            <p>@(Model.PaidAt.HasValue ? Model.PaidAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "未支付")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verify Code Card -->
+            @if (Model.Status == "Paid" && Model.VerifyCode != "未生成")
+            {
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-qr-code"></i> 核销码
+                        </h4>
+                    </div>
+                    <div class="card-body text-center">
+                        <p class="text-muted mb-3">请在景点入场时出示以下核销码</p>
+                        <div class="alert alert-info mb-4">
+                            <h3 class="mb-0" style="font-family: monospace; letter-spacing: 2px;">@Model.VerifyCode</h3>
+                        </div>
+                        <button class="btn btn-outline-primary" onclick="window.print()">
+                            <i class="bi bi-printer"></i> 打印核销码
+                        </button>
+                    </div>
+                </div>
+            }
+
+            <!-- Action Buttons -->
+            <div class="d-grid gap-2 mb-4">
+                <a asp-controller="Attractions" asp-action="Index" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> 继续浏览景点
+                </a>
+                <a asp-controller="Me" asp-action="Dashboard" class="btn btn-outline-secondary">
+                    <i class="bi bi-person-circle"></i> 返回个人中心
+                </a>
+            </div>
+
+            <!-- Important Notes -->
+            <div class="alert alert-info" role="alert">
+                <h6 class="alert-heading">
+                    <i class="bi bi-info-circle"></i> 重要提示
+                </h6>
+                <ul class="mb-0 small">
+                    <li>请妥善保管核销码，入场时需要出示</li>
+                    <li>核销码仅限本人使用，不可转让</li>
+                    <li>如有问题，请联系客服</li>
+                    <li>您可以在个人中心查看所有订单</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    code {
+        background-color: #f5f5f5;
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 1.1em;
+    }
+
+    .card-header {
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .bi {
+        margin-right: 5px;
+    }
+</style>

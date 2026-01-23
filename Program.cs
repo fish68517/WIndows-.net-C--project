@@ -3,8 +3,18 @@ using Microsoft.AspNetCore.Identity;
 using TourismPlatform.Data;
 using TourismPlatform.Repositories;
 using TourismPlatform.Services;
+// 1. 【必须】添加这行引用
+using TourismPlatform.Services.Alipay;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+// 2. 【必须】使用 builder.Services 注册支付宝服务
+// 注意：这行代码必须在 var app = builder.Build(); 这一行之前！
+builder.Services.AddScoped<IAlipayService, AlipayService>();
+
+// 注册核销码服务
+builder.Services.AddScoped<IVerifyService, VerifyService>();
 
 // Configure logging
 builder.Logging.ClearProviders();
@@ -106,5 +116,4 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
-
 app.Run();
