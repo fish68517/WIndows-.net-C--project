@@ -6,6 +6,10 @@ using TourismPlatform.Services;
 // 1. 【必须】添加这行引用
 using TourismPlatform.Services.Alipay;
 
+using TourismPlatform.Services.Ai;
+using TourismPlatform.Services.Weather;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -15,6 +19,15 @@ builder.Services.AddScoped<IAlipayService, AlipayService>();
 
 // 注册核销码服务
 builder.Services.AddScoped<IVerifyService, VerifyService>();
+
+// 注册 HTTP Client 用于 AI 请求
+builder.Services.AddHttpClient();
+
+// 注册 AI 服务
+builder.Services.AddScoped<IAiService, OpenAiService>();
+
+// 注册 天气 服务
+builder.Services.AddScoped<IWeatherService, WeatherService>();
 
 // Configure logging
 builder.Logging.ClearProviders();

@@ -2,10 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using TourismPlatform.Models;
 using TourismPlatform.Services;
 using TourismPlatform.Repositories;
-using Microsoft.Extensions.Logging; // 1. 引入日志命名空间
+using Microsoft.Extensions.Logging;
 using System.Linq;
 using System;
 using System.Threading.Tasks;
+// 1. 【修复】引入支付宝服务的命名空间
+using TourismPlatform.Services.Alipay; 
+ 
+using Newtonsoft.Json;
 
 namespace TourismPlatform.Controllers
 {
@@ -15,21 +19,25 @@ namespace TourismPlatform.Controllers
         private readonly IAttractionService _attractionService;
         private readonly IHotelService _hotelService;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<OrdersController> _logger; // 2. 定义日志对象
+        private readonly ILogger<OrdersController> _logger;
+        // 2. 【修复】添加支付宝服务字段
+        private readonly IAlipayService _alipayService; 
 
-        // 3. 注入日志对象
+        // 3. 【修复】在构造函数中注入 IAlipayService
         public OrdersController(
             IOrderService orderService, 
             IAttractionService attractionService, 
             IHotelService hotelService, 
             IUnitOfWork unitOfWork,
-            ILogger<OrdersController> logger)
+            ILogger<OrdersController> logger,
+            IAlipayService alipayService) // 注入它！
         {
             _orderService = orderService;
             _attractionService = attractionService;
             _hotelService = hotelService;
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _alipayService = alipayService; // 赋值！
         }
 
         // GET: /Orders/CreateTicket?attractionId=5
@@ -128,7 +136,6 @@ namespace TourismPlatform.Controllers
                 return NotFound("订单不存在");
             }
 
-            // 构造 ViewModel (这就是之前报错的地方，现在 View 类型匹配了)
             var model = new PayTicketOrderViewModel
             {
                 TicketOrderId = order.TicketOrderId,
@@ -146,7 +153,8 @@ namespace TourismPlatform.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("PayTicket")]
-        public async Task<IActionResult> PayTicketConfirmed(int orderId)
+        // 4. 【修复】添加 string paymentMethod 参数，接收前端传值
+        public async Task<IActionResult> PayTicketConfirmed(int orderId, string paymentMethod)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (!userId.HasValue) return RedirectToAction("Login", "Account");
@@ -154,11 +162,10 @@ namespace TourismPlatform.Controllers
             var order = await _orderService.GetTicketOrderAsync(orderId);
             if (order == null) return NotFound("订单不存在");
 
-            _logger.LogInformation("用户 {UserId} 确认支付订单 {OrderId}", userId, orderId);
-
+            _logger.LogInformation("用户 {UserId} 确认支付订单 {OrderId}，方式：{Method}", userId, orderId, paymentMethod);
 
             // 如果选择支付宝，跳转到沙箱支付页
-            if (paymentMethod == "alipay")
+            if (true)
             {
                 // 构造回调地址：http://localhost:5000/Orders/AlipayReturn
                 var returnUrl = Url.Action("AlipayReturn", "Orders", null, Request.Scheme);
@@ -166,7 +173,6 @@ namespace TourismPlatform.Controllers
                 _logger.LogInformation("支付宝支付回调地址：{ReturnUrl}", returnUrl);
 
                 // 调用支付宝服务生成 HTML
-                // 注意：沙箱环境金额建议测试小一点，虽然是假的钱
                 var formHtml = _alipayService.GeneratePagePayRequest(
                     order.TicketOrderId.ToString(), // 订单号
                     order.TotalPrice.ToString("F2"), // 金额
@@ -178,6 +184,7 @@ namespace TourismPlatform.Controllers
                 return Content(formHtml, "text/html");
             }
 
+            // --- 默认支付逻辑 (模拟银行卡/微信等直接成功) ---
             try
             {
                 var paymentSuccess = await _orderService.PayTicketOrderAsync(orderId);
@@ -192,7 +199,9 @@ namespace TourismPlatform.Controllers
                     _logger.LogWarning("订单 {OrderId} 支付失败（业务层返回 false）", orderId);
                     
                     // 支付失败，重新加载页面，需要查出数据填充 ViewModel
-                    var order = await _orderService.GetTicketOrderAsync(orderId);
+                    // 5. 【修复】去掉前面的 'var'，复用上面已定义的 order 变量，解决 CS0136 错误
+                    order = await _orderService.GetTicketOrderAsync(orderId);
+                    
                     var model = new PayTicketOrderViewModel
                     {
                         TicketOrderId = orderId,
@@ -209,7 +218,7 @@ namespace TourismPlatform.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "支付过程中发生系统异常，订单ID: {OrderId}", orderId);
-                return RedirectToAction("Error", "Home"); // 建议跳转到通用错误页
+                return RedirectToAction("Error", "Home"); 
             }
         }
 
@@ -223,6 +232,10 @@ namespace TourismPlatform.Controllers
             var order = await _orderService.GetTicketOrderAsync(orderId);
             if (order == null || order.UserId != userId.Value) return NotFound();
 
+           
+
+            var json = JsonConvert.SerializeObject(order, Formatting.Indented);
+            _logger.LogInformation("订单详情：{OrderJson}", json);
             var model = new TicketOrderDetailViewModel
             {
                 TicketOrderId = order.TicketOrderId,
@@ -230,9 +243,14 @@ namespace TourismPlatform.Controllers
                 VisitDate = order.VisitDate,
                 Quantity = order.Quantity,
                 TotalPrice = order.TotalPrice,
-                Status = order.Status.ToString(),
+                
+                // 【关键修改】强制转为 int 再转 string，确保输出 "1" 而不是 "Paid"
+                // 这样才能匹配你 Detail.cshtml 里的 @if(Model.Status == "1")
+                Status = ((int)order.Status).ToString(), 
+                
                 CreatedAt = order.CreatedAt,
                 PaidAt = order.PaidAt,
+                // 这里现在应该能取到值了，因为 Service 层已经加载了
                 VerifyCode = order.VerifyCode?.Code ?? "未生成"
             };
 
@@ -275,7 +293,7 @@ namespace TourismPlatform.Controllers
             return View(model);
         }
 
-        // 辅助方法：重新加载景点信息，防止页面回显时数据丢失
+        // 辅助方法：重新加载景点信息
         private async Task ReloadTicketModel(CreateTicketOrderViewModel model)
         {
             var attraction = await _attractionService.GetByIdAsync(model.AttractionId);
@@ -286,31 +304,24 @@ namespace TourismPlatform.Controllers
             }
         }
 
-            // 2. 新增支付宝同步回调接口 (用户付完钱会跳到这)
+        // 2. 新增支付宝同步回调接口 (用户付完钱会跳到这)
         [HttpGet]
         public async Task<IActionResult> AlipayReturn()
         {
-            // 获取支付宝传回来的所有参数
             var paramsMap = new Dictionary<string, string>();
             foreach (var key in Request.Query.Keys)
             {
                 paramsMap.Add(key, Request.Query[key]);
             }
 
-            // 验证签名 (确保是支付宝发来的，不是伪造的)
             var isValid = _alipayService.ValidateCallback(paramsMap);
             
             if (isValid)
             {
-                // 获取订单号
                 var outTradeNo = Request.Query["out_trade_no"];
                 if (int.TryParse(outTradeNo, out int orderId))
                 {
-                    // 调用你现有的 OrderService 完成支付状态更新和核销码生成
-                    // 注意：这里不用再判断是否 PendingPay，PayTicketOrderAsync 内部判断了
                     await _orderService.PayTicketOrderAsync(orderId);
-                    
-                    // 支付成功，跳转到详情页
                     TempData["Success"] = "支付宝支付成功！";
                     return RedirectToAction("Detail", new { orderId = orderId });
                 }

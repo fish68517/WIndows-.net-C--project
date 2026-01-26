@@ -10,6 +10,12 @@ namespace TourismPlatform.Services
         Task<IEnumerable<Comment>> GetAttractionCommentsAsync(int attractionId);
         Task<IEnumerable<Comment>> GetDiaryCommentsAsync(int diaryId);
         Task<IEnumerable<Comment>> GetUserCommentsAsync(int userId);
-        Task<IEnumerable<Comment>> GetAllCommentsAsync();
+        
+
+
+        Task<List<Comment>> GetAllCommentsAsync(); // 获取所有评论(包括待审核)
+        Task<bool> ApproveCommentAsync(int commentId); // 通过
+        Task<bool> RejectCommentAsync(int commentId);  // 拒绝
+        Task<bool> DeleteCommentAsync(int commentId);  // 删除
     }
 }

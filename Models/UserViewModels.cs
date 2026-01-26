@@ -108,20 +108,25 @@ namespace TourismPlatform.Models
         public string VerifyCode { get; set; }
     }
 
+    // 下单页面模型
     public class CreateHotelOrderViewModel
     {
+        public int HotelId { get; set; }
         public int RoomTypeId { get; set; }
         public string HotelName { get; set; }
         public string RoomTypeName { get; set; }
         public decimal PricePerNight { get; set; }
 
-        [Required(ErrorMessage = "入住日期不能为空")]
-        public DateTime CheckInDate { get; set; }
+        [Required(ErrorMessage = "请选择入住日期")]
+        [DataType(DataType.Date)]
+        public DateTime CheckInDate { get; set; } = DateTime.Now.Date;
 
-        [Required(ErrorMessage = "离店日期不能为空")]
-        public DateTime CheckOutDate { get; set; }
+        [Required(ErrorMessage = "请选择离店日期")]
+        [DataType(DataType.Date)]
+        public DateTime CheckOutDate { get; set; } = DateTime.Now.AddDays(1).Date;
     }
 
+    // 支付页面模型
     public class PayHotelOrderViewModel
     {
         public int HotelOrderId { get; set; }

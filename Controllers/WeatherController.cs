@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using TourismPlatform.Services;
-using TourismPlatform.Models;
+using System.Threading.Tasks;
+using TourismPlatform.Services.Weather;
 
 namespace TourismPlatform.Controllers
 {
@@ -13,9 +13,9 @@ namespace TourismPlatform.Controllers
             _weatherService = weatherService;
         }
 
-        public async Task<IActionResult> Forecast()
+        public async Task<IActionResult> Index()
         {
-            var forecast = await _weatherService.GetForecastAsync();
+            var forecast = await _weatherService.GetJinanForecastAsync();
             return View(forecast);
         }
     }

@@ -1,0 +1,51 @@
+@model IEnumerable<TourismPlatform.Services.Weather.DailyWeather>
+
+@{
+    ViewData["Title"] = "济南天气预报";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary"><i class="bi bi-cloud-sun me-2"></i>济南市未来7天天气预报</h2>
+        <p class="text-muted">数据来源：济南市气象局 (API集成)</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 justify-content-center">
+        @foreach (var day in Model)
+        {
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm hover-card">
+                    <div class="card-body text-center p-4">
+                        <h5 class="card-title text-muted mb-3">@day.Date (@day.Week)</h5>
+                        
+                        <div class="my-4">
+                            <i class="bi @day.Icon display-1 text-primary"></i>
+                        </div>
+                        
+                        <h3 class="fw-bold">@day.Text</h3>
+                        
+                        <div class="d-flex justify-content-center gap-3 my-3">
+                            <span class="badge bg-danger fs-6"><i class="bi bi-arrow-up"></i> @day.TempMax°C</span>
+                            <span class="badge bg-info fs-6"><i class="bi bi-arrow-down"></i> @day.TempMin°C</span>
+                        </div>
+                        
+                        <p class="text-muted mb-0"><i class="bi bi-wind"></i> @day.Wind</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    
+    <div class="alert alert-info mt-5 text-center">
+        <i class="bi bi-info-circle me-2"></i> 温馨提示：天气多变，出行请记得携带雨具或做好防晒措施。
+    </div>
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.3s ease;
+    }
+    .hover-card:hover {
+        transform: translateY(-5px);
+    }
+</style>

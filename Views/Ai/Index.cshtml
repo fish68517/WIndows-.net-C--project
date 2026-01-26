@@ -1,0 +1,144 @@
+@{
+    ViewData["Title"] = "智能旅游助手";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-robot"></i> 智能旅游助手 (24h)</h5>
+                    <span class="badge bg-light text-dark">在线</span>
+                </div>
+                <div class="card-body" id="chat-box" style="height: 400px; overflow-y: auto; background-color: #f8f9fa;">
+                    <div class="d-flex flex-row justify-content-start mb-3">
+                        <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                            <p class="small mb-0">你好！我是济南旅游小助手，有什么可以帮你的吗？</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">
+                    <input type="text" class="form-control form-control-lg" id="user-input"
+                           placeholder="输入您的问题...">
+                    <button class="btn btn-primary ms-2" id="btn-send"><i class="bi bi-send"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // 1. 检测 jQuery 是否加载成功
+            if (typeof jQuery == 'undefined') {
+                alert("严重错误：jQuery 未加载！请检查 _Layout.cshtml");
+                return;
+            }
+            console.log("【调试】脚本加载成功，jQuery版本: " + $.fn.jquery);
+
+            // 绑定点击事件
+            $('#btn-send').click(function () {
+                console.log("【调试】发送按钮被点击");
+                sendMessage();
+            });
+
+            // 绑定回车事件
+            $('#user-input').keypress(function (e) {
+                if (e.which == 13) {
+                    console.log("【调试】检测到回车键");
+                    sendMessage();
+                }
+            });
+
+            function sendMessage() {
+                var msg = $('#user-input').val();
+                console.log("【调试】用户输入内容: ", msg);
+
+                if (!msg || !msg.trim()) {
+                    console.log("【调试】内容为空，取消发送");
+                    return;
+                }
+
+                // 1. 立即显示用户消息
+                appendMessage('user', msg);
+                $('#user-input').val('');
+
+                // 2. 显示加载动画
+                var loadingId = appendLoading();
+                console.log("【调试】准备发起 AJAX 请求...");
+
+                // 3. 发起请求 (使用 $.ajax 以便捕获错误)
+                $.ajax({
+                    url: '/Ai/SendMessage',
+                    type: 'POST',
+                    data: { message: msg },
+                    success: function (res) {
+                        console.log("【调试】后端返回成功: ", res);
+                        removeLoading(loadingId);
+                        
+                        if (res.success) {
+                            appendMessage('ai', res.answer);
+                        } else {
+                            appendMessage('ai', '系统提示: ' + res.answer);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // 如果网络断了，或者后端 500 报错，会进这里
+                        console.error("【严重错误】请求失败！");
+                        console.error("状态码: " + xhr.status);
+                        console.error("错误信息: " + error);
+                        console.error("响应文本: " + xhr.responseText);
+                        
+                        removeLoading(loadingId);
+                        appendMessage('ai', '🔴 连接服务器失败 (HTTP ' + xhr.status + ')。请按 F12 查看控制台红字报错。');
+                    }
+                });
+            }
+
+            function appendMessage(role, text) {
+                var isUser = role === 'user';
+                var align = isUser ? 'justify-content-end' : 'justify-content-start';
+                
+                // 处理换行符，让 AI 回复更好看
+                if (!isUser && text) {
+                    text = text.replace(/\n/g, '<br>');
+                }
+
+                var html = `
+                    <div class="d-flex flex-row ${align} mb-3">
+                        <div class="p-3 ${isUser ? 'me-3' : 'ms-3'}" style="border-radius: 15px; background-color: ${isUser ? '#0d6efd' : 'rgba(57, 192, 237,.2)'};">
+                            <p class="small mb-0 ${isUser ? 'text-white' : ''}">${text}</p>
+                        </div>
+                    </div>`;
+                
+                $('#chat-box').append(html);
+                scrollToBottom();
+            }
+
+            function appendLoading() {
+                var id = 'loading-' + Date.now();
+                var html = `
+                    <div id="${id}" class="d-flex flex-row justify-content-start mb-3">
+                        <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div> 正在思考...
+                        </div>
+                    </div>`;
+                $('#chat-box').append(html);
+                scrollToBottom();
+                return id;
+            }
+
+            function removeLoading(id) {
+                $('#' + id).remove();
+            }
+
+            function scrollToBottom() {
+                var chatBox = document.getElementById("chat-box");
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        });
+    </script>
+}

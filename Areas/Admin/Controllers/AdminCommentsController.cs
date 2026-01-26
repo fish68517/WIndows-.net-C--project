@@ -59,5 +59,21 @@ namespace TourismPlatform.Areas.Admin.Controllers
 
             return RedirectToAction("Index");
         }
+
+        // 通过
+        [HttpPost]
+        public async Task<IActionResult> Approve(int id)
+        {
+            await _commentService.ApproveCommentAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        // 拒绝
+        [HttpPost]
+        public async Task<IActionResult> Reject(int id)
+        {
+            await _commentService.RejectCommentAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
