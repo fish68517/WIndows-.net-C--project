@@ -34,5 +34,11 @@ namespace TourismPlatform.Services
 
         // 【新增】同时获取所有门票和酒店订单
         Task<(List<TicketOrder> Tickets, List<HotelOrder> Hotels)> GetAllTicketAndHotelOrdersAsync();
+
+
+        // 【新增】核销相关
+        Task<(List<TicketOrder> Tickets, List<HotelOrder> Hotels)> GetOrdersForVerificationAsync();
+        Task<bool> VerifyTicketOrderAsync(int orderId); // 核销门票
+        Task<bool> VerifyHotelOrderAsync(int orderId);  // 核销酒店
     }
 }

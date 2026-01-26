@@ -326,6 +326,67 @@ namespace TourismPlatform.Services
                 hotels.OrderByDescending(h => h.CreatedAt).ToList()
             );
         }
+
+
+
+                // 【新增】获取所有待核销订单 (Paid, ToUse, CheckedIn)
+            public async Task<(List<TicketOrder> Tickets, List<HotelOrder> Hotels)> GetOrdersForVerificationAsync()
+            {
+                // 1. 获取门票 (状态: Paid 或 ToUse)
+                var allTickets = await _unitOfWork.TicketOrders.GetAllAsync(t => t.User, t => t.Attraction, t => t.VerifyCode);
+                var pendingTickets = allTickets.Where(t => 
+                    t.Status == TicketOrderStatus.Paid || 
+                    t.Status == TicketOrderStatus.ToUse
+                ).OrderBy(t => t.VisitDate).ToList();
+
+                // 2. 获取酒店 (状态: Paid 或 ToUse 或 CheckedIn)
+                var allHotels = await _unitOfWork.HotelOrders.GetAllAsync(h => h.User, h => h.RoomType, h => h.RoomType.Hotel, h => h.VerifyCode);
+                var pendingHotels = allHotels.Where(h => 
+                    h.Status == HotelOrderStatus.Paid || 
+                    h.Status == HotelOrderStatus.ToUse || 
+                    h.Status == HotelOrderStatus.CheckedIn
+                ).OrderBy(h => h.CheckInDate).ToList();
+
+                return (pendingTickets, pendingHotels);
+            }
+
+            // 【新增】核销门票 -> Used
+            public async Task<bool> VerifyTicketOrderAsync(int orderId)
+            {
+                var order = await _unitOfWork.TicketOrders.GetByIdAsync(orderId);
+                if (order == null) return false;
+
+                // 只有符合状态的才能核销
+                if (order.Status == TicketOrderStatus.Paid || order.Status == TicketOrderStatus.ToUse)
+                {
+                    order.Status = TicketOrderStatus.Used; // 变更为已使用
+                    _unitOfWork.TicketOrders.Update(order);
+                    await _unitOfWork.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+
+            // 【新增】核销酒店 -> Used
+            public async Task<bool> VerifyHotelOrderAsync(int orderId)
+            {
+                var order = await _unitOfWork.HotelOrders.GetByIdAsync(orderId);
+                if (order == null) return false;
+
+                // 只有符合状态的才能核销
+                if (order.Status == HotelOrderStatus.Paid || 
+                    order.Status == HotelOrderStatus.ToUse || 
+                    order.Status == HotelOrderStatus.CheckedIn)
+                {
+                    order.Status = HotelOrderStatus.Used; // 变更为已使用/已离店
+                    _unitOfWork.HotelOrders.Update(order);
+                    await _unitOfWork.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+
+
     }
     
 }

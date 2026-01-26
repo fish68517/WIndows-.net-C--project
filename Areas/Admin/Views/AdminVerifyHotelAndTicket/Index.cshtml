@@ -1,0 +1,174 @@
+@model TourismPlatform.Models.VerificationViewModel
+@{
+    ViewData["Title"] = "核销管理";
+}
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1><i class="bi bi-qr-code-scan"></i> 订单核销中心</h1>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> 返回首页
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-light">
+        <ul class="nav nav-tabs card-header-tabs" id="verifyTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="ticket-tab" data-bs-toggle="tab" data-bs-target="#ticket" type="button">
+                    <i class="bi bi-ticket-perforated"></i> 门票核销
+                    <span class="badge bg-danger rounded-pill ms-1">@Model.TicketOrders.Count</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="hotel-tab" data-bs-toggle="tab" data-bs-target="#hotel" type="button">
+                    <i class="bi bi-building"></i> 酒店核销
+                    <span class="badge bg-danger rounded-pill ms-1">@Model.HotelOrders.Count</span>
+                </button>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="card-body">
+        <div class="tab-content" id="verifyTabsContent">
+            
+            <div class="tab-pane fade show active" id="ticket" role="tabpanel">
+                @if (Model.TicketOrders.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>核销码</th>
+                                    <th>用户</th>
+                                    <th>景点/时间</th>
+                                    <th>状态</th>
+                                    <th class="text-end">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.TicketOrders)
+                                {
+                                    <tr>
+                                        <td>#@item.TicketOrderId</td>
+                                        <td>
+                                            <code class="fs-5 text-dark bg-warning-subtle px-2 py-1 rounded">
+                                                @(item.VerifyCode?.Code ?? "未生成")
+                                            </code>
+                                        </td>
+                                        <td>
+                                            <div>@(item.User?.Nickname ?? "未知")</div>
+                                            <small class="text-muted">ID: @item.UserId</small>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold">@(item.Attraction?.Name)</div>
+                                            <small class="text-muted">@item.VisitDate.ToString("yyyy-MM-dd")</small>
+                                        </td>
+                                        <td>
+                                            @if(item.Status == TourismPlatform.Models.TicketOrderStatus.ToUse) {
+                                                <span class="badge bg-info text-dark">待使用</span>
+                                            } else {
+                                                <span class="badge bg-success">已支付</span>
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <form asp-action="VerifyTicket" asp-route-id="@item.TicketOrderId" method="post">
+                                                <button type="submit" class="btn btn-primary btn-sm px-3" onclick="return confirm('确认核销订单 #@item.TicketOrderId 吗？');">
+                                                    <i class="bi bi-check-lg"></i> 确认核销
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5 text-muted">目前没有需要核销的门票订单</div>
+                }
+            </div>
+
+            <div class="tab-pane fade" id="hotel" role="tabpanel">
+                @if (Model.HotelOrders.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>核销码</th>
+                                    <th>用户</th>
+                                    <th>酒店/房型</th>
+                                    <th>入住时间</th>
+                                    <th>状态</th>
+                                    <th class="text-end">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.HotelOrders)
+                                {
+                                    <tr>
+                                        <td>#@item.HotelOrderId</td>
+                                        <td>
+                                            <code class="fs-5 text-dark bg-warning-subtle px-2 py-1 rounded">
+                                                @(item.VerifyCode?.Code ?? "未生成")
+                                            </code>
+                                        </td>
+                                        <td>
+                                            <div>@(item.User?.Nickname ?? "未知")</div>
+                                            <small class="text-muted">ID: @item.UserId</small>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold">@(item.RoomType?.Hotel?.Name)</div>
+                                            <small class="text-muted">@(item.RoomType?.RoomTypeName)</small>
+                                        </td>
+                                        <td>
+                                            <div>@item.CheckInDate.ToString("MM-dd") 入住</div>
+                                            <small class="text-muted">@item.CheckOutDate.ToString("MM-dd") 离店</small>
+                                        </td>
+                                        <td>
+                                            @if(item.Status == TourismPlatform.Models.HotelOrderStatus.CheckedIn) {
+                                                <span class="badge bg-primary">已入住</span>
+                                            } else if(item.Status == TourismPlatform.Models.HotelOrderStatus.ToUse) {
+                                                <span class="badge bg-info text-dark">待入住</span>
+                                            } else {
+                                                <span class="badge bg-success">已支付</span>
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <form asp-action="VerifyHotel" asp-route-id="@item.HotelOrderId" method="post">
+                                                <button type="submit" class="btn btn-primary btn-sm px-3" onclick="return confirm('确认核销/退房订单 #@item.HotelOrderId 吗？');">
+                                                    <i class="bi bi-check-lg"></i> 确认核销
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5 text-muted">目前没有需要核销的酒店订单</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

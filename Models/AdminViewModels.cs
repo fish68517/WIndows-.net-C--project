@@ -107,6 +107,14 @@ namespace TourismPlatform.Models
     {
         public string OrderType { get; set; } = "ticket";
         public List<AdminVerifyCodeViewModel> VerifyCodes { get; set; } = new();
+
+    }
+
+    public class VerificationViewModel
+    {
+       
+           public List<TicketOrder> TicketOrders { get; set; } = new List<TicketOrder>();
+        public List<HotelOrder> HotelOrders { get; set; } = new List<HotelOrder>();
     }
 
     public class AdminVerifyCodeViewModel

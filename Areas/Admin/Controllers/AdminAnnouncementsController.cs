@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TourismPlatform.Data;
 using TourismPlatform.Models;
+using Microsoft.Extensions.Logging; // 1. 引入日志命名空间
 
 namespace TourismPlatform.Areas.Admin.Controllers
 {
@@ -8,10 +9,14 @@ namespace TourismPlatform.Areas.Admin.Controllers
     public class AdminAnnouncementsController : Controller
     {
         private readonly MyDbContext _context;
+        // 2. 声明 Logger
+        private readonly ILogger<AdminAnnouncementsController> _logger;
 
-        public AdminAnnouncementsController(MyDbContext context)
+        // 3. 在构造函数中注入 Logger
+        public AdminAnnouncementsController(MyDbContext context, ILogger<AdminAnnouncementsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // Check if admin is logged in
@@ -139,11 +144,15 @@ namespace TourismPlatform.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> Delete(int id)
         {
+            // 4. 打印进入方法的日志
+            _logger.LogInformation($"【删除请求】收到删除公告请求，ID: {id}");
+
             if (!IsAdminLoggedIn())
             {
+                _logger.LogWarning($"【删除请求】用户未登录或非管理员，拒绝 ID: {id}");
                 return RedirectToAction("Login", "AdminAccount");
             }
 
@@ -152,20 +161,26 @@ namespace TourismPlatform.Areas.Admin.Controllers
                 var announcement = _context.Announcements.FirstOrDefault(a => a.AnnouncementId == id);
                 if (announcement == null)
                 {
+                    _logger.LogWarning($"【删除请求】公告不存在，ID: {id}");
                     return NotFound();
                 }
 
                 _context.Announcements.Remove(announcement);
                 await _context.SaveChangesAsync();
 
+                _logger.LogInformation($"【删除请求】公告删除成功，ID: {id}");
                 TempData["SuccessMessage"] = "公告删除成功";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                // 5. 打印异常日志
+                _logger.LogError(ex, $"【删除请求】删除发生异常，ID: {id}");
                 TempData["ErrorMessage"] = $"删除公告失败: {ex.Message}";
                 return RedirectToAction("Index");
             }
         }
+
+ 
     }
 }
