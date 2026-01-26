@@ -1,0 +1,172 @@
+@model TourismPlatform.Models.RefundManagementViewModel
+
+@{
+    ViewData["Title"] = "退票管理";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1><i class="bi bi-arrow-repeat"></i> 退票/订单管理中心</h1>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> 返回首页
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<ul class="nav nav-tabs mb-3" id="refundTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="ticket-tab" data-bs-toggle="tab" data-bs-target="#ticket" type="button" role="tab">
+            <i class="bi bi-ticket-perforated"></i> 门票订单
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="hotel-tab" data-bs-toggle="tab" data-bs-target="#hotel" type="button" role="tab">
+            <i class="bi bi-building"></i> 酒店订单
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="refundTabsContent">
+    
+    <div class="tab-pane fade show active" id="ticket" role="tabpanel">
+        <div class="card shadow-sm border-top-0">
+            <div class="card-body">
+                @if (Model.TicketOrders.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>用户</th>
+                                    <th>景点</th>
+                                    <th>金额</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.TicketOrders)
+                                {
+                                    <tr>
+                                        <td>#@item.TicketOrderId</td>
+                                        <td>@(item.User?.Nickname ?? "未知")</td>
+                                        <td>@(item.Attraction?.Name ?? "未知")</td>
+                                        <td class="text-danger">¥@item.TotalPrice.ToString("F2")</td>
+                                        <td>
+                                            @if(item.Status == TourismPlatform.Models.TicketOrderStatus.RefundRequested) {
+                                                <span class="badge bg-warning text-dark blink-badge">申请中</span>
+                                            } else {
+                                                <span class="badge bg-secondary">@item.Status</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                @if(item.Status == TourismPlatform.Models.TicketOrderStatus.RefundRequested) {
+                                                    <form asp-action="Approve" asp-route-id="@item.TicketOrderId" method="post">
+                                                        <button class="btn btn-success" onclick="return confirm('同意退票？')">同意</button>
+                                                    </form>
+                                                    <form asp-action="Reject" asp-route-id="@item.TicketOrderId" method="post">
+                                                        <button class="btn btn-warning ms-1" onclick="return confirm('拒绝退票？')">拒绝</button>
+                                                    </form>
+                                                }
+                                                @if(item.Status == TourismPlatform.Models.TicketOrderStatus.Cancelled) {
+                                                    <form asp-action="Delete" asp-route-id="@item.TicketOrderId" method="post">
+                                                        <button class="btn btn-danger" onclick="return confirm('删除？')">删除</button>
+                                                    </form>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">暂无门票订单数据</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="hotel" role="tabpanel">
+        <div class="card shadow-sm border-top-0">
+            <div class="card-body">
+                @if (Model.HotelOrders.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>用户</th>
+                                    <th>酒店/房型</th>
+                                    <th>入住时间</th>
+                                    <th>金额</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.HotelOrders)
+                                {
+                                    <tr>
+                                        <td>#@item.HotelOrderId</td>
+                                        <td>@(item.User?.Nickname ?? "未知")</td>
+                                        <td>
+                                            <div>@(item.RoomType?.Hotel?.Name ?? "未知")</div>
+                                            <small class="text-muted">@(item.RoomType?.RoomTypeName)</small>
+                                        </td>
+                                        <td>@item.CheckInDate.ToString("MM-dd")</td>
+                                        <td class="text-danger">¥@item.TotalPrice.ToString("F2")</td>
+                                        <td>
+                                            @if(item.Status == TourismPlatform.Models.HotelOrderStatus.RefundRequested) {
+                                                <span class="badge bg-warning text-dark blink-badge">申请中</span>
+                                            } else {
+                                                <span class="badge bg-secondary">@item.Status</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                @if(item.Status == TourismPlatform.Models.HotelOrderStatus.RefundRequested) {
+                                                    <form asp-action="ApproveHotel" asp-route-id="@item.HotelOrderId" method="post">
+                                                        <button class="btn btn-success" onclick="return confirm('同意退款？')">同意</button>
+                                                    </form>
+                                                    <form asp-action="RejectHotel" asp-route-id="@item.HotelOrderId" method="post">
+                                                        <button class="btn btn-warning ms-1" onclick="return confirm('拒绝退款？')">拒绝</button>
+                                                    </form>
+                                                }
+                                                @if(item.Status == TourismPlatform.Models.HotelOrderStatus.Cancelled) {
+                                                    <form asp-action="DeleteHotel" asp-route-id="@item.HotelOrderId" method="post">
+                                                        <button class="btn btn-danger" onclick="return confirm('删除？')">删除</button>
+                                                    </form>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">暂无酒店订单数据</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .blink-badge { animation: blinker 1.5s linear infinite; }
+    @@keyframes blinker { 50% { opacity: 0.5; } }
+</style>

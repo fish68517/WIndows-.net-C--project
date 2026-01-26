@@ -452,5 +452,56 @@ namespace TourismPlatform.Controllers
                 model.TicketPrice = attraction.TicketPrice;
             }
         }
+
+
+        // ... 现有的 Detail 方法 ...
+
+        // 【新增】退票/取消订单 Action
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RefundTicket(int orderId)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (!userId.HasValue) return RedirectToAction("Login", "Account");
+
+            var success = await _orderService.RefundTicketOrderAsync(orderId, userId.Value);
+
+            if (success)
+            {
+                TempData["Success"] = "订单已成功取消/退票。";
+            }
+            else
+            {
+                TempData["Error"] = "退票失败：订单不存在、状态不可退或非本人订单。";
+            }
+
+            // 退票后返回“我的门票”列表
+            return RedirectToAction("Tickets", "Me");
+        }
+
+
+        // ... 在 RefundTicket 下面添加 ...
+
+        // 【新增】酒店申请退款
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RefundHotel(int orderId)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (!userId.HasValue) return RedirectToAction("Login", "Account");
+
+            var success = await _orderService.RefundHotelOrderAsync(orderId, userId.Value);
+
+            if (success)
+            {
+                TempData["Success"] = "酒店退款申请已提交，请等待管理员审核。";
+            }
+            else
+            {
+                TempData["Error"] = "申请失败：订单状态不符或非本人订单。";
+            }
+
+            return RedirectToAction("Hotels", "Me");
+        }
     }
 }

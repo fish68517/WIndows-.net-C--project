@@ -6,7 +6,8 @@ namespace TourismPlatform.Models
         Paid,
         Cancelled,
         ToUse,
-        Used
+        Used,
+        RefundRequested  // 【新增】申请退票中
     }
 
     public class TicketOrder

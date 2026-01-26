@@ -79,42 +79,32 @@ namespace TourismPlatform.Services
 
         public async Task<List<Comment>> GetAllCommentsAsync()
         {
-            // 2. 使用 Repository 定义的 GetAllAsync 重载方法来包含关联数据
-            // 你的 IRepository 定义了: Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includes);
-            var comments = await _unitOfWork.Comments.GetAllAsync(
-                c => c.User,       // 关联 User
-                c => c.Attraction, // 关联 Attraction
-                c => c.Diary       // 关联 Diary
-            );
-
-            // Repository 返回的是 IEnumerable，我们在内存中进行排序
-            return comments.OrderByDescending(c => c.CreatedAt).ToList();
+            // 按时间倒序，关联查询用户、景点和游记信息
+            return await _unitOfWork.Comments
+                .Include(c => c.User)
+                .Include(c => c.Attraction)
+                .Include(c => c.Diary)
+                .OrderByDescending(c => c.CreatedAt)
+                .ToListAsync();
         }
-       public async Task<bool> ApproveCommentAsync(int commentId)
+
+        public async Task<bool> ApproveCommentAsync(int commentId)
         {
-            // 3. 使用 GetByIdAsync 来根据 ID 获取实体
-            var comment = await _unitOfWork.Comments.GetByIdAsync(commentId);
-            
+            var comment = await _unitOfWork.Comments.FindAsync(commentId);
             if (comment == null) return false;
 
-            comment.Status = 1; // 通过
-            
-            // 4. 使用 Repository 的 Update 方法
+            comment.Status = 1; // 设为通过
             _unitOfWork.Comments.Update(comment);
-            
-            // 5. 提交事务
             await _unitOfWork.SaveChangesAsync();
             return true;
         }
 
         public async Task<bool> RejectCommentAsync(int commentId)
         {
-            var comment = await _unitOfWork.Comments.GetByIdAsync(commentId);
-            
+            var comment = await _unitOfWork.Comments.FindAsync(commentId);
             if (comment == null) return false;
 
-            comment.Status = 2; // 拒绝
-            
+            comment.Status = 2; // 设为拒绝
             _unitOfWork.Comments.Update(comment);
             await _unitOfWork.SaveChangesAsync();
             return true;
@@ -122,11 +112,9 @@ namespace TourismPlatform.Services
 
         public async Task<bool> DeleteCommentAsync(int commentId)
         {
-            var comment = await _unitOfWork.Comments.GetByIdAsync(commentId);
-            
+            var comment = await _unitOfWork.Comments.FindAsync(commentId);
             if (comment == null) return false;
 
-            // 6. 使用 Repository 的 Remove 方法
             _unitOfWork.Comments.Remove(comment);
             await _unitOfWork.SaveChangesAsync();
             return true;

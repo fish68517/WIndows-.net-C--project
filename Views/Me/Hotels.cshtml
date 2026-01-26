@@ -17,7 +17,6 @@
         </div>
     </div>
 
-    <!-- Status Filter -->
     <div class="card shadow mb-4">
         <div class="card-body">
             <div class="btn-group" role="group">
@@ -41,10 +40,6 @@
                    class="btn btn-outline-secondary @(Model.SelectedStatus == "Used" ? "active" : "")">
                     已入住
                 </a>
-                <a asp-controller="Me" asp-action="Hotels" asp-route-status="Cancelled" 
-                   class="btn btn-outline-danger @(Model.SelectedStatus == "Cancelled" ? "active" : "")">
-                    已取消
-                </a>
             </div>
         </div>
     </div>
@@ -62,7 +57,6 @@
                         <th>离店日期</th>
                         <th>总价</th>
                         <th>状态</th>
-                        <th>创建时间</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -70,52 +64,38 @@
                     @foreach (var order in Model.Orders)
                     {
                         <tr>
-                            <td>
-                                <strong>#@order.HotelOrderId</strong>
-                            </td>
-                            <td>
-                                @if (order.RoomType?.Hotel != null)
-                                {
-                                    <span>@order.RoomType.Hotel.Name</span>
-                                }
-                                else
-                                {
-                                    <span>未知酒店</span>
-                                }
-                            </td>
-                            <td>
-                                @if (order.RoomType != null)
-                                {
-                                    <span>@order.RoomType.RoomTypeName</span>
-                                }
-                                else
-                                {
-                                    <span>未知房型</span>
-                                }
-                            </td>
+                            <td><strong>#@order.HotelOrderId</strong></td>
+                            <td>@(order.RoomType?.Hotel?.Name ?? "未知酒店")</td>
+                            <td>@(order.RoomType?.RoomTypeName ?? "未知房型")</td>
                             <td>@order.CheckInDate.ToString("yyyy-MM-dd")</td>
                             <td>@order.CheckOutDate.ToString("yyyy-MM-dd")</td>
-                            <td>
-                                <strong class="text-danger">¥@order.TotalPrice.ToString("F2")</strong>
-                            </td>
+                            <td><strong class="text-danger">¥@order.TotalPrice.ToString("F2")</strong></td>
                             <td>
                                 <span class="badge bg-@GetStatusBadgeClass(order.Status)">
                                     @GetStatusText(order.Status)
                                 </span>
                             </td>
-                            <td>@order.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
                                     <a asp-controller="Orders" asp-action="DetailHotel" asp-route-orderId="@order.HotelOrderId" 
-                                       class="btn btn-outline-primary">
-                                        详情
-                                    </a>
+                                       class="btn btn-outline-primary">详情</a>
+                                    
                                     @if (order.Status.ToString() == "PendingPay")
                                     {
                                         <a asp-controller="Orders" asp-action="PayHotel" asp-route-orderId="@order.HotelOrderId" 
-                                           class="btn btn-outline-success">
-                                            支付
-                                        </a>
+                                           class="btn btn-outline-success">支付</a>
+                                        <form asp-controller="Orders" asp-action="RefundHotel" method="post" class="d-inline" onsubmit="return confirm('确定要取消未支付订单吗？');">
+                                            <input type="hidden" name="orderId" value="@order.HotelOrderId" />
+                                            <button type="submit" class="btn btn-outline-secondary">取消</button>
+                                        </form>
+                                    }
+
+                                    @if (order.Status.ToString() == "Paid" || order.Status.ToString() == "ToUse")
+                                    {
+                                        <form asp-controller="Orders" asp-action="RefundHotel" method="post" class="d-inline" onsubmit="return confirm('确定要申请退款吗？');">
+                                            <input type="hidden" name="orderId" value="@order.HotelOrderId" />
+                                            <button type="submit" class="btn btn-outline-danger">退款</button>
+                                        </form>
                                     }
                                 </div>
                             </td>
@@ -127,38 +107,9 @@
     }
     else
     {
-        <div class="alert alert-info" role="alert">
-            <h4 class="alert-heading">暂无订单</h4>
-            <p>
-                @if (string.IsNullOrEmpty(Model.SelectedStatus))
-                {
-                    <span>您还没有预订任何酒店。</span>
-                }
-                else
-                {
-                    <span>您没有状态为"@GetStatusText(Model.SelectedStatus)"的订单。</span>
-                }
-            </p>
-            <hr>
-            <p class="mb-0">
-                <a asp-controller="Hotels" asp-action="Index" class="btn btn-primary btn-sm">
-                    去浏览酒店并预订吧！
-                </a>
-            </p>
-        </div>
+        <div class="alert alert-info">暂无相关订单</div>
     }
 </div>
-
-<style>
-    .table-hover tbody tr:hover {
-        background-color: #f8f9fa;
-    }
-
-    .btn-group-sm .btn {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-    }
-</style>
 
 @functions {
     private string GetStatusBadgeClass(object status)
@@ -170,7 +121,9 @@
             "PendingPay" => "warning",
             "ToUse" => "info",
             "Used" => "secondary",
+            "CheckedIn" => "secondary",
             "Cancelled" => "danger",
+            "RefundRequested" => "warning", // 黄色显示申请中
             _ => "secondary"
         };
     }
@@ -183,8 +136,10 @@
             "Paid" => "已支付",
             "PendingPay" => "待支付",
             "ToUse" => "待入住",
-            "Used" => "已入住",
+            "Used" => "已离店",
+            "CheckedIn" => "已入住",
             "Cancelled" => "已取消",
+            "RefundRequested" => "退款审核中",
             _ => statusStr
         };
     }

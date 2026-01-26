@@ -101,12 +101,28 @@
                                        class="btn btn-outline-primary">
                                         详情
                                     </a>
+
+                                    @* 1. 待支付状态：显示“去支付” *@
                                     @if (order.Status.ToString() == "PendingPay")
                                     {
                                         <a asp-controller="Orders" asp-action="PayTicket" asp-route-orderId="@order.TicketOrderId" 
                                            class="btn btn-outline-success">
                                             支付
                                         </a>
+                                        
+                                        <form asp-controller="Orders" asp-action="RefundTicket" method="post" class="d-inline" onsubmit="return confirm('确定要取消这个未支付的订单吗？');">
+                                            <input type="hidden" name="orderId" value="@order.TicketOrderId" />
+                                            <button type="submit" class="btn btn-outline-secondary">取消</button>
+                                        </form>
+                                    }
+
+                                    @* 2. 已支付 或 待使用 状态：显示“退票” *@
+                                    @if (order.Status.ToString() == "Paid" || order.Status.ToString() == "ToUse")
+                                    {
+                                        <form asp-controller="Orders" asp-action="RefundTicket" method="post" class="d-inline" onsubmit="return confirm('确定要申请退票吗？\n(注：模拟退票，资金将原路返回)');">
+                                            <input type="hidden" name="orderId" value="@order.TicketOrderId" />
+                                            <button type="submit" class="btn btn-outline-danger">退票</button>
+                                        </form>
                                     }
                                 </div>
                             </td>
@@ -162,6 +178,7 @@
             "ToUse" => "info",
             "Used" => "secondary",
             "Cancelled" => "danger",
+            "RefundRequested" => "warning", // 新增：申请中显示黄色
             _ => "secondary"
         };
     }
@@ -176,6 +193,7 @@
             "ToUse" => "待使用",
             "Used" => "已使用",
             "Cancelled" => "已取消",
+            "RefundRequested" => "退票审核中", // 新增：显示文字
             _ => statusStr
         };
     }

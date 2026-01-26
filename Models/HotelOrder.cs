@@ -7,7 +7,8 @@ namespace TourismPlatform.Models
         Cancelled,
         ToUse,
         Used,
-        CheckedIn
+        CheckedIn,
+        RefundRequested  // 【新增】申请退票中
     }
 
     public class HotelOrder

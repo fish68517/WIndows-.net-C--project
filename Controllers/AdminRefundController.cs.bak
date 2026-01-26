@@ -1,0 +1,61 @@
+// ... 引用 ...
+using TourismPlatform.Models; // 引用新ViewModel
+
+public class AdminRefundController : Controller
+{
+    private readonly IOrderService _orderService;
+
+    public AdminRefundController(IOrderService orderService)
+    {
+        _orderService = orderService;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        // 获取两类订单
+        var tickets = await _orderService.GetAllTicketOrdersAsync();
+        var hotels = await _orderService.GetAllHotelOrdersAsync();
+
+        var model = new RefundManagementViewModel
+        {
+            TicketOrders = tickets,
+            HotelOrders = hotels
+        };
+
+        return View(model);
+    }
+
+    // --- 门票相关 Action (保持不变) ---
+    [HttpPost]
+    public async Task<IActionResult> Approve(int id) { /* ...原有代码... */ }
+    [HttpPost]
+    public async Task<IActionResult> Reject(int id) { /* ...原有代码... */ }
+    [HttpPost]
+    public async Task<IActionResult> Delete(int id) { /* ...原有代码... */ }
+
+    // --- 酒店相关 Action (新增) ---
+
+    [HttpPost]
+    public async Task<IActionResult> ApproveHotel(int id)
+    {
+        await _orderService.AdminApproveHotelRefundAsync(id);
+        TempData["SuccessMessage"] = "酒店退款已批准。";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> RejectHotel(int id)
+    {
+        await _orderService.AdminRejectHotelRefundAsync(id);
+        TempData["SuccessMessage"] = "酒店退款已拒绝。";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteHotel(int id)
+    {
+        await _orderService.AdminDeleteHotelOrderAsync(id);
+        TempData["SuccessMessage"] = "酒店订单已删除。";
+        return RedirectToAction(nameof(Index));
+    }
+}
