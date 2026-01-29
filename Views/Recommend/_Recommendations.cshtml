@@ -4,7 +4,7 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <h2>
-                <i class="bi bi-heart"></i> 猜你喜欢
+                <i class="bi bi-heart text-danger"></i> 猜你喜欢
             </h2>
             <p class="text-muted">根据您的浏览和收藏记录为您推荐</p>
         </div>
@@ -16,51 +16,57 @@
             @foreach (var attraction in Model)
             {
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <!-- Attraction Image -->
-                        <div class="position-relative" style="height: 250px; overflow: hidden;">
+                    <div class="card h-100 shadow-sm border-0 recommendation-card">
+                        <div class="position-relative overflow-hidden" style="height: 220px;">
                             @if (attraction.Images != null && attraction.Images.Any())
                             {
-                                <img src="@attraction.Images.FirstOrDefault()?.ImageUrl" 
-                                     class="card-img-top" 
+                                // 【优化点】借鉴详情页逻辑，按 DisplayOrder 排序取第一张作为封面
+                                var coverImage = attraction.Images.OrderBy(i => i.DisplayOrder).FirstOrDefault();
+                                <img src="@coverImage?.ImageUrl" 
+                                     class="card-img-top h-100 w-100" 
                                      alt="@attraction.Name"
-                                     style="width: 100%; height: 100%; object-fit: cover;" />
+                                     style="object-fit: cover; transition: transform 0.5s ease;" />
                             }
                             else
                             {
-                                <div class="bg-light d-flex align-items-center justify-content-center" 
-                                     style="width: 100%; height: 100%;">
-                                    <span class="text-muted">暂无图片</span>
+                                <div class="bg-light d-flex align-items-center justify-content-center h-100 w-100">
+                                    <div class="text-center text-muted">
+                                        <i class="bi bi-image fs-1 d-block mb-2"></i>
+                                        <span>暂无图片</span>
+                                    </div>
                                 </div>
                             }
-                        </div>
-
-                        <div class="card-body">
-                            <!-- Attraction Name -->
-                            <h5 class="card-title">@attraction.Name</h5>
-
-                            <!-- District -->
-                            @if (attraction.District != null)
-                            {
-                                <p class="card-text">
-                                    <small class="text-muted">
-                                        <i class="bi bi-geo-alt"></i> @attraction.District.Name
-                                    </small>
-                                </p>
-                            }
-
-                            <!-- Ticket Price -->
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="h5 mb-0 text-danger">¥@attraction.TicketPrice.ToString("F2")</span>
-                                <small class="text-muted">门票价格</small>
+                            
+                            <div class="position-absolute bottom-0 start-0 bg-dark bg-opacity-75 text-white px-3 py-1 rounded-end mb-3">
+                                <span class="h5 mb-0">¥@attraction.TicketPrice.ToString("F0")</span>
                             </div>
                         </div>
 
-                        <div class="card-footer bg-white border-top">
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate" title="@attraction.Name">@attraction.Name</h5>
+
+                            @if (false)
+                            {
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                @if (attraction.District != null)
+                                {
+                                    <small class="text-muted">
+                                        <i class="bi bi-geo-alt-fill text-primary"></i> @attraction.District.Name
+                                    </small>
+                                }
+                                <small class="text-warning">
+                                    <i class="bi bi-star-fill"></i> 推荐
+                                </small>
+                            </div>
+                            }
+                            
+                        </div>
+
+                        <div class="card-footer bg-white border-top-0 pb-3">
                             <a asp-controller="Attractions" 
                                asp-action="Detail" 
                                asp-route-id="@attraction.AttractionId"
-                               class="btn btn-primary btn-sm w-100">
+                               class="btn btn-outline-primary w-100 rounded-pill">
                                 查看详情
                             </a>
                         </div>
@@ -71,27 +77,31 @@
     }
     else
     {
-        <div class="alert alert-info" role="alert">
-            <p class="mb-0">浏览更多景点，我们会为您提供更好的推荐。</p>
+        <div class="alert alert-light text-center py-5 border" role="alert">
+            <i class="bi bi-journal-x fs-1 text-muted mb-3 d-block"></i>
+            <p class="mb-0 text-muted">浏览更多景点，我们会为您提供更好的推荐。</p>
         </div>
     }
 </div>
 
 <style>
-    .card {
+    /* 卡片悬停特效 */
+    .recommendation-card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+    .recommendation-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* 图片放大特效 */
+    .recommendation-card:hover .card-img-top {
+        transform: scale(1.1);
     }
 
     .card-title {
         font-weight: 600;
-        color: #333;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        color: #2c3e50;
     }
 </style>

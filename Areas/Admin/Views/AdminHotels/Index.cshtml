@@ -33,10 +33,10 @@
             <thead class="table-light">
                 <tr>
                     <th>酒店名称</th>
-                    <th>所属区域</th>
-                    <th>所属景点</th>
+                    <th>地址</th>
+                    <th>描述</th>
                     <th>联系方式</th>
-                    <th>房型数量</th>
+            
                     <th>创建时间</th>
                     <th>操作</th>
                 </tr>
@@ -51,7 +51,7 @@
                                 <strong>@hotel.Name</strong>
                             </td>
                             <td>
-                                @hotel.District?.Name
+                                @hotel.Address
                             </td>
                             <td>
                                 @if (hotel.Attraction != null)
@@ -60,15 +60,13 @@
                                 }
                                 else
                                 {
-                                    <span class="text-muted">-</span>
+                                    <span>@hotel.Description</span>
                                 }
                             </td>
                             <td>
                                 @hotel.ContactPhone
                             </td>
-                            <td>
-                                <span class="badge bg-info">@hotel.RoomTypes.Count</span>
-                            </td>
+                      
                             <td>
                                 @hotel.CreatedAt.ToString("yyyy-MM-dd HH:mm")
                             </td>

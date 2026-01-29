@@ -64,8 +64,28 @@ namespace TourismPlatform.Areas.Admin.Controllers
                 return RedirectToAction("Login", "AdminAccount");
             }
 
+            // ============================================================
+            // 【核心修复】移除导航属性的验证
+            // 告诉 ModelState：不要检查 Category, District, AttractionImages 等对象是否为空
+            // 我们只需要 ID，不需要整个对象
+            // ============================================================
+            ModelState.Remove("Category");
+            ModelState.Remove("District");
+            ModelState.Remove("AttractionImages"); 
+            ModelState.Remove("User"); // 如果有 User 关联，建议也加上
+            // ============================================================
+
             if (!ModelState.IsValid)
             {
+                // 打印错误日志（调试用），方便你看还有哪个字段报错
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        Console.WriteLine($"验证错误: {error.ErrorMessage}");
+                    }
+                }
+
                 var districts = await _attractionService.GetAllDistrictsAsync();
                 var categories = await _attractionService.GetAllCategoriesAsync();
                 ViewBag.Districts = districts;
@@ -75,10 +95,15 @@ namespace TourismPlatform.Areas.Admin.Controllers
 
             try
             {
+                // 设置创建时间（防止数据库报错）
+                attraction.CreatedAt = DateTime.UtcNow;
+                
                 // Create the attraction
                 var createdAttraction = await _attractionService.CreateAsync(attraction);
 
                 // Handle image uploads
+                // 【关于问题2】这里已经实现了：只有 images 不为空且数量大于0时才执行
+                // 所以不上传图片直接提交，这里会直接跳过，不会报错
                 if (images != null && images.Count > 0)
                 {
                     int displayOrder = 0;
@@ -153,8 +178,26 @@ namespace TourismPlatform.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            // ============================================================
+         
+            // ============================================================
+            ModelState.Remove("Category");
+            ModelState.Remove("District");
+            ModelState.Remove("AttractionImages");
+            ModelState.Remove("User"); // 如果有用户关联，建议加上
+            // ============================================================
+
             if (!ModelState.IsValid)
             {
+                // 打印日志方便调试
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        Console.WriteLine($"Edit验证错误: {error.ErrorMessage}");
+                    }
+                }
+
                 var districts = await _attractionService.GetAllDistrictsAsync();
                 var categories = await _attractionService.GetAllCategoriesAsync();
                 ViewBag.Districts = districts;

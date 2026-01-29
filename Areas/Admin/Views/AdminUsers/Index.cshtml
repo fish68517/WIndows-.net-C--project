@@ -64,7 +64,7 @@
                             <th>邮箱</th>
                             <th>注册时间</th>
                             <th>状态</th>
-                            <th>操作</th>
+                        
                         </tr>
                     </thead>
                     <tbody>
@@ -80,38 +80,7 @@
                                 <td>
                                     <small class="text-muted">@user.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
                                 </td>
-                                <td>
-                                    @if (user.IsActive)
-                                    {
-                                        <span class="badge bg-success">
-                                            <i class="bi bi-check-circle"></i> 正常
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger">
-                                            <i class="bi bi-x-circle"></i> 已禁用
-                                        </span>
-                                    }
-                                </td>
-                                <td>
-                                    @if (user.IsActive)
-                                    {
-                                        <form method="post" asp-area="Admin" asp-controller="AdminUsers" asp-action="Disable" asp-route-id="@user.UserId" style="display: inline;" onsubmit="return confirm('确定要禁用该用户吗？');">
-                                            <button type="submit" class="btn btn-sm btn-warning">
-                                                <i class="bi bi-lock"></i> 禁用
-                                            </button>
-                                        </form>
-                                    }
-                                    else
-                                    {
-                                        <form method="post" asp-area="Admin" asp-controller="AdminUsers" asp-action="Enable" asp-route-id="@user.UserId" style="display: inline;" onsubmit="return confirm('确定要启用该用户吗？');">
-                                            <button type="submit" class="btn btn-sm btn-success">
-                                                <i class="bi bi-unlock"></i> 启用
-                                            </button>
-                                        </form>
-                                    }
-                                </td>
+                               
                             </tr>
                         }
                     </tbody>

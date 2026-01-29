@@ -16,21 +16,23 @@
                         <input type="hidden" asp-for="AttractionId" />
 
                         <div class="mb-3">
-                            <label asp-for="Rating" class="form-label">评分 <span class="text-danger">*</span></label>
+                            <label asp-for="Rating" class="form-label"> <span class="text-danger"></span></label>
                             <div class="rating-input">
-                                <div class="btn-group" role="group">
-                                    @for (int i = 1; i <= 5; i++)
-                                    {
-                                        <input type="radio" class="btn-check" name="Rating" id="rating@i" value="@i" asp-for="Rating" />
-                                        <label class="btn btn-outline-warning" for="rating@i">
-                                            @for (int j = 0; j < i; j++)
-                                            {
-                                                <i class="bi bi-star-fill"></i>
-                                            }
-                                        </label>
-                                    }
-                                </div>
+                        <div class="mb-3">
+                                <label asp-for="Rating" class="form-label">评分 <span class="text-danger">*</span></label>
+                                
+                                <select asp-for="Rating" class="form-select" required>
+                                    <option value="">-- 请选择评分 --</option>
+                                    <option value="5">⭐⭐⭐⭐⭐ (5分 - 非常满意)</option>
+                                    <option value="4">⭐⭐⭐⭐ (4分 - 满意)</option>
+                                    <option value="3">⭐⭐⭐ (3分 - 一般)</option>
+                                    <option value="2">⭐⭐ (2分 - 不满意)</option>
+                                    <option value="1">⭐ (1分 - 非常差)</option>
+                                </select>
+                                
+                                <span asp-validation-for="Rating" class="text-danger"></span>
                             </div>
+                        </div>
                             <span asp-validation-for="Rating" class="text-danger"></span>
                         </div>
 

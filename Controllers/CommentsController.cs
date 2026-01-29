@@ -31,10 +31,10 @@ namespace TourismPlatform.Controllers
             var userOrders = await _orderService.GetUserTicketOrdersAsync(userId.Value);
             var hasUsedOrder = userOrders.Any(o => o.AttractionId == attractionId && o.Status == TicketOrderStatus.Used);
 
-            if (!hasUsedOrder)
-            {
-                return BadRequest("只有使用过该景点门票的用户才能评论");
-            }
+            // if (!hasUsedOrder)
+            // {
+            //     return BadRequest("只有使用过该景点门票的用户才能评论");
+            // }
 
             var model = new CreateCommentViewModel
             {
@@ -65,10 +65,10 @@ namespace TourismPlatform.Controllers
             var userOrders = await _orderService.GetUserTicketOrdersAsync(userId.Value);
             var hasUsedOrder = userOrders.Any(o => o.AttractionId == model.AttractionId && o.Status == TicketOrderStatus.Used);
 
-            if (!hasUsedOrder)
-            {
-                return BadRequest("只有使用过该景点门票的用户才能评论");
-            }
+            // if (!hasUsedOrder)
+            // {
+            //     return BadRequest("只有使用过该景点门票的用户才能评论");
+            // }
 
             // Validate rating
             if (model.Rating < 1 || model.Rating > 5)
