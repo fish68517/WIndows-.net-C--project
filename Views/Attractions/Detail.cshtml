@@ -377,32 +377,55 @@
         }
 
         function toggleFavorite(attractionId) {
-            const url = isFavorited ? '/Favorites/Remove' : '/Favorites/Add';
-            
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
-                },
-                body: `attractionId=${attractionId}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    isFavorited = !isFavorited;
-                    updateFavoriteButton();
-                    alert(data.message);
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error toggling favorite:', error);
-                alert('操作失败，请稍后重试');
-            });
+                const url = isFavorited ? '/Favorites/Remove' : '/Favorites/Add';
+                
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: `attractionId=${attractionId}`
+                })
+                .then(async response => {
+                    // 1. 打印 HTTP 状态码
+                    console.log('HTTP Status Code:', response.status); 
+                    
+                    // 2. 获取原始文本内容（不要直接调 .json()）
+                    const text = await response.text();
+                    console.log('Raw Response Body:', text); // 这里很可能打印出来是空的，或者是一段报错HTML
+
+                    // 3. 检查请求是否成功
+                    if (!response.ok) {
+                        throw new Error(`网络请求失败: ${response.status} ${response.statusText}`);
+                    }
+
+                    // 4. 尝试手动解析 JSON
+                    try {
+                        return text ? JSON.parse(text) : {}; // 如果是空字符串，返回空对象，避免报错
+                    } catch (e) {
+                        throw new Error('返回的数据不是合法的 JSON');
+                    }
+                })
+                .then(data => {
+                    // 注意：如果你后端什么都没返回，这里的 data 可能是个空对象 {}
+                    // 你需要确认后端逻辑是否包含 success 字段
+                    if (data.success || data.success === undefined) { 
+                        // 临时允许 undefined 通过，具体看你后端逻辑
+                        isFavorited = !isFavorited;
+                        updateFavoriteButton();
+                        alert(data.message || '操作成功');
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error details:', error);
+                    alert('操作失败：' + error.message);
+                });
         }
 
+        
         function updateFavoriteButton() {
             const btn = document.getElementById('favoriteBtn');
             const icon = document.getElementById('favoriteIcon');
