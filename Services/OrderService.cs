@@ -211,21 +211,40 @@ namespace TourismPlatform.Services
         return true;
     }
 
-    // 【新增】管理员：删除订单 (仅限已取消状态)
-    public async Task<bool> AdminDeleteOrderAsync(int orderId)
-    {
-        var order = await _unitOfWork.TicketOrders.GetByIdAsync(orderId);
-        if (order == null) return false;
+    // // 【新增】管理员：删除订单 (仅限已取消状态)
+    // public async Task<bool> AdminDeleteOrderAsync(int orderId)
+    // {
+    //     var order = await _unitOfWork.TicketOrders.GetByIdAsync(orderId);
+    //     if (order == null) return false;
 
-        // 只有 "已取消" 的订单允许删除
-        if (order.Status == TicketOrderStatus.Cancelled)
-        {
-            _unitOfWork.TicketOrders.Remove(order);
-            await _unitOfWork.SaveChangesAsync();
-            return true;
-        }
-        return false;
-    }
+    //     // 只有 "已取消" 的订单允许删除
+    //     if (order.Status == TicketOrderStatus.Cancelled)
+    //     {
+    //         _unitOfWork.TicketOrders.Remove(order);
+    //         await _unitOfWork.SaveChangesAsync();
+    //         return true;
+    //     }
+    //     return false;
+    // }
+
+    // 2. 修复门票订单删除 (预防同样的错误)
+    // public async Task<bool> AdminDeleteOrderAsync(int id)
+    // {
+    //     var order = await _unitOfWork.TicketOrders.FindAsync(id);
+    //     if (order == null) return false;
+
+    //     // 【核心修复】 先删除关联的门票核销码
+    //     var verifyCode = await _unitOfWork.VerifyCodes
+    //                                 .FirstOrDefaultAsync(v => v.TicketOrderId == id);
+    //     if (verifyCode != null)
+    //     {
+    //         _unitOfWork.VerifyCodes.Remove(verifyCode);
+    //     }
+
+    //     _unitOfWork.TicketOrders.Remove(order);
+    //     await _unitOfWork.SaveChangesAsync();
+    //     return true;
+    // }
 
     // ... 其他代码 ...
 
@@ -288,20 +307,53 @@ namespace TourismPlatform.Services
             return true;
         }
 
-        // 删除订单 (仅限已取消)
-        public async Task<bool> AdminDeleteHotelOrderAsync(int orderId)
-        {
-            var order = await _unitOfWork.HotelOrders.GetByIdAsync(orderId);
-            if (order == null) return false;
+        // // 删除订单 (仅限已取消)
+        // public async Task<bool> AdminDeleteHotelOrderAsync(int orderId)
+        // {
+        //     var order = await _unitOfWork.HotelOrders.GetByIdAsync(orderId);
+        //     if (order == null) return false;
 
-            if (order.Status == HotelOrderStatus.Cancelled)
-            {
-                _unitOfWork.HotelOrders.Remove(order);
-                await _unitOfWork.SaveChangesAsync();
-                return true;
-            }
-            return false;
-        }
+        //     if (order.Status == HotelOrderStatus.Cancelled)
+        //     {
+        //         _unitOfWork.HotelOrders.Remove(order);
+        //         await _unitOfWork.SaveChangesAsync();
+        //         return true;
+        //     }
+        //     return false;
+        // }
+
+
+        // // 1. 修复酒店订单删除
+        // public async Task<bool> AdminDeleteHotelOrderAsync(int id)
+        // {
+        //     // 查找订单
+        //     var order = await _unitOfWork.HotelOrders.FindAsync(id);
+        //     if (order == null) return false;
+
+        //     // =========================================================
+        //     // 【核心修复】 先查找并删除关联的核销码 (VerifyCode)
+        //     // =========================================================
+        //     var verifyCode = await _unitOfWork.VerifyCodes
+        //                                 .FirstOrDefaultAsync(v => v.HotelOrderId == id);
+        //     if (verifyCode != null)
+        //     {
+        //         _unitOfWork.VerifyCodes.Remove(verifyCode);
+        //     }
+
+        //     // =========================================================
+        //     // 【核心修复】 如果有退款记录 (Refunds)，也可能需要删除
+        //     // (根据你的报错，目前是VerifyCode卡住了，但如果有Refund表，这里也得删)
+        //     // =========================================================
+        //     // var refund = await _context.Refunds.FirstOrDefaultAsync(r => r.HotelOrderId == id);
+        //     // if (refund != null) _context.Refunds.Remove(refund);
+
+        //     // 最后删除订单
+        //     _unitOfWork.HotelOrders.Remove(order);
+            
+        //     // 提交事务
+        //     await _unitOfWork.SaveChangesAsync();
+        //     return true;
+        // }
 
         // 【新增】实现同时获取所有订单
        // 【修正】改为串行执行，避免 DbContext 线程冲突
@@ -387,6 +439,63 @@ namespace TourismPlatform.Services
             }
 
 
+                 // =========================================================
+        // 🟢
+        // =========================================================
+        public async Task<bool> AdminDeleteHotelOrderAsync(int id)
+        {
+            // ❌ 错误写法: await _unitOfWork.HotelOrders.FindAsync(id); 
+            // ✅ 正确写法: GetByIdAsync(id)
+            var order = await _unitOfWork.HotelOrders.GetByIdAsync(id);
+            if (order == null) return false;
+
+            // 1. 先删除关联的核销码
+            // 使用 FindAsync + Lambda 表达式查找
+            var verifyCodes = await _unitOfWork.VerifyCodes.FindAsync(v => v.HotelOrderId == id);
+            var verifyCode = verifyCodes.FirstOrDefault(); // 取出第一个（理论上也就一个）
+            
+            if (verifyCode != null)
+            {
+                _unitOfWork.VerifyCodes.Remove(verifyCode);
+            }
+
+            // 2. 删除订单
+            _unitOfWork.HotelOrders.Remove(order);
+            
+            // 3. 提交事务
+            await _unitOfWork.SaveChangesAsync();
+            return true;
+        }
+
+        // =========================================================
+        // 🟢 修复 2：AdminDeleteOrderAsync (门票)
+        // =========================================================
+        public async Task<bool> AdminDeleteOrderAsync(int id)
+        {
+            // ✅ 使用 GetByIdAsync
+            var order = await _unitOfWork.TicketOrders.GetByIdAsync(id);
+            if (order == null) return false;
+
+            // 1. 先删除关联的核销码
+            var verifyCodes = await _unitOfWork.VerifyCodes.FindAsync(v => v.TicketOrderId == id);
+            var verifyCode = verifyCodes.FirstOrDefault();
+
+            if (verifyCode != null)
+            {
+                _unitOfWork.VerifyCodes.Remove(verifyCode);
+            }
+
+            // 2. 删除订单
+            _unitOfWork.TicketOrders.Remove(order);
+            
+            // 3. 提交事务
+            await _unitOfWork.SaveChangesAsync();
+            return true;
+        }
+        
+
+
     }
-    
+   
 }
+
