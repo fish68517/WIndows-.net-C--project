@@ -29,6 +29,9 @@ builder.Services.AddScoped<IAiService, OpenAiService>();
 // 注册 天气 服务
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 
+// 注册 SiliconFlow AI 服务
+builder.Services.AddHttpClient<TourismPlatform.Services.Ai.SiliconFlowService>();
+
 // Configure logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
