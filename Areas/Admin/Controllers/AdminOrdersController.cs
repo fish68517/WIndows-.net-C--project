@@ -5,19 +5,24 @@ using TourismPlatform.Models;
 using TourismPlatform.Repositories;
 using OfficeOpenXml;
 using TourismPlatform.Models;
+using Microsoft.Extensions.Logging;
 
 namespace TourismPlatform.Areas.Admin.Controllers
+
+
 {
     [Area("Admin")]
     public class AdminOrdersController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly MyDbContext _context;
+        private readonly ILogger<AdminOrdersController> _logger; // 添加这行
 
-        public AdminOrdersController(IUnitOfWork unitOfWork, MyDbContext context)
+        public AdminOrdersController(IUnitOfWork unitOfWork, MyDbContext context,ILogger<AdminOrdersController> logger)
         {
             _unitOfWork = unitOfWork;
             _context = context;
+            _logger = logger; // 赋值
         }
 
         // Check if admin is logged in
@@ -272,8 +277,11 @@ namespace TourismPlatform.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CancelTicketOrder(int id)
         {
+            // 1. 进入方法即记录，如果日志没出现，说明被 Filter 拦截了
+            _logger.LogInformation($"收到取消订单请求，订单ID: {id}, User: {HttpContext.User.Identity.Name}");
             if (!IsAdminLoggedIn())
             {
+                _logger.LogWarning($"用户未登录尝试取消订单: {id}");
                 return Json(new { success = false, message = "未授权" });
             }
 
@@ -298,6 +306,7 @@ namespace TourismPlatform.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, $"取消订单 {id} 时发生异常"); // 记录异常详情
                 return Json(new { success = false, message = $"取消失败: {ex.Message}" });
             }
         }

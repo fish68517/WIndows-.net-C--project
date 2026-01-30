@@ -108,6 +108,8 @@
                 <h5 class="mb-0">订单状态</h5>
             </div>
             <div class="card-body">
+                @Html.AntiForgeryToken()
+
                 @{
                     var statusBadgeClass = Model.Status switch
                     {
@@ -162,73 +164,96 @@
     </div>
 </div>
 
+@section Scripts {
 <script>
-function updateStatus() {
-    const newStatus = document.getElementById('statusSelect').value;
-    if (!newStatus) {
-        alert('请选择新状态');
-        return;
-    }
+    // ✅✅✅ 核心修复 2：将函数挂载到 window，解决插件冲突 ✅✅✅
+    window.updateStatus = function() {
+        const newStatus = document.getElementById('statusSelect').value;
+        if (!newStatus) {
+            alert('请选择新状态');
+            return;
+        }
 
-    if (confirm('确定要更新订单状态吗？')) {
-        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-        
-        fetch('@Url.Action("UpdateHotelStatus", "AdminOrders", new { area = "Admin" })', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRF-TOKEN': token || ''
-            },
-            body: new URLSearchParams({
-                id: @Model.HotelOrderId,
-                newStatus: newStatus,
-                __RequestVerificationToken: token || ''
+        if (confirm('确定要更新订单状态吗？')) {
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+            
+            fetch('@Url.Action("UpdateHotelStatus", "AdminOrders", new { area = "Admin" })', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-TOKEN': token || ''
+                },
+                body: new URLSearchParams({
+                    id: @Model.HotelOrderId,
+                    newStatus: newStatus,
+                    __RequestVerificationToken: token || ''
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
-                location.reload();
-            } else {
-                alert('错误: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('请求失败，请稍后重试');
-        });
-    }
-}
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('错误: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('请求失败，请稍后重试');
+            });
+        }
+    };
 
-function cancelOrder() {
-    if (confirm('确定要取消该订单吗？此操作将处理退款。')) {
-        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-        
-        fetch('@Url.Action("CancelHotelOrder", "AdminOrders", new { area = "Admin" })', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRF-TOKEN': token || ''
-            },
-            body: new URLSearchParams({
-                id: @Model.HotelOrderId,
-                __RequestVerificationToken: token || ''
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
-                location.reload();
-            } else {
-                alert('错误: ' + data.message);
+    window.cancelOrder = function() {
+        if (confirm('确定要取消该订单吗？此操作将处理退款。')) {
+            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+            const token = tokenInput?.value;
+            
+            // 安全检查
+            if (!token) {
+                console.error("严重错误：无法找到 __RequestVerificationToken");
+                alert("系统错误：安全令牌缺失");
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('请求失败，请稍后重试');
-        });
-    }
-}
+
+            fetch('@Url.Action("CancelHotelOrder", "AdminOrders", new { area = "Admin" })', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-TOKEN': token || ''
+                },
+                body: new URLSearchParams({
+                    id: @Model.HotelOrderId,
+                    __RequestVerificationToken: token || ''
+                })
+            })
+            .then(async response => {
+                const text = await response.text();
+                // 增强错误处理：先检查状态码
+                if (!response.ok) {
+                    throw new Error(`请求失败: ${response.status} - ${text}`);
+                }
+                // 尝试解析 JSON
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    throw new Error("返回的数据不是有效的 JSON: " + text);
+                }
+            })
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('错误: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('请求失败: ' + error.message);
+            });
+        }
+    };
 </script>
+}

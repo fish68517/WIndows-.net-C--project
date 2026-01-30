@@ -18,6 +18,7 @@
                 <h5 class="mb-0">订单信息</h5>
             </div>
             <div class="card-body">
+                @Html.AntiForgeryToken()
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label text-muted">订单号</label>
@@ -148,73 +149,93 @@
     </div>
 </div>
 
+@section Scripts {
 <script>
-function updateStatus() {
-    const newStatus = document.getElementById('statusSelect').value;
-    if (!newStatus) {
-        alert('请选择新状态');
-        return;
-    }
+    // 1. 将函数挂载到 window 对象，确保 onclick 能找到它们
+    window.updateStatus = function() {
+        const newStatus = document.getElementById('statusSelect').value;
+        if (!newStatus) {
+            alert('请选择新状态');
+            return;
+        }
 
-    if (confirm('确定要更新订单状态吗？')) {
-        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-        
-        fetch('@Url.Action("UpdateTicketStatus", "AdminOrders", new { area = "Admin" })', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRF-TOKEN': token || ''
-            },
-            body: new URLSearchParams({
-                id: @Model.TicketOrderId,
-                newStatus: newStatus,
-                __RequestVerificationToken: token || ''
+        if (confirm('确定要更新订单状态吗？')) {
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+            
+            fetch('@Url.Action("UpdateTicketStatus", "AdminOrders", new { area = "Admin" })', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-TOKEN': token || ''
+                },
+                body: new URLSearchParams({
+                    id: @Model.TicketOrderId,
+                    newStatus: newStatus,
+                    __RequestVerificationToken: token || ''
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
-                location.reload();
-            } else {
-                alert('错误: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('请求失败，请稍后重试');
-        });
-    }
-}
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('错误: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('请求失败，请稍后重试');
+            });
+        }
+    };
 
-function cancelOrder() {
-    if (confirm('确定要取消该订单吗？此操作将处理退款。')) {
-        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-        
-        fetch('@Url.Action("CancelTicketOrder", "AdminOrders", new { area = "Admin" })', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRF-TOKEN': token || ''
-            },
-            body: new URLSearchParams({
-                id: @Model.TicketOrderId,
-                __RequestVerificationToken: token || ''
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
-                location.reload();
-            } else {
-                alert('错误: ' + data.message);
+    window.cancelOrder = function() {
+        if (confirm('确定要取消该订单吗？此操作将处理退款。')) {
+            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+            const token = tokenInput?.value;
+            
+            if (!token) {
+                console.error("严重错误：无法找到 __RequestVerificationToken");
+                alert("系统错误：安全令牌缺失");
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('请求失败，请稍后重试');
-        });
-    }
-}
+
+            fetch('@Url.Action("CancelTicketOrder", "AdminOrders", new { area = "Admin" })', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRF-TOKEN': token || ''
+                },
+                body: new URLSearchParams({
+                    id: @Model.TicketOrderId,
+                    __RequestVerificationToken: token || ''
+                })
+            })
+            .then(async response => {
+                const text = await response.text();
+                if (!response.ok) {
+                    throw new Error(`请求失败: ${response.status} - ${text}`);
+                }
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    throw new Error("返回的数据不是有效的 JSON: " + text);
+                }
+            })
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('错误: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('请求失败: ' + error.message);
+            });
+        }
+    };
 </script>
+}
