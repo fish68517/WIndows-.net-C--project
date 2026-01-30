@@ -46,7 +46,16 @@
                             <div class="text-muted small">
                                 <div>作者：@diary.User?.Nickname</div>
                                 <div>发布时间：@diary.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
-                                <div>评论数：@diary.Comments?.Count ?? 0</div>
+
+                                @{
+                                int commentCount = 0;
+                                if (diary.Comments != null)
+                                {
+                                    commentCount = diary.Comments.Count;
+                                }
+                             }
+                            <div>评论数：@commentCount</div>
+                        
                             </div>
                         </div>
                         <div class="card-footer bg-white">

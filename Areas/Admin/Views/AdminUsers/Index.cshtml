@@ -57,14 +57,14 @@
         @if (Model != null && Model.Any())
         {
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
                             <th>用户昵称</th>
                             <th>邮箱</th>
                             <th>注册时间</th>
-                            <th>状态</th>
-                        
+                            <th class="text-center">状态</th>
+                            <th class="text-center">操作</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -80,7 +80,36 @@
                                 <td>
                                     <small class="text-muted">@user.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
                                 </td>
-                               
+                                
+                                <td class="text-center">
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge bg-success rounded-pill">正常</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger rounded-pill">已禁用</span>
+                                    }
+                                </td>
+
+                                <td class="text-center">
+                                    @if (user.IsActive)
+                                    {
+                                        <form asp-area="Admin" asp-controller="AdminUsers" asp-action="Disable" asp-route-id="@user.UserId" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('确定要禁用该用户吗？禁用后用户将无法登录。')">
+                                                <i class="bi bi-slash-circle"></i> 禁用
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-area="Admin" asp-controller="AdminUsers" asp-action="Enable" asp-route-id="@user.UserId" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('确定要重新启用该用户吗？')">
+                                                <i class="bi bi-check-circle"></i> 启用
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
                             </tr>
                         }
                     </tbody>

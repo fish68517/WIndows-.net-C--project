@@ -80,9 +80,22 @@ namespace TourismPlatform.Services
         //     return await _unitOfWork.TicketOrders.GetByIdAsync(orderId);
         // }
 
+        // =========================================================
+        // 🟢 修复：获取用户订单时，必须加载 Attraction 关联数据
+        // =========================================================
         public async Task<IEnumerable<TicketOrder>> GetUserTicketOrdersAsync(int userId)
         {
-            return await _unitOfWork.TicketOrders.FindAsync(o => o.UserId == userId);
+            // 1. 使用 GetAllAsync 加载 Attraction (可能还有 VerifyCode)
+            // 这样 order.Attraction 就不为 null 了
+            var allOrders = await _unitOfWork.TicketOrders.GetAllAsync(
+                o => o.Attraction, 
+                o => o.VerifyCode // 如果列表页将来要显示核销码，最好也带上
+            );
+
+            // 2. 在内存中筛选出当前用户的订单，并按时间倒序
+            return allOrders
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.CreatedAt);
         }
 
         public async Task<HotelOrder> CreateHotelOrderAsync(int userId, int roomTypeId, DateTime checkIn, DateTime checkOut)
@@ -150,9 +163,21 @@ namespace TourismPlatform.Services
         //     return await _unitOfWork.HotelOrders.GetByIdAsync(orderId);
         // }
 
+        // =========================================================
+        // 🟢 修复：获取用户酒店订单时，加载 Hotel/RoomType 数据
+        // =========================================================
         public async Task<IEnumerable<HotelOrder>> GetUserHotelOrdersAsync(int userId)
         {
-            return await _unitOfWork.HotelOrders.FindAsync(o => o.UserId == userId);
+            // 加载 RoomType 以及 RoomType.Hotel
+            var allOrders = await _unitOfWork.HotelOrders.GetAllAsync(
+                o => o.RoomType,
+                o => o.RoomType.Hotel,
+                o => o.VerifyCode
+            );
+
+            return allOrders
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.CreatedAt);
         }
 
 

@@ -28,28 +28,44 @@ namespace TourismPlatform.Controllers
             return View();
         }
 
-        [HttpPost]
+    [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateDiaryViewModel model)
         {
-            // Check if user is logged in
+            Console.WriteLine("--------------------------------------------------");
+            Console.WriteLine($"📝 [调试] 开始处理发布游记请求: {DateTime.Now}");
+
+            // 1. 检查登录
             var userId = HttpContext.Session.GetInt32("UserId");
             if (!userId.HasValue)
             {
+                Console.WriteLine("❌ [调试] 用户未登录，跳转到登录页");
                 return RedirectToAction("Login", "Account");
             }
 
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            // 2. 检查模型校验状态
+            // if (!ModelState.IsValid)
+            // {
+            //     Console.WriteLine("⚠️ [调试] ModelState 校验失败！具体错误如下：");
+            //     foreach (var state in ModelState)
+            //     {
+            //         foreach (var error in state.Value.Errors)
+            //         {
+            //             Console.WriteLine($"   - 字段: {state.Key}, 错误: {error.ErrorMessage}, 异常: {error.Exception?.Message}");
+            //         }
+            //     }
+            //     // 如果校验失败，会直接返回 View，导致页面“不跳转”
+            //     return View(model);
+            // }
 
             try
             {
-                // Convert IFormFileCollection to List<IFormFile>
-                var imageList = model.Images?.ToList() ?? new List<IFormFile>();
+               // Console.WriteLine($"✅ [调试] 数据校验通过。标题: {model.Title}, 图片数量: {model.Images?.Count ?? 0}");
 
-                // Create diary
+                var imageList = new List<IFormFile>();
+
+                // 3. 调用 Service 创建游记
+                Console.WriteLine("⏳ [调试] 正在调用 Service 创建数据...");
                 var diary = await _diaryService.CreateAsync(
                     userId.Value,
                     model.Title,
@@ -57,13 +73,24 @@ namespace TourismPlatform.Controllers
                     imageList
                 );
 
-                // Redirect to diary detail page
-                return RedirectToAction("Detail", new { id = diary.DiaryId });
+                Console.WriteLine($"🎉 [调试] 游记创建成功！ID: {diary.DiaryId}");
+                Console.WriteLine("🚀 [调试] 正在执行跳转 RedirectToAction(\"Index\")...");
+
+                // ✅ 4. 执行跳转
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "发布游记时出错，请稍后重试");
+                Console.WriteLine($"❌ [调试] 发生严重异常: {ex.Message}");
+                Console.WriteLine($"❌ [调试] 堆栈信息: {ex.StackTrace}");
+                
+                // 如果发生异常，也会返回 View，导致页面“不跳转”
+                ModelState.AddModelError("", $"发布失败: {ex.Message}");
                 return View(model);
+            }
+            finally
+            {
+                Console.WriteLine("--------------------------------------------------");
             }
         }
 

@@ -27,12 +27,16 @@
                             <span asp-validation-for="Content" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3">
+                        @if(false) {
+                            <div class="mb-3">
                             <label asp-for="Images" class="form-label">上传图片</label>
                             <input asp-for="Images" type="file" class="form-control" multiple accept="image/*" />
                             <small class="form-text text-muted">支持多张图片上传，格式：JPG、PNG、GIF 等</small>
                             <div id="imagePreview" class="mt-3"></div>
-                        </div>
+                           </div>
+
+                        }
+                        
 
                         <div class="d-grid gap-2 d-sm-flex justify-content-sm-end">
                             <button type="submit" class="btn btn-primary">发布游记</button>
@@ -78,27 +82,34 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // 1. 取消注释，尝试获取元素
             const imageInput = document.querySelector('input[type="file"][name="Images"]');
             const imagePreview = document.getElementById('imagePreview');
 
-            imageInput.addEventListener('change', function (e) {
-                imagePreview.innerHTML = '';
+            // 2. 【核心修复】增加判断：只有当 imageInput 确实存在时，才添加事件监听
+            if (imageInput) {
+                imageInput.addEventListener('change', function (e) {
+                    // 确保预览区域存在（防止潜在的报错）
+                    if (!imagePreview) return;
+                    
+                    imagePreview.innerHTML = '';
 
-                const files = e.target.files;
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    const reader = new FileReader();
+                    const files = e.target.files;
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const reader = new FileReader();
 
-                    reader.onload = function (event) {
-                        const previewItem = document.createElement('div');
-                        previewItem.className = 'image-preview-item';
-                        previewItem.innerHTML = `<img src="${event.target.result}" alt="Preview" />`;
-                        imagePreview.appendChild(previewItem);
-                    };
+                        reader.onload = function (event) {
+                            const previewItem = document.createElement('div');
+                            previewItem.className = 'image-preview-item';
+                            previewItem.innerHTML = `<img src="${event.target.result}" alt="Preview" />`;
+                            imagePreview.appendChild(previewItem);
+                        };
 
-                    reader.readAsDataURL(file);
-                }
-            });
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
         });
     </script>
 }
