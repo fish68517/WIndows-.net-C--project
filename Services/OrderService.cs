@@ -189,14 +189,19 @@ namespace TourismPlatform.Services
         if (order == null || order.UserId != userId) return false;
 
         // 只有 "已支付" 或 "待使用" 的订单可以申请退票
-        if (order.Status == TicketOrderStatus.Paid || order.Status == TicketOrderStatus.ToUse)
-        {
-            order.Status = TicketOrderStatus.RefundRequested; // 变更为申请中
+        // if (order.Status == TicketOrderStatus.Paid || order.Status == TicketOrderStatus.ToUse)
+        // {
+        //     order.Status = TicketOrderStatus.RefundRequested; // 变更为申请中
+        //     _unitOfWork.TicketOrders.Update(order);
+        //     await _unitOfWork.SaveChangesAsync();
+        //     return true;
+        // }
+        // return false;
+
+        order.Status = TicketOrderStatus.Cancelled; // 变更为申请中
             _unitOfWork.TicketOrders.Update(order);
             await _unitOfWork.SaveChangesAsync();
             return true;
-        }
-        return false;
     }
 
     // 【新增】管理员：获取所有订单
@@ -283,14 +288,19 @@ namespace TourismPlatform.Services
             if (order == null || order.UserId != userId) return false;
 
             // 只有 "已支付" 或 "待入住" 的订单可以申请退款
-            if (order.Status == HotelOrderStatus.Paid || order.Status == HotelOrderStatus.ToUse)
-            {
-                order.Status = HotelOrderStatus.RefundRequested; // 变更为申请中
+            // if (order.Status == HotelOrderStatus.Paid || order.Status == HotelOrderStatus.ToUse)
+            // {
+            //     order.Status = HotelOrderStatus.RefundRequested; // 变更为申请中
+            //     _unitOfWork.HotelOrders.Update(order);
+            //     await _unitOfWork.SaveChangesAsync();
+            //     return true;
+            // }
+            // return false;
+
+            order.Status = HotelOrderStatus.Cancelled; // 变更为申请中
                 _unitOfWork.HotelOrders.Update(order);
                 await _unitOfWork.SaveChangesAsync();
                 return true;
-            }
-            return false;
         }
 
         // ==========================================

@@ -19,6 +19,14 @@
     </div>
 }
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <ul class="nav nav-tabs mb-3" id="refundTabs" role="tablist">
     <li class="nav-item" role="presentation">
         <button class="nav-link active" id="ticket-tab" data-bs-toggle="tab" data-bs-target="#ticket" type="button" role="tab">
@@ -54,17 +62,15 @@
                             <tbody>
                                 @foreach (var item in Model.TicketOrders)
                                 {
+                                    // 获取状态信息（中文 + 样式）
+                                    var statusInfo = GetTicketStatusInfo(item.Status);
                                     <tr>
                                         <td>#@item.TicketOrderId</td>
                                         <td>@(item.User?.Nickname ?? "未知")</td>
                                         <td>@(item.Attraction?.Name ?? "未知")</td>
                                         <td class="text-danger">¥@item.TotalPrice.ToString("F2")</td>
                                         <td>
-                                            @if(item.Status == TourismPlatform.Models.TicketOrderStatus.RefundRequested) {
-                                                <span class="badge bg-warning text-dark blink-badge">申请中</span>
-                                            } else {
-                                                <span class="badge bg-secondary">@item.Status</span>
-                                            }
+                                            <span class="badge @statusInfo.BadgeClass">@statusInfo.Text</span>
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
@@ -118,6 +124,8 @@
                             <tbody>
                                 @foreach (var item in Model.HotelOrders)
                                 {
+                                    // 获取状态信息（中文 + 样式）
+                                    var statusInfo = GetHotelStatusInfo(item.Status);
                                     <tr>
                                         <td>#@item.HotelOrderId</td>
                                         <td>@(item.User?.Nickname ?? "未知")</td>
@@ -128,11 +136,7 @@
                                         <td>@item.CheckInDate.ToString("MM-dd")</td>
                                         <td class="text-danger">¥@item.TotalPrice.ToString("F2")</td>
                                         <td>
-                                            @if(item.Status == TourismPlatform.Models.HotelOrderStatus.RefundRequested) {
-                                                <span class="badge bg-warning text-dark blink-badge">申请中</span>
-                                            } else {
-                                                <span class="badge bg-secondary">@item.Status</span>
-                                            }
+                                            <span class="badge @statusInfo.BadgeClass">@statusInfo.Text</span>
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
@@ -170,3 +174,42 @@
     .blink-badge { animation: blinker 1.5s linear infinite; }
     @@keyframes blinker { 50% { opacity: 0.5; } }
 </style>
+
+@functions {
+    // 定义一个简单的内部类来传递状态信息
+    public class StatusInfo {
+        public string Text { get; set; }
+        public string BadgeClass { get; set; }
+    }
+
+    // 1. 门票状态映射
+    public StatusInfo GetTicketStatusInfo(TourismPlatform.Models.TicketOrderStatus status)
+    {
+        return status switch
+        {
+            TourismPlatform.Models.TicketOrderStatus.PendingPay => new StatusInfo { Text = "待支付", BadgeClass = "bg-warning text-dark" },
+            TourismPlatform.Models.TicketOrderStatus.Paid => new StatusInfo { Text = "已支付", BadgeClass = "bg-info text-dark" },
+            TourismPlatform.Models.TicketOrderStatus.ToUse => new StatusInfo { Text = "待使用", BadgeClass = "bg-primary" },
+            TourismPlatform.Models.TicketOrderStatus.Used => new StatusInfo { Text = "已使用", BadgeClass = "bg-success" },
+            TourismPlatform.Models.TicketOrderStatus.Cancelled => new StatusInfo { Text = "已取消", BadgeClass = "bg-secondary" },
+            TourismPlatform.Models.TicketOrderStatus.RefundRequested => new StatusInfo { Text = "申请退票中", BadgeClass = "bg-danger blink-badge" },
+            _ => new StatusInfo { Text = "未知", BadgeClass = "bg-secondary" }
+        };
+    }
+
+    // 2. 酒店状态映射
+    public StatusInfo GetHotelStatusInfo(TourismPlatform.Models.HotelOrderStatus status)
+    {
+        return status switch
+        {
+            TourismPlatform.Models.HotelOrderStatus.PendingPay => new StatusInfo { Text = "待支付", BadgeClass = "bg-warning text-dark" },
+            TourismPlatform.Models.HotelOrderStatus.Paid => new StatusInfo { Text = "已支付", BadgeClass = "bg-info text-dark" },
+            TourismPlatform.Models.HotelOrderStatus.ToUse => new StatusInfo { Text = "待入住", BadgeClass = "bg-primary" },
+            TourismPlatform.Models.HotelOrderStatus.CheckedIn => new StatusInfo { Text = "已入住", BadgeClass = "bg-primary" },
+            TourismPlatform.Models.HotelOrderStatus.Used => new StatusInfo { Text = "已离店", BadgeClass = "bg-success" },
+            TourismPlatform.Models.HotelOrderStatus.Cancelled => new StatusInfo { Text = "已取消", BadgeClass = "bg-secondary" },
+            TourismPlatform.Models.HotelOrderStatus.RefundRequested => new StatusInfo { Text = "申请退款中", BadgeClass = "bg-danger blink-badge" },
+            _ => new StatusInfo { Text = "未知", BadgeClass = "bg-secondary" }
+        };
+    }
+}
