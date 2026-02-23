@@ -18,10 +18,10 @@ namespace AnonymousEmotionDiary.Views
 
         public DiaryEditView(User currentUser, MainWindow mainWindow = null)
         {
-            InitializeComponent();
             _currentUser = currentUser;
             _mainWindow = mainWindow;
             _diaryService = new DiaryService();
+            InitializeComponent();
         }
 
         private void InitializeComponent()
@@ -82,7 +82,6 @@ namespace AnonymousEmotionDiary.Views
             errorLabel.Location = new System.Drawing.Point(20, 395);
             errorLabel.Size = new System.Drawing.Size(540, 30);
             errorLabel.AutoSize = false;
-            errorLabel.WordWrap = true;
             this.Controls.Add(errorLabel);
 
             // Publish button

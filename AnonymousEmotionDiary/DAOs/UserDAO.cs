@@ -19,7 +19,7 @@ namespace AnonymousEmotionDiary.DAOs
         {
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         INSERT INTO Users (Username, PasswordHash, CreatedAt, LastLoginAt)
@@ -53,7 +53,7 @@ namespace AnonymousEmotionDiary.DAOs
         {
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         SELECT UserId, Username, PasswordHash, CreatedAt, LastLoginAt
@@ -98,7 +98,7 @@ namespace AnonymousEmotionDiary.DAOs
         {
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         SELECT UserId, Username, PasswordHash, CreatedAt, LastLoginAt
@@ -143,7 +143,7 @@ namespace AnonymousEmotionDiary.DAOs
         {
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         UPDATE Users

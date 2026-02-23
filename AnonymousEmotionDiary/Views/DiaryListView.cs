@@ -21,11 +21,11 @@ namespace AnonymousEmotionDiary.Views
 
         public DiaryListView(User currentUser, MainWindow mainWindow = null)
         {
-            InitializeComponent();
             _currentUser = currentUser;
             _mainWindow = mainWindow;
             _diaryService = new DiaryService();
             _diaries = new List<Diary>();
+            InitializeComponent();
         }
 
         private void InitializeComponent()
@@ -33,7 +33,8 @@ namespace AnonymousEmotionDiary.Views
             this.SuspendLayout();
 
             // Form properties
-            this.Text = $"Anonymous Emotion Diary - Diary List ({_currentUser.Username})";
+            string username = _currentUser?.Username ?? "Unknown";
+            this.Text = $"Anonymous Emotion Diary - Diary List ({username})";
             this.Width = 800;
             this.Height = 600;
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -97,7 +98,6 @@ namespace AnonymousEmotionDiary.Views
             errorLabel.Location = new System.Drawing.Point(20, 470);
             errorLabel.Size = new System.Drawing.Size(740, 30);
             errorLabel.AutoSize = false;
-            errorLabel.WordWrap = true;
             this.Controls.Add(errorLabel);
 
             // View Details button
@@ -151,13 +151,20 @@ namespace AnonymousEmotionDiary.Views
         {
             try
             {
+                if (_currentUser == null)
+                {
+                    return;
+                }
                 _diaries = _diaryService.GetUserDiaries(_currentUser.UserId);
                 RefreshDiaryGrid();
             }
             catch (Exception ex)
             {
                 Label errorLabel = (Label)this.Controls["ErrorLabel"];
-                errorLabel.Text = $"Error loading diaries: {ex.Message}";
+                if (errorLabel != null)
+                {
+                    errorLabel.Text = $"Error loading diaries: {ex.Message}";
+                }
             }
         }
 

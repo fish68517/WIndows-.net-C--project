@@ -112,7 +112,6 @@ namespace AnonymousEmotionDiary.Views
             errorLabel.Location = new System.Drawing.Point(30, 210);
             errorLabel.Size = new System.Drawing.Size(320, 50);
             errorLabel.AutoSize = false;
-            errorLabel.WordWrap = true;
             this.Controls.Add(errorLabel);
 
             // Register button

@@ -20,7 +20,7 @@ namespace AnonymousEmotionDiary.DAOs
         {
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         INSERT INTO Logs (LogType, Message, StackTrace, CreatedAt)
@@ -56,7 +56,7 @@ namespace AnonymousEmotionDiary.DAOs
 
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         SELECT LogId, LogType, Message, StackTrace, CreatedAt
@@ -104,7 +104,7 @@ namespace AnonymousEmotionDiary.DAOs
 
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         SELECT LogId, LogType, Message, StackTrace, CreatedAt
@@ -148,7 +148,7 @@ namespace AnonymousEmotionDiary.DAOs
         {
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         DELETE FROM Logs
@@ -177,7 +177,7 @@ namespace AnonymousEmotionDiary.DAOs
         {
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         SELECT LogId, LogType, Message, StackTrace, CreatedAt

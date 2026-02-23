@@ -9,9 +9,9 @@ namespace AnonymousEmotionDiary
     public class TestRunner
     {
         /// <summary>
-        /// Main entry point for running tests.
+        /// Runs all end-to-end tests.
         /// </summary>
-        public static void Main(string[] args)
+        public static void RunTests()
         {
             try
             {

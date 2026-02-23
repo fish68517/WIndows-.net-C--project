@@ -16,10 +16,10 @@ namespace AnonymousEmotionDiary.Views
 
         public HighRiskWarningView(Diary diary, User currentUser, MainWindow mainWindow = null)
         {
-            InitializeComponent();
             _diary = diary;
             _currentUser = currentUser;
             _mainWindow = mainWindow;
+            InitializeComponent();
         }
 
         private void InitializeComponent()
@@ -79,7 +79,6 @@ namespace AnonymousEmotionDiary.Views
             alertMessage.Location = new System.Drawing.Point(0, 0);
             alertMessage.Size = new System.Drawing.Size(640, 60);
             alertMessage.AutoSize = false;
-            alertMessage.WordWrap = true;
             contentPanel.Controls.Add(alertMessage);
 
             // Support resources section
@@ -102,7 +101,6 @@ namespace AnonymousEmotionDiary.Views
             hotlineLabel.Location = new System.Drawing.Point(0, 100);
             hotlineLabel.Size = new System.Drawing.Size(640, 80);
             hotlineLabel.AutoSize = false;
-            hotlineLabel.WordWrap = true;
             contentPanel.Controls.Add(hotlineLabel);
 
             // Online resources
@@ -116,7 +114,6 @@ namespace AnonymousEmotionDiary.Views
             onlineLabel.Location = new System.Drawing.Point(0, 190);
             onlineLabel.Size = new System.Drawing.Size(640, 80);
             onlineLabel.AutoSize = false;
-            onlineLabel.WordWrap = true;
             contentPanel.Controls.Add(onlineLabel);
 
             // Professional help
@@ -130,7 +127,6 @@ namespace AnonymousEmotionDiary.Views
             professionalLabel.Location = new System.Drawing.Point(0, 280);
             professionalLabel.Size = new System.Drawing.Size(640, 80);
             professionalLabel.AutoSize = false;
-            professionalLabel.WordWrap = true;
             contentPanel.Controls.Add(professionalLabel);
 
             // Encouragement message
@@ -142,7 +138,6 @@ namespace AnonymousEmotionDiary.Views
             encouragementLabel.Location = new System.Drawing.Point(0, 370);
             encouragementLabel.Size = new System.Drawing.Size(640, 60);
             encouragementLabel.AutoSize = false;
-            encouragementLabel.WordWrap = true;
             contentPanel.Controls.Add(encouragementLabel);
 
             // Close button

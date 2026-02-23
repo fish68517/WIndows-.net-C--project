@@ -51,6 +51,7 @@ namespace AnonymousEmotionDiary
 
         /// <summary>
         /// Gets or creates a database connection.
+        /// Note: Do NOT use 'using' statement with this connection as it's managed by DatabaseManager.
         /// </summary>
         public static SQLiteConnection GetConnection()
         {
@@ -60,6 +61,17 @@ namespace AnonymousEmotionDiary
                 _connection.Open();
             }
             return _connection;
+        }
+
+        /// <summary>
+        /// Creates a new database connection for single use.
+        /// Use this with 'using' statement for operations that need a fresh connection.
+        /// </summary>
+        public static SQLiteConnection CreateConnection()
+        {
+            SQLiteConnection connection = new SQLiteConnection(ConfigurationHelper.DatabaseConnectionString);
+            connection.Open();
+            return connection;
         }
 
         /// <summary>

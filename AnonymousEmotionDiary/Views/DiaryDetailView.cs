@@ -17,10 +17,10 @@ namespace AnonymousEmotionDiary.Views
 
         public DiaryDetailView(Diary diary, User currentUser, MainWindow mainWindow)
         {
-            InitializeComponent();
             _diary = diary;
             _currentUser = currentUser;
             _mainWindow = mainWindow;
+            InitializeComponent();
         }
 
         private void InitializeComponent()

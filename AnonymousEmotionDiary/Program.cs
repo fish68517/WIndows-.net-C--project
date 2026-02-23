@@ -11,10 +11,17 @@ namespace AnonymousEmotionDiary
         /// Initializes the application, runs the main form, and handles cleanup on exit.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             try
             {
+                // Check if running tests
+                if (args.Length > 0 && args[0] == "TestRunner")
+                {
+                    TestRunner.RunTests();
+                    return;
+                }
+
                 // Application startup initialization
                 InitializeApplication();
 

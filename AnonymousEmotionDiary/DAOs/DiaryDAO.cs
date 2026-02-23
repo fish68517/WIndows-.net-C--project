@@ -20,7 +20,7 @@ namespace AnonymousEmotionDiary.DAOs
         {
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         INSERT INTO Diaries (UserId, Content, EmotionIndex, IsHighRisk, CreatedAt)
@@ -55,7 +55,7 @@ namespace AnonymousEmotionDiary.DAOs
         {
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         SELECT DiaryId, UserId, Content, EmotionIndex, IsHighRisk, CreatedAt
@@ -103,7 +103,7 @@ namespace AnonymousEmotionDiary.DAOs
 
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         SELECT DiaryId, UserId, Content, EmotionIndex, IsHighRisk, CreatedAt
@@ -150,7 +150,7 @@ namespace AnonymousEmotionDiary.DAOs
         {
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         DELETE FROM Diaries
@@ -181,7 +181,7 @@ namespace AnonymousEmotionDiary.DAOs
         {
             try
             {
-                using (SQLiteConnection connection = DatabaseManager.GetConnection())
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
                         UPDATE Diaries
