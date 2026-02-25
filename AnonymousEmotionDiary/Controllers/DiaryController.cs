@@ -8,8 +8,8 @@ using AnonymousEmotionDiary.Views;
 namespace AnonymousEmotionDiary.Controllers
 {
     /// <summary>
-    /// Controller for handling diary management operations.
-    /// Manages diary creation, viewing, deletion, and detail display flows.
+    /// 用于处理日记管理操作的控制器。
+    /// 负责日记的创建、查看、删除以及详情展示流程。
     /// </summary>
     public class DiaryController
     {
@@ -17,7 +17,7 @@ namespace AnonymousEmotionDiary.Controllers
         private readonly LogService _logService;
 
         /// <summary>
-        /// Initializes a new instance of the DiaryController class.
+        /// 初始化 DiaryController 类的新实例。
         /// </summary>
         public DiaryController()
         {
@@ -39,16 +39,16 @@ namespace AnonymousEmotionDiary.Controllers
                 // Validate input is not empty
                 if (string.IsNullOrWhiteSpace(content))
                 {
-                    _logService.LogDebug($"Diary creation failed for user {userId}: empty content");
-                    MessageBox.Show("Please enter diary content.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    _logService.LogDebug($"用户 {userId} 发布日记失败：内容为空");
+                    MessageBox.Show("请输入日记内容。", "校验错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return null;
                 }
 
                 // Validate content length
                 if (!_diaryService.ValidateDiaryContent(content))
                 {
-                    _logService.LogDebug($"Diary creation failed for user {userId}: invalid content length");
-                    MessageBox.Show("Diary content must not exceed 5000 characters.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    _logService.LogDebug($"用户 {userId} 发布日记失败：内容长度不合法");
+                    MessageBox.Show("日记内容不能超过 5000 个字符。", "校验错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return null;
                 }
 
@@ -57,14 +57,14 @@ namespace AnonymousEmotionDiary.Controllers
 
                 if (createdDiary != null)
                 {
-                    _logService.LogDebug($"Diary creation successful for user {userId}: DiaryId {createdDiary.DiaryId}, EmotionIndex {createdDiary.EmotionIndex}");
-                    MessageBox.Show("Diary published successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    _logService.LogDebug($"用户 {userId} 发布日记成功：DiaryId={createdDiary.DiaryId}，情绪指数={createdDiary.EmotionIndex}");
+                    MessageBox.Show("日记发布成功！", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return createdDiary;
                 }
                 else
                 {
-                    _logService.LogDebug($"Diary creation failed for user {userId}: DiaryService returned null");
-                    MessageBox.Show("Failed to publish diary. Please try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    _logService.LogDebug($"用户 {userId} 发布日记失败：DiaryService 返回空对象");
+                    MessageBox.Show("日记发布失败，请重试。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return null;
                 }
             }
@@ -87,7 +87,7 @@ namespace AnonymousEmotionDiary.Controllers
             try
             {
                 List<Diary> userDiaries = _diaryService.GetUserDiaries(userId);
-                _logService.LogDebug($"Retrieved {userDiaries.Count} diaries for user {userId}");
+                _logService.LogDebug($"已为用户 {userId} 获取到 {userDiaries.Count} 篇日记");
                 return userDiaries;
             }
             catch (Exception ex)
@@ -110,31 +110,31 @@ namespace AnonymousEmotionDiary.Controllers
             {
                 // Confirm deletion with user
                 DialogResult result = MessageBox.Show(
-                    "Are you sure you want to delete this diary? This action cannot be undone.",
-                    "Confirm Delete",
+                    "确定要删除这篇日记吗？此操作不可撤销。",
+                    "确认删除",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Warning
                 );
 
                 if (result != DialogResult.Yes)
                 {
-                    _logService.LogDebug($"Diary deletion cancelled by user for DiaryId {diaryId}");
+                    _logService.LogDebug($"用户取消删除日记：DiaryId={diaryId}");
                     return false;
                 }
 
                 // Attempt to delete diary
-                bool deleteSuccess = _diaryService.DeleteDiary(diaryId);
+                bool delete成功 = _diaryService.DeleteDiary(diaryId);
 
-                if (deleteSuccess)
+                if (delete成功)
                 {
-                    _logService.LogDebug($"Diary deleted successfully: DiaryId {diaryId}");
-                    MessageBox.Show("Diary deleted successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    _logService.LogDebug($"日记删除成功：DiaryId={diaryId}");
+                    MessageBox.Show("日记已删除。", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return true;
                 }
                 else
                 {
-                    _logService.LogDebug($"Diary deletion failed: DiaryId {diaryId} not found or deletion unsuccessful");
-                    MessageBox.Show("Failed to delete diary. Please try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    _logService.LogDebug($"日记删除失败：DiaryId={diaryId} 不存在或删除未成功");
+                    MessageBox.Show("删除日记失败，请重试。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;
                 }
             }
@@ -168,7 +168,7 @@ namespace AnonymousEmotionDiary.Controllers
 
                 // Display diary detail
                 DisplayDiaryDetail(diary);
-                _logService.LogDebug($"Diary detail displayed for DiaryId {diaryId}");
+                _logService.LogDebug($"已展示日记详情：DiaryId={diaryId}");
                 return diary;
             }
             catch (Exception ex)
@@ -187,23 +187,23 @@ namespace AnonymousEmotionDiary.Controllers
         private void DisplayDiaryDetail(Diary diary)
         {
             // Build detail message
-            string detailMessage = $"Diary ID: {diary.DiaryId}\n" +
-                                  $"Date: {diary.CreatedAt:yyyy-MM-dd HH:mm:ss}\n" +
-                                  $"Emotion Index: {diary.EmotionIndex}\n" +
+            string detailMessage = $"日记ID：{diary.DiaryId}\n" +
+                                  $"日期：{diary.CreatedAt:yyyy-MM-dd HH:mm:ss}\n" +
+                                  $"情绪指数：{diary.EmotionIndex}\n" +
                                   $"---\n" +
                                   $"{diary.Content}";
 
             // Add high-risk warning if applicable
             if (diary.IsHighRisk)
             {
-                detailMessage += "\n\n⚠ HIGH RISK EMOTION DETECTED\n" +
-                               "Please consider reaching out for support:\n" +
-                               "- Campus Counseling Center\n" +
-                               "- Mental Health Hotline: 1-800-XXX-XXXX\n" +
-                               "- Crisis Text Line: Text HOME to 741741";
+                detailMessage += "\n\n⚠ 检测到高风险情绪\n" +
+                               "建议你寻求帮助支持：\n" +
+                               "- 校园心理咨询中心\n" +
+                               "- 心理健康热线：1-800-XXX-XXXX\n" +
+                               "- 危机短信热线：发送 HOME 到 741741";
             }
 
-            MessageBox.Show(detailMessage, "Diary Details", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(detailMessage, "日记详情", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

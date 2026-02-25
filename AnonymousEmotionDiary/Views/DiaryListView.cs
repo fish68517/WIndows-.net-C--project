@@ -44,7 +44,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Title label
             Label titleLabel = new Label();
-            titleLabel.Text = "My Diaries";
+            titleLabel.Text = "我的日记";
             titleLabel.Font = new System.Drawing.Font("Arial", 16, System.Drawing.FontStyle.Bold);
             titleLabel.Location = new System.Drawing.Point(20, 20);
             titleLabel.Size = new System.Drawing.Size(200, 30);
@@ -53,7 +53,7 @@ namespace AnonymousEmotionDiary.Views
             // Diary count label
             Label countLabel = new Label();
             countLabel.Name = "CountLabel";
-            countLabel.Text = "Total: 0 diaries";
+            countLabel.Text = "总计: 0 篇日记";
             countLabel.Font = new System.Drawing.Font("Arial", 10);
             countLabel.ForeColor = System.Drawing.Color.Gray;
             countLabel.Location = new System.Drawing.Point(600, 25);
@@ -76,10 +76,10 @@ namespace AnonymousEmotionDiary.Views
 
             // Configure columns
             diaryGridView.Columns.Add("DiaryId", "ID");
-            diaryGridView.Columns.Add("Summary", "Summary");
-            diaryGridView.Columns.Add("CreatedAt", "Date");
-            diaryGridView.Columns.Add("EmotionIndex", "Emotion");
-            diaryGridView.Columns.Add("HighRisk", "Risk");
+            diaryGridView.Columns.Add("Summary", "内容");
+            diaryGridView.Columns.Add("CreatedAt", "日期");
+            diaryGridView.Columns.Add("EmotionIndex", "情感指数");
+            diaryGridView.Columns.Add("HighRisk", "高风险");
 
             // Set column widths
             diaryGridView.Columns["DiaryId"].Width = 50;
@@ -103,7 +103,7 @@ namespace AnonymousEmotionDiary.Views
             // View Details button
             Button viewButton = new Button();
             viewButton.Name = "ViewButton";
-            viewButton.Text = "View Details";
+            viewButton.Text = "查看详情";
             viewButton.Location = new System.Drawing.Point(200, 510);
             viewButton.Size = new System.Drawing.Size(100, 30);
             viewButton.Click += ViewButton_Click;
@@ -112,7 +112,7 @@ namespace AnonymousEmotionDiary.Views
             // Delete button
             Button deleteButton = new Button();
             deleteButton.Name = "DeleteButton";
-            deleteButton.Text = "Delete";
+            deleteButton.Text = "删除";
             deleteButton.Location = new System.Drawing.Point(320, 510);
             deleteButton.Size = new System.Drawing.Size(100, 30);
             deleteButton.Click += DeleteButton_Click;
@@ -121,7 +121,7 @@ namespace AnonymousEmotionDiary.Views
             // New Diary button
             Button newButton = new Button();
             newButton.Name = "NewButton";
-            newButton.Text = "New Diary";
+            newButton.Text = "新建日记";
             newButton.Location = new System.Drawing.Point(440, 510);
             newButton.Size = new System.Drawing.Size(100, 30);
             newButton.Click += NewButton_Click;
@@ -130,7 +130,7 @@ namespace AnonymousEmotionDiary.Views
             // Logout button
             Button logoutButton = new Button();
             logoutButton.Name = "LogoutButton";
-            logoutButton.Text = "Logout";
+            logoutButton.Text = "注销";
             logoutButton.Location = new System.Drawing.Point(660, 510);
             logoutButton.Size = new System.Drawing.Size(100, 30);
             logoutButton.Click += LogoutButton_Click;
@@ -163,7 +163,7 @@ namespace AnonymousEmotionDiary.Views
                 Label errorLabel = (Label)this.Controls["ErrorLabel"];
                 if (errorLabel != null)
                 {
-                    errorLabel.Text = $"Error loading diaries: {ex.Message}";
+                    errorLabel.Text = $"加载日记时出错: {ex.Message}";
                 }
             }
         }
@@ -202,7 +202,7 @@ namespace AnonymousEmotionDiary.Views
                 }
             }
 
-            countLabel.Text = $"Total: {_diaries.Count} diaries";
+            countLabel.Text = $"总计: {_diaries.Count} 篇日记";
         }
 
         private void ViewButton_Click(object sender, EventArgs e)
@@ -212,7 +212,7 @@ namespace AnonymousEmotionDiary.Views
 
             if (diaryGridView.SelectedRows.Count == 0)
             {
-                errorLabel.Text = "Please select a diary to view.";
+                errorLabel.Text = "请选择要查看的日记。";
                 return;
             }
 
@@ -232,7 +232,7 @@ namespace AnonymousEmotionDiary.Views
             }
             else
             {
-                errorLabel.Text = "Failed to load diary details.";
+                errorLabel.Text = "加载日记详情时出错。";
             }
         }
 
@@ -243,7 +243,7 @@ namespace AnonymousEmotionDiary.Views
 
             if (diaryGridView.SelectedRows.Count == 0)
             {
-                errorLabel.Text = "Please select a diary to delete.";
+                errorLabel.Text = "请选择要删除的日记。";
                 return;
             }
 
@@ -251,8 +251,8 @@ namespace AnonymousEmotionDiary.Views
 
             // Confirm deletion
             DialogResult result = MessageBox.Show(
-                "Are you sure you want to delete this diary? This action cannot be undone.",
-                "Confirm Delete",
+                "你确定要删除此日记吗？此操作无法撤销。",
+                "确认删除",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning
             );
@@ -262,12 +262,12 @@ namespace AnonymousEmotionDiary.Views
                 if (_diaryService.DeleteDiary(diaryId))
                 {
                     errorLabel.Text = "";
-                    MessageBox.Show("Diary deleted successfully.", "Success");
+                    MessageBox.Show("日记删除成功。", "成功");
                     LoadDiaries();
                 }
                 else
                 {
-                    errorLabel.Text = "Failed to delete diary.";
+                    errorLabel.Text = "日记删除失败。";
                 }
             }
         }

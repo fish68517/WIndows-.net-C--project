@@ -4,17 +4,10 @@ using AnonymousEmotionDiary.Models;
 
 namespace AnonymousEmotionDiary.DAOs
 {
-    /// <summary>
-    /// Data Access Object for User operations.
-    /// Handles database operations for storing and retrieving user records.
-    /// </summary>
+
     public class UserDAO
     {
-        /// <summary>
-        /// Inserts a new user record into the database.
-        /// </summary>
-        /// <param name="user">The user object to insert.</param>
-        /// <returns>True if the insertion was successful, false otherwise.</returns>
+      
         public bool InsertUser(User user)
         {
             try
@@ -44,11 +37,6 @@ namespace AnonymousEmotionDiary.DAOs
             }
         }
 
-        /// <summary>
-        /// Retrieves a user record by username from the database.
-        /// </summary>
-        /// <param name="username">The username to search for.</param>
-        /// <returns>The user record if found, null otherwise.</returns>
         public User SelectUserByUsername(string username)
         {
             try
@@ -89,11 +77,7 @@ namespace AnonymousEmotionDiary.DAOs
             return null;
         }
 
-        /// <summary>
-        /// Retrieves a user record by user ID from the database.
-        /// </summary>
-        /// <param name="userId">The user ID to search for.</param>
-        /// <returns>The user record if found, null otherwise.</returns>
+     
         public User SelectUserById(int userId)
         {
             try
@@ -134,11 +118,7 @@ namespace AnonymousEmotionDiary.DAOs
             return null;
         }
 
-        /// <summary>
-        /// Updates the last login timestamp for a user.
-        /// </summary>
-        /// <param name="userId">The user ID to update.</param>
-        /// <returns>True if the update was successful, false otherwise.</returns>
+
         public bool UpdateLastLogin(int userId)
         {
             try

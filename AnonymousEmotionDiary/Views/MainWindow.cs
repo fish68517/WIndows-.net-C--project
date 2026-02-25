@@ -141,8 +141,8 @@ namespace AnonymousEmotionDiary.Views
         public void HandleLogout()
         {
             DialogResult result = MessageBox.Show(
-                "Are you sure you want to logout?",
-                "Confirm Logout",
+                "你确定要注销吗？",
+                "确认注销",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question
             );

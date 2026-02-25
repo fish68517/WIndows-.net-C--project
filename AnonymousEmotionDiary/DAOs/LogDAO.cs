@@ -5,17 +5,10 @@ using AnonymousEmotionDiary.Models;
 
 namespace AnonymousEmotionDiary.DAOs
 {
-    /// <summary>
-    /// Data Access Object for Log operations.
-    /// Handles database operations for storing and retrieving log records.
-    /// </summary>
+  
     public class LogDAO
     {
-        /// <summary>
-        /// Inserts a new log record into the database.
-        /// </summary>
-        /// <param name="log">The log object to insert.</param>
-        /// <returns>True if the insertion was successful, false otherwise.</returns>
+       
         public bool InsertLog(Log log)
         {
             try
@@ -45,11 +38,7 @@ namespace AnonymousEmotionDiary.DAOs
             }
         }
 
-        /// <summary>
-        /// Retrieves all log records of a specific type from the database.
-        /// </summary>
-        /// <param name="logType">The type of logs to retrieve (e.g., "Debug", "Error", "EmotionAnalysis").</param>
-        /// <returns>A list of log records matching the specified type.</returns>
+
         public List<Log> SelectLogsByType(string logType)
         {
             List<Log> logs = new List<Log>();
@@ -94,10 +83,7 @@ namespace AnonymousEmotionDiary.DAOs
             return logs;
         }
 
-        /// <summary>
-        /// Retrieves all log records from the database.
-        /// </summary>
-        /// <returns>A list of all log records.</returns>
+     
         public List<Log> SelectAllLogs()
         {
             List<Log> logs = new List<Log>();
@@ -139,11 +125,7 @@ namespace AnonymousEmotionDiary.DAOs
             return logs;
         }
 
-        /// <summary>
-        /// Deletes log records older than the specified number of days.
-        /// </summary>
-        /// <param name="days">The number of days to retain logs for.</param>
-        /// <returns>The number of log records deleted.</returns>
+     
         public int DeleteOldLogs(int days)
         {
             try
@@ -168,11 +150,6 @@ namespace AnonymousEmotionDiary.DAOs
             }
         }
 
-        /// <summary>
-        /// Retrieves a specific log record by its ID.
-        /// </summary>
-        /// <param name="logId">The ID of the log record to retrieve.</param>
-        /// <returns>The log record if found, null otherwise.</returns>
         public Log SelectLogById(int logId)
         {
             try

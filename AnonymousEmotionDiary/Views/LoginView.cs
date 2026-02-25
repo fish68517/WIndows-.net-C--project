@@ -38,7 +38,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Title label
             Label titleLabel = new Label();
-            titleLabel.Text = "Login";
+            titleLabel.Text = "登录";
             titleLabel.Font = new System.Drawing.Font("Arial", 16, System.Drawing.FontStyle.Bold);
             titleLabel.Location = new System.Drawing.Point(150, 20);
             titleLabel.Size = new System.Drawing.Size(100, 30);
@@ -46,7 +46,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Username label
             Label usernameLabel = new Label();
-            usernameLabel.Text = "Username:";
+            usernameLabel.Text = "用户名:";
             usernameLabel.Location = new System.Drawing.Point(30, 70);
             usernameLabel.Size = new System.Drawing.Size(80, 20);
             this.Controls.Add(usernameLabel);
@@ -60,7 +60,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Password label
             Label passwordLabel = new Label();
-            passwordLabel.Text = "Password:";
+            passwordLabel.Text = "密码:";
             passwordLabel.Location = new System.Drawing.Point(30, 110);
             passwordLabel.Size = new System.Drawing.Size(80, 20);
             this.Controls.Add(passwordLabel);
@@ -86,7 +86,7 @@ namespace AnonymousEmotionDiary.Views
             // Login button
             Button loginButton = new Button();
             loginButton.Name = "LoginButton";
-            loginButton.Text = "Login";
+            loginButton.Text = "登录";
             loginButton.Location = new System.Drawing.Point(120, 200);
             loginButton.Size = new System.Drawing.Size(100, 30);
             loginButton.Click += LoginButton_Click;
@@ -95,7 +95,7 @@ namespace AnonymousEmotionDiary.Views
             // Register button
             Button registerButton = new Button();
             registerButton.Name = "RegisterButton";
-            registerButton.Text = "Register";
+            registerButton.Text = "注册";
             registerButton.Location = new System.Drawing.Point(250, 200);
             registerButton.Size = new System.Drawing.Size(100, 30);
             registerButton.Click += RegisterButton_Click;

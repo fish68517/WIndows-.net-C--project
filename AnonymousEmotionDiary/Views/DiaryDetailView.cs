@@ -37,7 +37,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Title label
             Label titleLabel = new Label();
-            titleLabel.Text = "Diary Detail";
+            titleLabel.Text = "日记详情";
             titleLabel.Font = new System.Drawing.Font("Arial", 16, System.Drawing.FontStyle.Bold);
             titleLabel.Location = new System.Drawing.Point(20, 20);
             titleLabel.Size = new System.Drawing.Size(200, 30);
@@ -45,7 +45,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Date label
             Label dateLabel = new Label();
-            dateLabel.Text = $"Date: {_diary.CreatedAt:yyyy-MM-dd HH:mm:ss}";
+            dateLabel.Text = $"日期: {_diary.CreatedAt:yyyy-MM-dd HH:mm:ss}";
             dateLabel.Font = new System.Drawing.Font("Arial", 10);
             dateLabel.ForeColor = System.Drawing.Color.Gray;
             dateLabel.Location = new System.Drawing.Point(20, 60);
@@ -95,7 +95,7 @@ namespace AnonymousEmotionDiary.Views
             // Return button
             Button returnButton = new Button();
             returnButton.Name = "ReturnButton";
-            returnButton.Text = "Return to List";
+            returnButton.Text = "返回到列表";
             returnButton.Location = new System.Drawing.Point(660, 490);
             returnButton.Size = new System.Drawing.Size(100, 30);
             returnButton.Click += ReturnButton_Click;

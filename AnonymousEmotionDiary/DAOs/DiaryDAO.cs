@@ -5,17 +5,10 @@ using AnonymousEmotionDiary.Models;
 
 namespace AnonymousEmotionDiary.DAOs
 {
-    /// <summary>
-    /// Data Access Object for Diary operations.
-    /// Handles database operations for storing, retrieving, and managing diary records.
-    /// </summary>
+
     public class DiaryDAO
     {
-        /// <summary>
-        /// Inserts a new diary record into the database.
-        /// </summary>
-        /// <param name="diary">The diary object to insert.</param>
-        /// <returns>True if the insertion was successful, false otherwise.</returns>
+      
         public bool InsertDiary(Diary diary)
         {
             try
@@ -46,12 +39,7 @@ namespace AnonymousEmotionDiary.DAOs
             }
         }
 
-        /// <summary>
-        /// Retrieves a diary record by diary ID from the database.
-        /// </summary>
-        /// <param name="diaryId">The diary ID to search for.</param>
-        /// <returns>The diary record if found, null otherwise.</returns>
-        public Diary SelectDiaryById(int diaryId)
+          public Diary SelectDiaryById(int diaryId)
         {
             try
             {
@@ -92,11 +80,7 @@ namespace AnonymousEmotionDiary.DAOs
             return null;
         }
 
-        /// <summary>
-        /// Retrieves all diary records for a specific user from the database.
-        /// </summary>
-        /// <param name="userId">The user ID to search for.</param>
-        /// <returns>A list of diary records for the user, or an empty list if none found.</returns>
+      
         public List<Diary> SelectDiariesByUserId(int userId)
         {
             List<Diary> diaries = new List<Diary>();
@@ -141,12 +125,7 @@ namespace AnonymousEmotionDiary.DAOs
             return diaries;
         }
 
-        /// <summary>
-        /// Deletes a diary record from the database.
-        /// </summary>
-        /// <param name="diaryId">The diary ID to delete.</param>
-        /// <returns>True if the deletion was successful, false otherwise.</returns>
-        public bool DeleteDiary(int diaryId)
+          public bool DeleteDiary(int diaryId)
         {
             try
             {
@@ -172,11 +151,6 @@ namespace AnonymousEmotionDiary.DAOs
             }
         }
 
-        /// <summary>
-        /// Updates an existing diary record in the database.
-        /// </summary>
-        /// <param name="diary">The diary object with updated values.</param>
-        /// <returns>True if the update was successful, false otherwise.</returns>
         public bool UpdateDiary(Diary diary)
         {
             try

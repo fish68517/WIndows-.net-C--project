@@ -27,7 +27,7 @@ namespace AnonymousEmotionDiary.Views
             this.SuspendLayout();
 
             // Form properties
-            this.Text = "High Risk Emotion Alert";
+            this.Text = "高风险情绪警告 - Anonymous Emotion Diary";
             this.Width = 700;
             this.Height = 650;
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -45,7 +45,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Warning title
             Label warningTitle = new Label();
-            warningTitle.Text = "⚠ High Risk Emotion Detected";
+            warningTitle.Text = "⚠ 高风险情绪检测到";
             warningTitle.Font = new System.Drawing.Font("Arial", 18, System.Drawing.FontStyle.Bold);
             warningTitle.ForeColor = System.Drawing.Color.DarkRed;
             warningTitle.Location = new System.Drawing.Point(20, 15);
@@ -56,7 +56,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Emotion index display
             Label emotionLabel = new Label();
-            emotionLabel.Text = $"Emotion Index: {_diary.EmotionIndex}/100";
+            emotionLabel.Text = $"情绪指数: {_diary.EmotionIndex}/100";
             emotionLabel.Font = new System.Drawing.Font("Arial", 12, System.Drawing.FontStyle.Bold);
             emotionLabel.ForeColor = System.Drawing.Color.DarkRed;
             emotionLabel.Location = new System.Drawing.Point(20, 50);
@@ -72,8 +72,8 @@ namespace AnonymousEmotionDiary.Views
 
             // Alert message
             Label alertMessage = new Label();
-            alertMessage.Text = "Your diary entry has been detected as containing high-risk emotions. " +
-                               "If you're experiencing emotional distress, please consider reaching out for support.";
+            alertMessage.Text = "您的日记条目已被检测为包含高风险情绪。 " +
+                               "如果您正在经历情绪困扰，请考虑寻求支持。";
             alertMessage.Font = new System.Drawing.Font("Arial", 11);
             alertMessage.ForeColor = System.Drawing.Color.Black;
             alertMessage.Location = new System.Drawing.Point(0, 0);
@@ -83,7 +83,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Support resources section
             Label resourcesTitle = new Label();
-            resourcesTitle.Text = "📞 Psychological Support Resources:";
+            resourcesTitle.Text = "📞 心理支持资源:";
             resourcesTitle.Font = new System.Drawing.Font("Arial", 12, System.Drawing.FontStyle.Bold);
             resourcesTitle.ForeColor = System.Drawing.Color.DarkBlue;
             resourcesTitle.Location = new System.Drawing.Point(0, 70);
@@ -92,7 +92,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Hotline resources
             Label hotlineLabel = new Label();
-            hotlineLabel.Text = "Crisis Hotlines:\n" +
+            hotlineLabel.Text = "危机热线:\n" +
                                "• National Mental Health Hotline: 400-161-9995\n" +
                                "• Life Support Hotline: 400-821-1215\n" +
                                "• Crisis Text Line: Text HOME to 741741";
@@ -105,7 +105,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Online resources
             Label onlineLabel = new Label();
-            onlineLabel.Text = "Online Counseling Services:\n" +
+            onlineLabel.Text = "在线咨询服务:\n" +
                               "• Mental Health Support Platform: https://www.xinli.com\n" +
                               "• Psychological Consultation Services: https://www.xlzx.cn\n" +
                               "• Campus Counseling Center (if available)";
@@ -118,7 +118,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Professional help
             Label professionalLabel = new Label();
-            professionalLabel.Text = "Professional Medical Help:\n" +
+            professionalLabel.Text = "专业医疗帮助:\n" +
                                     "• Contact your local hospital's psychology or psychiatry department\n" +
                                     "• Visit your campus counseling center\n" +
                                     "• Schedule an appointment with a mental health professional";
@@ -143,7 +143,7 @@ namespace AnonymousEmotionDiary.Views
             // Close button
             Button closeButton = new Button();
             closeButton.Name = "CloseButton";
-            closeButton.Text = "Return to Diary List";
+            closeButton.Text = "返回到列表";
             closeButton.Location = new System.Drawing.Point(280, 600);
             closeButton.Size = new System.Drawing.Size(140, 35);
             closeButton.Font = new System.Drawing.Font("Arial", 11);

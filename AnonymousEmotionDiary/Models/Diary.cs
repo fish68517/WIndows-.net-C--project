@@ -2,44 +2,24 @@ using System;
 
 namespace AnonymousEmotionDiary.Models
 {
-    /// <summary>
-    /// Represents a diary entry in the system.
-    /// Contains diary content, emotion analysis results, and metadata.
-    /// </summary>
+   
     public class Diary
     {
-        /// <summary>
-        /// Gets or sets the unique identifier for the diary entry.
-        /// </summary>
+     
         public int DiaryId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the user ID of the diary owner.
-        /// References the Users table.
-        /// </summary>
+      
         public int UserId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the content of the diary entry.
-        /// Must not be empty and not exceed 5000 characters.
-        /// </summary>
+      
         public string Content { get; set; }
 
-        /// <summary>
-        /// Gets or sets the emotion index for the diary entry.
-        /// Range: 0-100, where higher values indicate more negative emotions.
-        /// </summary>
+      
         public int EmotionIndex { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the diary entry is marked as high risk.
-        /// High risk is determined when emotion index exceeds 70.
-        /// </summary>
+    
         public bool IsHighRisk { get; set; }
 
-        /// <summary>
-        /// Gets or sets the timestamp when the diary entry was created.
-        /// </summary>
         public DateTime CreatedAt { get; set; }
 
         /// <summary>

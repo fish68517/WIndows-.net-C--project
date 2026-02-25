@@ -39,7 +39,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Title label
             Label titleLabel = new Label();
-            titleLabel.Text = "Write Your Diary";
+            titleLabel.Text = "写下你的日记";
             titleLabel.Font = new System.Drawing.Font("Arial", 16, System.Drawing.FontStyle.Bold);
             titleLabel.Location = new System.Drawing.Point(20, 20);
             titleLabel.Size = new System.Drawing.Size(200, 30);
@@ -48,7 +48,7 @@ namespace AnonymousEmotionDiary.Views
             // Character count label
             Label charCountLabel = new Label();
             charCountLabel.Name = "CharCountLabel";
-            charCountLabel.Text = "Characters: 0 / 5000";
+            charCountLabel.Text = "字符数: 0 / 5000";
             charCountLabel.Font = new System.Drawing.Font("Arial", 10);
             charCountLabel.ForeColor = System.Drawing.Color.Gray;
             charCountLabel.Location = new System.Drawing.Point(400, 25);
@@ -58,7 +58,7 @@ namespace AnonymousEmotionDiary.Views
 
             // Content label
             Label contentLabel = new Label();
-            contentLabel.Text = "Diary Content:";
+            contentLabel.Text = "日记内容:";
             contentLabel.Location = new System.Drawing.Point(20, 60);
             contentLabel.Size = new System.Drawing.Size(100, 20);
             this.Controls.Add(contentLabel);
@@ -87,7 +87,7 @@ namespace AnonymousEmotionDiary.Views
             // Publish button
             Button publishButton = new Button();
             publishButton.Name = "PublishButton";
-            publishButton.Text = "Publish";
+            publishButton.Text = "发布";
             publishButton.Location = new System.Drawing.Point(280, 435);
             publishButton.Size = new System.Drawing.Size(100, 30);
             publishButton.Enabled = false;
@@ -97,7 +97,7 @@ namespace AnonymousEmotionDiary.Views
             // Return button
             Button returnButton = new Button();
             returnButton.Name = "ReturnButton";
-            returnButton.Text = "Return";
+            returnButton.Text = "返回";
             returnButton.Location = new System.Drawing.Point(420, 435);
             returnButton.Size = new System.Drawing.Size(100, 30);
             returnButton.Click += ReturnButton_Click;
@@ -146,7 +146,7 @@ namespace AnonymousEmotionDiary.Views
             // Validate content
             if (!_diaryService.ValidateDiaryContent(content))
             {
-                errorLabel.Text = "Diary content must not be empty and not exceed 5000 characters.";
+                errorLabel.Text = "日记内容不能为空且不能超过5000个字符。";
                 return;
             }
 
@@ -156,7 +156,7 @@ namespace AnonymousEmotionDiary.Views
             if (createdDiary != null)
             {
                 errorLabel.Text = "";
-                MessageBox.Show("Diary published successfully!", "Success");
+                MessageBox.Show("日记发布成功！", "成功");
                 
                 // Check if high risk and show warning if needed
                 if (createdDiary.IsHighRisk)
@@ -169,7 +169,7 @@ namespace AnonymousEmotionDiary.Views
             }
             else
             {
-                errorLabel.Text = "Failed to publish diary. Please try again.";
+                errorLabel.Text = "日记发布失败。请重试。";
             }
         }
 

@@ -7,8 +7,8 @@ using AnonymousEmotionDiary.Views;
 namespace AnonymousEmotionDiary.Controllers
 {
     /// <summary>
-    /// Controller for handling emotion analysis and high-risk warning display.
-    /// Manages emotion detection, risk assessment, and user notifications.
+    /// 用于处理情绪分析与高风险预警展示的控制器。
+    /// 负责情绪检测、风险评估以及用户提示通知。
     /// </summary>
     public class EmotionController
     {
@@ -16,7 +16,7 @@ namespace AnonymousEmotionDiary.Controllers
         private readonly LogService _logService;
 
         /// <summary>
-        /// Initializes a new instance of the EmotionController class.
+        /// 初始化 EmotionController 类的新实例。
         /// </summary>
         public EmotionController()
         {
@@ -24,13 +24,6 @@ namespace AnonymousEmotionDiary.Controllers
             _logService = new LogService();
         }
 
-        /// <summary>
-        /// Handles emotion analysis for diary content.
-        /// Analyzes the provided content and returns the emotion index.
-        /// Logs the analysis result for tracking and debugging.
-        /// </summary>
-        /// <param name="content">The diary content to analyze.</param>
-        /// <returns>The calculated emotion index (0-100), or -1 if analysis fails.</returns>
         public int HandleEmotionAnalysis(string content)
         {
             try
@@ -38,7 +31,7 @@ namespace AnonymousEmotionDiary.Controllers
                 // Validate input
                 if (string.IsNullOrWhiteSpace(content))
                 {
-                    _logService.LogDebug("Emotion analysis failed: content is empty");
+                    _logService.LogDebug("情绪分析失败：内容为空");
                     return -1;
                 }
 
@@ -53,7 +46,7 @@ namespace AnonymousEmotionDiary.Controllers
                     modelVersion: "emotion-controller"
                 );
 
-                _logService.LogDebug($"Emotion analysis completed: emotion index = {emotionIndex}");
+                _logService.LogDebug($"情绪分析完成：情绪指数={emotionIndex}");
 
                 return emotionIndex;
             }
@@ -79,31 +72,31 @@ namespace AnonymousEmotionDiary.Controllers
                 // Validate input
                 if (diary == null)
                 {
-                    _logService.LogDebug("Display warning failed: diary is null");
+                    _logService.LogDebug("展示预警失败：diary 为空");
                     return false;
                 }
 
                 if (currentUser == null)
                 {
-                    _logService.LogDebug("Display warning failed: current user is null");
+                    _logService.LogDebug("展示预警失败：当前用户为空");
                     return false;
                 }
 
                 // Check if emotion is high-risk
                 if (!_emotionDetectionService.IsHighRisk(diary.EmotionIndex))
                 {
-                    _logService.LogDebug($"Emotion index {diary.EmotionIndex} is not high-risk, no warning displayed");
+                    _logService.LogDebug($"情绪指数 {diary.EmotionIndex} 未达到高风险阈值，不显示预警");
                     return false;
                 }
 
                 // Log high-risk detection
-                _logService.LogDebug($"High-risk emotion detected for diary {diary.DiaryId}: emotion index = {diary.EmotionIndex}");
+                _logService.LogDebug($"检测到高风险情绪：DiaryId={diary.DiaryId}，情绪指数={diary.EmotionIndex}");
 
                 // Display high-risk warning view
                 HighRiskWarningView warningView = new HighRiskWarningView(diary, currentUser);
                 warningView.ShowDialog();
 
-                _logService.LogDebug($"High-risk warning displayed for diary {diary.DiaryId}");
+                _logService.LogDebug($"已展示高风险预警：DiaryId={diary.DiaryId}");
 
                 return true;
             }
@@ -127,18 +120,18 @@ namespace AnonymousEmotionDiary.Controllers
             {
                 if (!_emotionDetectionService.IsHighRisk(emotionIndex))
                 {
-                    _logService.LogDebug($"Emotion index {emotionIndex} is not high-risk, no warning message generated");
+                    _logService.LogDebug($"情绪指数 {emotionIndex} 未达到高风险阈值，不生成预警文案");
                     return string.Empty;
                 }
 
                 string warningMessage = _emotionDetectionService.GetRiskWarning(emotionIndex);
-                _logService.LogDebug($"Risk warning message generated for emotion index {emotionIndex}");
+                _logService.LogDebug($"已生成预警文案：情绪指数={emotionIndex}");
 
                 return warningMessage;
             }
             catch (Exception ex)
             {
-                _logService.LogError($"Exception while generating risk warning message for emotion index {emotionIndex}", ex);
+                // _logService.LogDebug($"生成预警文案时发生异常：情绪指数={emotionIndex}", ex);
                 return string.Empty;
             }
         }

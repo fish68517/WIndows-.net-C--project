@@ -9,18 +9,18 @@ using Newtonsoft.Json;
 namespace AnonymousEmotionDiary.Services
 {
     /// <summary>
-    /// Service for detecting and analyzing emotions in diary content.
-    /// Combines keyword extraction with LLM API analysis to generate emotion indices.
+    /// 用于检测并分析日记内容情绪的服务。
+    /// 结合关键词提取与 LLM API 分析生成情绪指数。
     /// </summary>
     public class EmotionDetectionService : IEmotionDetectionService
     {
         private readonly LogService _logService;
         private readonly HttpClient _httpClient;
 
-        // Emotion keywords mapping: keyword -> emotion intensity (0-100)
+         // 情绪关键词映射：关键词 -> 情绪强度（0-100）
         private static readonly Dictionary<string, int> NegativeEmotionKeywords = new Dictionary<string, int>
         {
-            // Sadness and depression
+            // 悲伤与抑郁
             { "难过", 75 },
             { "伤心", 75 },
             { "悲伤", 80 },
@@ -30,7 +30,7 @@ namespace AnonymousEmotionDiary.Services
             { "沮丧", 75 },
             { "郁闷", 70 },
             
-            // Anxiety and worry
+            // 焦虑与担忧
             { "焦虑", 75 },
             { "担心", 60 },
             { "害怕", 75 },
@@ -39,7 +39,7 @@ namespace AnonymousEmotionDiary.Services
             { "不安", 70 },
             { "惶恐", 80 },
             
-            // Anger and frustration
+            // 愤怒与挫败
             { "生气", 75 },
             { "愤怒", 80 },
             { "恼怒", 75 },
@@ -48,21 +48,21 @@ namespace AnonymousEmotionDiary.Services
             { "怨恨", 85 },
             { "厌烦", 65 },
             
-            // Loneliness and isolation
+            // 孤独与疏离
             { "孤独", 75 },
             { "寂寞", 70 },
             { "孤单", 70 },
             { "被遗弃", 85 },
             { "无人理解", 80 },
             
-            // Stress and pressure
+            // 压力与紧张
             { "压力", 70 },
             { "压抑", 75 },
             { "疲惫", 65 },
             { "疲劳", 60 },
             { "累", 55 },
             
-            // Self-harm and suicidal ideation
+            // 自伤与自杀意念
             { "自杀", 95 },
             { "自伤", 90 },
             { "死亡", 85 },
@@ -73,15 +73,15 @@ namespace AnonymousEmotionDiary.Services
 
         private static readonly Dictionary<string, int> PositiveEmotionKeywords = new Dictionary<string, int>
         {
-            // Happiness and joy
+            // 快乐与喜悦
             { "开心", 20 },
             { "高兴", 20 },
             { "快乐", 15 },
             { "喜悦", 15 },
             { "兴奋", 25 },
             { "欣喜", 20 },
-            
-            // Contentment and satisfaction
+
+            // 满足与满意
             { "满足", 25 },
             { "满意", 25 },
             { "舒适", 30 },
@@ -89,13 +89,13 @@ namespace AnonymousEmotionDiary.Services
             { "平静", 35 },
             { "安心", 30 },
             
-            // Hope and optimism
+            // 希望与乐观
             { "希望", 25 },
             { "乐观", 20 },
             { "期待", 25 },
             { "憧憬", 20 },
             
-            // Love and connection
+            // 爱与连接感
             { "爱", 20 },
             { "喜欢", 25 },
             { "感谢", 25 },
@@ -103,9 +103,10 @@ namespace AnonymousEmotionDiary.Services
             { "温暖", 25 }
         };
 
-        /// <summary>
-        /// Initializes a new instance of the EmotionDetectionService class.
+         /// <summary>
+        /// 初始化 EmotionDetectionService 类的新实例。
         /// </summary>
+
         public EmotionDetectionService()
         {
             _logService = new LogService();
@@ -115,13 +116,13 @@ namespace AnonymousEmotionDiary.Services
             };
         }
 
-        /// <summary>
-        /// Analyzes the emotion in the provided content and returns an emotion index.
-        /// Combines keyword extraction with LLM API analysis.
-        /// Falls back to keyword-only analysis if API fails.
+               /// <summary>
+        /// 分析给定内容中的情绪并返回情绪指数。
+        /// 结合关键词提取与 LLM API 分析。
+        /// 当 API 调用失败时回退为仅基于关键词的分析。
         /// </summary>
-        /// <param name="content">The diary content to analyze.</param>
-        /// <returns>An emotion index value between 0 and 100.</returns>
+        /// <param name="content">要分析的日记内容。</param>
+        /// <returns>返回 0 到 100 之间的情绪指数值。</returns>
         public int AnalyzeEmotion(string content)
         {
             try
@@ -132,17 +133,17 @@ namespace AnonymousEmotionDiary.Services
                     return 50;
                 }
 
-                // Step 1: Extract keywords and get keyword-based emotion index
+                // 步骤 1：提取关键词并计算基于关键词的情绪指数
                 int keywordEmotionIndex = ExtractKeywords(content);
                 _logService.LogDebug($"Emotion analysis: keyword-based emotion index = {keywordEmotionIndex}");
 
-                // Step 2: Try to call LLM API for deeper analysis
+                // 步骤 2：尝试调用 LLM API 进行更深入的分析
                 int llmEmotionIndex = CallLLMAPI(content).Result;
 
                 if (llmEmotionIndex >= 0)
                 {
-                    // Successfully got LLM result, combine with keyword analysis
-                    // Weight: 40% keyword, 60% LLM
+                    // 成功获取 LLM 结果，与关键词分析进行融合
+                    // 权重：关键词 40%，LLM 60%
                     int combinedIndex = (int)Math.Round(keywordEmotionIndex * 0.4 + llmEmotionIndex * 0.6);
                     combinedIndex = Math.Max(0, Math.Min(100, combinedIndex)); // Clamp to 0-100
                     
@@ -157,7 +158,7 @@ namespace AnonymousEmotionDiary.Services
                 }
                 else
                 {
-                    // LLM API failed, use keyword-only analysis
+                    // LLM API 调用失败，使用仅关键词分析
                     _logService.LogDebug("Emotion analysis: LLM API failed, using keyword-only analysis");
                     _logService.LogEmotionAnalysis(
                         diaryId: 0,
@@ -177,11 +178,11 @@ namespace AnonymousEmotionDiary.Services
             }
         }
 
-        /// <summary>
-        /// Extracts emotion keywords from the content and calculates emotion index based on keywords.
+                /// <summary>
+        /// 从内容中提取情绪关键词，并基于关键词计算情绪指数。
         /// </summary>
-        /// <param name="content">The diary content to analyze.</param>
-        /// <returns>An emotion index based on keyword analysis (0-100).</returns>
+        /// <param name="content">要分析的日记内容。</param>
+        /// <returns>基于关键词分析得到的情绪指数（0-100）。</returns>
         public int ExtractKeywords(string content)
         {
             try
@@ -231,12 +232,12 @@ namespace AnonymousEmotionDiary.Services
             }
         }
 
-        /// <summary>
-        /// Calls the LLM API to perform deep emotion analysis on the content.
-        /// Returns -1 if the API call fails.
+               /// <summary>
+        /// 调用 LLM API 对内容进行深度情绪分析。
+        /// 若 API 调用失败则返回 -1。
         /// </summary>
-        /// <param name="content">The diary content to analyze.</param>
-        /// <returns>An emotion index from LLM analysis (0-100), or -1 if API call fails.</returns>
+        /// <param name="content">要分析的日记内容。</param>
+        /// <returns>LLM 分析得到的情绪指数（0-100）；若 API 调用失败则返回 -1。</returns>
         public async Task<int> CallLLMAPI(string content)
         {
             try
@@ -310,22 +311,22 @@ Emotion index:";
             }
         }
 
-        /// <summary>
-        /// Determines if an emotion index indicates high-risk emotional state.
+            /// <summary>
+        /// 判断情绪指数是否指示高风险情绪状态。
         /// </summary>
-        /// <param name="emotionIndex">The emotion index to check.</param>
-        /// <returns>True if emotion index exceeds the high-risk threshold, false otherwise.</returns>
+        /// <param name="emotionIndex">要检查的情绪指数。</param>
+        /// <returns>若情绪指数超过高风险阈值则返回 True，否则返回 False。</returns>
         public bool IsHighRisk(int emotionIndex)
         {
             return emotionIndex > ConfigurationHelper.EmotionHighRiskThreshold;
         }
 
-        /// <summary>
-        /// Generates a risk warning message for high-risk emotions.
-        /// Includes psychological support resources.
+             /// <summary>
+        /// 为高风险情绪生成风险提示信息。
+        /// 包含心理支持资源信息。
         /// </summary>
-        /// <param name="emotionIndex">The emotion index that triggered the warning.</param>
-        /// <returns>A warning message with support resources.</returns>
+        /// <param name="emotionIndex">触发提示的情绪指数。</param>
+        /// <returns>包含支持资源的提示信息。</returns>
         public string GetRiskWarning(int emotionIndex)
         {
             string warning = $@"⚠️ 情绪预警提示

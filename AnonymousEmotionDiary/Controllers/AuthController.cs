@@ -7,8 +7,8 @@ using AnonymousEmotionDiary.Views;
 namespace AnonymousEmotionDiary.Controllers
 {
     /// <summary>
-    /// Controller for handling user authentication operations.
-    /// Manages user registration, login, and logout flows.
+    /// 用于处理用户认证相关操作的控制器。
+    /// 管理用户注册、登录与退出登录流程。
     /// </summary>
     public class AuthController
     {
@@ -16,7 +16,7 @@ namespace AnonymousEmotionDiary.Controllers
         private readonly LogService _logService;
 
         /// <summary>
-        /// Initializes a new instance of the AuthController class.
+        /// 初始化 AuthController 的新实例。
         /// </summary>
         public AuthController()
         {
@@ -25,141 +25,138 @@ namespace AnonymousEmotionDiary.Controllers
         }
 
         /// <summary>
-        /// Handles user registration.
-        /// Validates input, calls UserService to register, and displays appropriate messages.
+        /// 处理用户注册：校验输入，调用 UserService 完成注册，并提示相应结果。
         /// </summary>
-        /// <param name="username">The username for the new account.</param>
-        /// <param name="password">The password for the new account.</param>
-        /// <param name="confirmPassword">The password confirmation.</param>
-        /// <returns>True if registration was successful, false otherwise.</returns>
+        /// <param name="username">新账号的用户名。</param>
+        /// <param name="password">新账号的密码。</param>
+        /// <param name="confirmPassword">确认密码。</param>
+        /// <returns>注册成功返回 true，否则返回 false。</returns>
         public bool HandleRegister(string username, string password, string confirmPassword)
         {
             try
             {
-                // Validate input is not empty
+                // 校验输入不能为空
                 if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(confirmPassword))
                 {
-                    _logService.LogDebug("Registration failed: empty input fields");
-                    MessageBox.Show("Please fill in all fields.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    _logService.LogDebug("注册失败：输入字段为空");
+                    MessageBox.Show("请填写所有字段。", "校验错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return false;
                 }
 
-                // Validate username format
+                // 校验用户名格式
                 if (!_userService.ValidateUsername(username))
                 {
-                    _logService.LogDebug($"Registration failed: invalid username format for '{username}'");
-                    MessageBox.Show("Username must be 3-20 characters long and contain only alphanumeric characters and underscores.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    _logService.LogDebug($"注册失败：用户名格式不合法：'{username}'");
+                    MessageBox.Show("用户名长度需为 3-20 位，只能包含字母、数字和下划线。", "校验错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return false;
                 }
 
-                // Validate password format
+                // 校验密码格式
                 if (!_userService.ValidatePassword(password))
                 {
-                    _logService.LogDebug("Registration failed: invalid password format");
-                    MessageBox.Show("Password must be at least 8 characters long.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    _logService.LogDebug("注册失败：密码格式不合法");
+                    MessageBox.Show("密码长度至少 8 位。", "校验错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return false;
                 }
 
-                // Validate passwords match
+                // 校验两次密码一致
                 if (password != confirmPassword)
                 {
-                    _logService.LogDebug("Registration failed: passwords do not match");
-                    MessageBox.Show("Passwords do not match.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    _logService.LogDebug("注册失败：两次输入的密码不一致");
+                    MessageBox.Show("两次输入的密码不一致。", "校验错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return false;
                 }
 
-                // Attempt registration
+                // 尝试注册
                 User newUser = _userService.RegisterUser(username, password);
 
                 if (newUser != null)
                 {
-                    _logService.LogDebug($"Registration successful for user: {username}");
-                    MessageBox.Show($"Registration successful! Welcome, {newUser.Username}. You can now login.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    _logService.LogDebug($"注册成功：用户 {username}");
+                    MessageBox.Show($"注册成功！欢迎你，{newUser.Username}。现在可以登录了。", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return true;
                 }
                 else
                 {
-                    _logService.LogDebug($"Registration failed: UserService returned null for username '{username}'");
-                    MessageBox.Show("Registration failed. Username may already exist or an error occurred.", "Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    _logService.LogDebug($"注册失败：UserService 返回 null，用户名：'{username}'");
+                    MessageBox.Show("注册失败：用户名可能已存在，或发生了其他错误。", "注册失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                _logService.LogError($"Exception during registration for username '{username}'", ex);
-                MessageBox.Show("An unexpected error occurred during registration. Please try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _logService.LogError($"注册过程中发生异常，用户名：'{username}'", ex);
+                MessageBox.Show("注册过程中发生未知错误，请稍后重试。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
         }
 
         /// <summary>
-        /// Handles user login.
-        /// Validates input, calls UserService to authenticate, and saves session if successful.
+        /// 处理用户登录：校验输入，调用 UserService 进行认证，成功后保存会话。
         /// </summary>
-        /// <param name="username">The username to authenticate.</param>
-        /// <param name="password">The password to verify.</param>
-        /// <returns>The authenticated User object if successful, null otherwise.</returns>
+        /// <param name="username">要认证的用户名。</param>
+        /// <param name="password">要校验的密码。</param>
+        /// <returns>认证成功返回 User 对象，否则返回 null。</returns>
         public User HandleLogin(string username, string password)
         {
             try
             {
-                // Validate input is not empty
+                // 校验输入不能为空
                 if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 {
-                    _logService.LogDebug("Login failed: empty username or password");
-                    MessageBox.Show("Please enter both username and password.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    _logService.LogDebug("登录失败：用户名或密码为空");
+                    MessageBox.Show("请输入用户名和密码。", "校验错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return null;
                 }
 
-                // Attempt login
+                // 尝试登录
                 User authenticatedUser = _userService.LoginUser(username, password);
 
                 if (authenticatedUser != null)
                 {
-                    // Save user session
+                    // 保存用户会话
                     SessionManager.SetCurrentUser(authenticatedUser);
-                    _logService.LogDebug($"Login successful for user: {username}, session saved");
+                    _logService.LogDebug($"登录成功：用户 {username}，已保存会话");
                     return authenticatedUser;
                 }
                 else
                 {
-                    _logService.LogDebug($"Login failed: invalid credentials for username '{username}'");
-                    MessageBox.Show("Invalid username or password.", "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    _logService.LogDebug($"登录失败：用户名 '{username}' 凭证无效");
+                    MessageBox.Show("用户名或密码错误。", "登录失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return null;
                 }
             }
             catch (Exception ex)
             {
-                _logService.LogError($"Exception during login for username '{username}'", ex);
-                MessageBox.Show("An unexpected error occurred during login. Please try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _logService.LogError($"登录过程中发生异常，用户名：'{username}'", ex);
+                MessageBox.Show("登录过程中发生未知错误，请稍后重试。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
         }
 
         /// <summary>
-        /// Handles user logout.
-        /// Clears the user session and returns to the login interface.
+        /// 处理用户退出登录：清理会话并返回登录界面。
         /// </summary>
-        /// <returns>True if logout was successful, false otherwise.</returns>
+        /// <returns>退出登录成功返回 true，否则返回 false。</returns>
         public bool HandleLogout()
         {
             try
             {
                 string currentUsername = SessionManager.GetCurrentUsername();
-                
-                // Clear session
-                SessionManager.ClearSession();
-                _logService.LogDebug($"User logout successful: {currentUsername}");
 
-                // Show logout message
-                MessageBox.Show("You have been logged out successfully.", "Logout", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // 清理会话
+                SessionManager.ClearSession();
+                _logService.LogDebug($"用户退出登录成功：{currentUsername}");
+
+                // 显示退出提示
+                MessageBox.Show("已成功退出登录。", "退出登录", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 return true;
             }
             catch (Exception ex)
             {
-                _logService.LogError("Exception during logout", ex);
-                MessageBox.Show("An error occurred during logout.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _logService.LogError("退出登录过程中发生异常", ex);
+                MessageBox.Show("退出登录时发生错误。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
         }
