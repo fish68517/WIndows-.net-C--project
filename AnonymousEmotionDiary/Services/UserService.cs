@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using BCrypt.Net;
 using AnonymousEmotionDiary.Models;
@@ -95,6 +96,14 @@ namespace AnonymousEmotionDiary.Services
         /// <returns>The created User object if successful, null otherwise.</returns>
         public User RegisterUser(string username, string password)
         {
+            return RegisterUser(username, password, string.Empty);
+        }
+
+        /// <summary>
+        /// Registers a new user account with optional contact information.
+        /// </summary>
+        public User RegisterUser(string username, string password, string contactInfo)
+        {
             try
             {
                 // Validate username
@@ -123,7 +132,7 @@ namespace AnonymousEmotionDiary.Services
                 string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
 
                 // Create new user object
-                User newUser = new User(username, passwordHash);
+                User newUser = new User(username, passwordHash, "User", contactInfo?.Trim() ?? string.Empty);
 
                 // Insert into database
                 bool insertSuccess = _userDAO.InsertUser(newUser);
@@ -224,6 +233,19 @@ namespace AnonymousEmotionDiary.Services
             {
                 _logService.LogError($"Error retrieving user by ID: {userId}", ex);
                 return null;
+            }
+        }
+
+        public List<User> GetAllRegularUsers()
+        {
+            try
+            {
+                return _userDAO.SelectAllRegularUsers();
+            }
+            catch (Exception ex)
+            {
+                _logService.LogError("Error retrieving regular users.", ex);
+                return new List<User>();
             }
         }
     }

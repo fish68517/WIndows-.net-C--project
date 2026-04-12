@@ -180,5 +180,44 @@ namespace AnonymousEmotionDiary.DAOs
                 return false;
             }
         }
+
+        public List<Diary> SelectAllDiaries()
+        {
+            List<Diary> diaries = new List<Diary>();
+
+            try
+            {
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
+                {
+                    string query = @"
+                        SELECT DiaryId, UserId, Content, EmotionIndex, IsHighRisk, CreatedAt
+                        FROM Diaries
+                        ORDER BY CreatedAt DESC;";
+
+                    using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            diaries.Add(new Diary
+                            {
+                                DiaryId = Convert.ToInt32(reader["DiaryId"]),
+                                UserId = Convert.ToInt32(reader["UserId"]),
+                                Content = reader["Content"].ToString(),
+                                EmotionIndex = Convert.ToInt32(reader["EmotionIndex"]),
+                                IsHighRisk = Convert.ToBoolean(reader["IsHighRisk"]),
+                                CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving all diaries: {ex.Message}");
+            }
+
+            return diaries;
+        }
     }
 }

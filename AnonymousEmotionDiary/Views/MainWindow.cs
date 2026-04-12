@@ -1,13 +1,11 @@
-using System;
+using System.Drawing;
 using System.Windows.Forms;
 using AnonymousEmotionDiary.Models;
 
 namespace AnonymousEmotionDiary.Views
 {
     /// <summary>
-    /// Main application window that serves as a container for all views.
-    /// Manages navigation between different screens (Login, Register, Diary List, Diary Edit, Diary Detail).
-    /// Provides centralized control flow for the entire application.
+    /// Main application shell.
     /// </summary>
     public partial class MainWindow : Form
     {
@@ -22,73 +20,60 @@ namespace AnonymousEmotionDiary.Views
 
         private void InitializeComponent()
         {
-            this.SuspendLayout();
+            SuspendLayout();
 
-            // Form properties
-            this.Text = "Anonymous Emotion Diary";
-            this.Width = 900;
-            this.Height = 700;
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
+            Text = "匿名情绪日记系统";
+            Width = 1280;
+            Height = 860;
+            StartPosition = FormStartPosition.CenterScreen;
+            MinimumSize = new Size(1100, 760);
+            BackColor = UiTheme.Background;
 
-            // Content panel to hold different views
-            _contentPanel = new Panel();
-            _contentPanel.Name = "ContentPanel";
-            _contentPanel.Location = new System.Drawing.Point(0, 0);
-            _contentPanel.Size = new System.Drawing.Size(900, 700);
-            _contentPanel.Dock = DockStyle.Fill;
-            this.Controls.Add(_contentPanel);
+            _contentPanel = new Panel
+            {
+                Name = "ContentPanel",
+                Dock = DockStyle.Fill,
+                BackColor = UiTheme.Background,
+                Padding = new Padding(24)
+            };
 
-            this.ResumeLayout(false);
+            Controls.Add(_contentPanel);
+            Load += MainWindow_Load;
 
-            // Load login view on startup
-            this.Load += MainWindow_Load;
+            ResumeLayout(false);
         }
 
-        private void MainWindow_Load(object sender, EventArgs e)
+        private void MainWindow_Load(object sender, System.EventArgs e)
         {
             NavigateToLogin();
         }
 
-        /// <summary>
-        /// Navigates to the login view.
-        /// </summary>
         public void NavigateToLogin()
         {
             _currentUser = null;
             ClearContentPanel();
-            LoginView loginView = new LoginView(this);
-            AddViewToPanel(loginView);
+            AddViewToPanel(new LoginView(this));
         }
 
-        /// <summary>
-        /// Navigates to the register view.
-        /// </summary>
         public void NavigateToRegister()
         {
             ClearContentPanel();
-            RegisterView registerView = new RegisterView(this);
-            AddViewToPanel(registerView);
+            AddViewToPanel(new RegisterView(this));
         }
 
-        /// <summary>
-        /// Navigates to the diary list view.
-        /// </summary>
-        /// <param name="user">The currently logged-in user.</param>
         public void NavigateToDiaryList(User user)
         {
             _currentUser = user;
             ClearContentPanel();
-            DiaryListView diaryListView = new DiaryListView(user, this);
-            AddViewToPanel(diaryListView);
+
+            Form nextView = user != null && user.IsAdmin
+                ? new AdminDashboardView(user, this)
+                : new DiaryListView(user, this);
+
+            AddViewToPanel(nextView);
         }
 
-        /// <summary>
-        /// Navigates to the diary edit view for creating a new diary.
-        /// </summary>
-        public void NavigateToDiaryEdit()
+        public void NavigateToDiaryEdit(Diary diary = null)
         {
             if (_currentUser == null)
             {
@@ -97,14 +82,9 @@ namespace AnonymousEmotionDiary.Views
             }
 
             ClearContentPanel();
-            DiaryEditView editView = new DiaryEditView(_currentUser, this);
-            AddViewToPanel(editView);
+            AddViewToPanel(new DiaryEditView(_currentUser, this, diary));
         }
 
-        /// <summary>
-        /// Navigates to the diary detail view.
-        /// </summary>
-        /// <param name="diary">The diary to display.</param>
         public void NavigateToDiaryDetail(Diary diary)
         {
             if (_currentUser == null)
@@ -114,14 +94,9 @@ namespace AnonymousEmotionDiary.Views
             }
 
             ClearContentPanel();
-            DiaryDetailView detailView = new DiaryDetailView(diary, _currentUser, this);
-            AddViewToPanel(detailView);
+            AddViewToPanel(new DiaryDetailView(diary, _currentUser, this));
         }
 
-        /// <summary>
-        /// Navigates to the high-risk warning view.
-        /// </summary>
-        /// <param name="diary">The high-risk diary.</param>
         public void NavigateToHighRiskWarning(Diary diary)
         {
             if (_currentUser == null)
@@ -131,21 +106,16 @@ namespace AnonymousEmotionDiary.Views
             }
 
             ClearContentPanel();
-            HighRiskWarningView warningView = new HighRiskWarningView(diary, _currentUser, this);
-            AddViewToPanel(warningView);
+            AddViewToPanel(new HighRiskWarningView(diary, _currentUser, this));
         }
 
-        /// <summary>
-        /// Handles user logout and returns to login view.
-        /// </summary>
         public void HandleLogout()
         {
             DialogResult result = MessageBox.Show(
-                "你确定要注销吗？",
-                "确认注销",
+                "确认退出当前账号？",
+                "退出登录",
                 MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
+                MessageBoxIcon.Question);
 
             if (result == DialogResult.Yes)
             {
@@ -154,33 +124,24 @@ namespace AnonymousEmotionDiary.Views
             }
         }
 
-        /// <summary>
-        /// Clears the content panel by removing all controls.
-        /// </summary>
+        public User GetCurrentUser()
+        {
+            return _currentUser;
+        }
+
         private void ClearContentPanel()
         {
             _contentPanel.Controls.Clear();
         }
 
-        /// <summary>
-        /// Adds a view (Form) to the content panel.
-        /// </summary>
-        /// <param name="view">The view to add.</param>
         private void AddViewToPanel(Form view)
         {
             view.TopLevel = false;
             view.FormBorderStyle = FormBorderStyle.None;
             view.Dock = DockStyle.Fill;
+            view.BackColor = UiTheme.Background;
             _contentPanel.Controls.Add(view);
             view.Show();
-        }
-
-        /// <summary>
-        /// Gets the currently logged-in user.
-        /// </summary>
-        public User GetCurrentUser()
-        {
-            return _currentUser;
         }
     }
 }

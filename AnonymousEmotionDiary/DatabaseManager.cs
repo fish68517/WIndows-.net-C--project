@@ -1,6 +1,7 @@
 using System;
 using System.Data.SQLite;
 using System.IO;
+using BCrypt.Net;
 
 namespace AnonymousEmotionDiary
 {
@@ -36,6 +37,8 @@ namespace AnonymousEmotionDiary
 
                     // Create tables if they don't exist
                     CreateTables(connection);
+                    EnsureUserColumns(connection);
+                    SeedAdminAccount(connection);
 
                     connection.Close();
                 }
@@ -98,6 +101,8 @@ namespace AnonymousEmotionDiary
                     UserId INTEGER PRIMARY KEY AUTOINCREMENT,
                     Username TEXT UNIQUE NOT NULL,
                     PasswordHash TEXT NOT NULL,
+                    Role TEXT NOT NULL DEFAULT 'User',
+                    ContactInfo TEXT,
                     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
                     LastLoginAt DATETIME
                 );";
@@ -124,6 +129,19 @@ namespace AnonymousEmotionDiary
                     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
                 );";
 
+            string createAdminContactsTable = @"
+                CREATE TABLE IF NOT EXISTS AdminContacts (
+                    ContactId INTEGER PRIMARY KEY AUTOINCREMENT,
+                    UserId INTEGER NOT NULL,
+                    AdminUserId INTEGER NOT NULL,
+                    EmotionIndexSnapshot INTEGER NOT NULL,
+                    ContactMethod TEXT NOT NULL,
+                    ContactNote TEXT NOT NULL,
+                    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (UserId) REFERENCES Users(UserId),
+                    FOREIGN KEY (AdminUserId) REFERENCES Users(UserId)
+                );";
+
             ExecuteNonQuery(connection, createUsersTable);
             LogInitializer.LogDebug("Users table created or verified.");
 
@@ -132,6 +150,73 @@ namespace AnonymousEmotionDiary
 
             ExecuteNonQuery(connection, createLogsTable);
             LogInitializer.LogDebug("Logs table created or verified.");
+
+            ExecuteNonQuery(connection, createAdminContactsTable);
+            LogInitializer.LogDebug("AdminContacts table created or verified.");
+        }
+
+        private static void EnsureUserColumns(SQLiteConnection connection)
+        {
+            EnsureColumnExists(connection, "Users", "Role", "TEXT NOT NULL DEFAULT 'User'");
+            EnsureColumnExists(connection, "Users", "ContactInfo", "TEXT");
+        }
+
+        private static void EnsureColumnExists(SQLiteConnection connection, string tableName, string columnName, string columnDefinition)
+        {
+            string pragmaQuery = $"PRAGMA table_info({tableName});";
+            using SQLiteCommand command = new SQLiteCommand(pragmaQuery, connection);
+            using SQLiteDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                string existingColumnName = reader["name"]?.ToString() ?? string.Empty;
+                if (string.Equals(existingColumnName, columnName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+            }
+
+            ExecuteNonQuery(connection, $"ALTER TABLE {tableName} ADD COLUMN {columnName} {columnDefinition};");
+            LogInitializer.LogDebug($"Column {columnName} added to {tableName}.");
+        }
+
+        private static void SeedAdminAccount(SQLiteConnection connection)
+        {
+            string username = ConfigurationHelper.AdminDefaultUsername;
+            string password = ConfigurationHelper.AdminDefaultPassword;
+
+            string selectQuery = "SELECT UserId, Role FROM Users WHERE Username = @Username LIMIT 1;";
+            using SQLiteCommand selectCommand = new SQLiteCommand(selectQuery, connection);
+            selectCommand.Parameters.AddWithValue("@Username", username);
+            using SQLiteDataReader reader = selectCommand.ExecuteReader();
+
+            if (reader.Read())
+            {
+                string currentRole = reader["Role"]?.ToString() ?? "User";
+                if (!string.Equals(currentRole, "Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    reader.Close();
+                    using SQLiteCommand updateCommand = new SQLiteCommand("UPDATE Users SET Role = 'Admin' WHERE Username = @Username;", connection);
+                    updateCommand.Parameters.AddWithValue("@Username", username);
+                    updateCommand.ExecuteNonQuery();
+                    LogInitializer.LogDebug($"Existing account '{username}' upgraded to administrator.");
+                }
+                return;
+            }
+
+            reader.Close();
+
+            string insertQuery = @"
+                INSERT INTO Users (Username, PasswordHash, Role, ContactInfo, CreatedAt)
+                VALUES (@Username, @PasswordHash, 'Admin', '校方管理员值班电话 / 邮箱', @CreatedAt);";
+
+            using SQLiteCommand insertCommand = new SQLiteCommand(insertQuery, connection);
+            insertCommand.Parameters.AddWithValue("@Username", username);
+            insertCommand.Parameters.AddWithValue("@PasswordHash", BCrypt.Net.BCrypt.HashPassword(password));
+            insertCommand.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
+            insertCommand.ExecuteNonQuery();
+
+            LogInitializer.LogDebug($"Default administrator account '{username}' seeded.");
         }
 
         /// <summary>

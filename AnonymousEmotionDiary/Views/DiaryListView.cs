@@ -1,333 +1,283 @@
-using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using AnonymousEmotionDiary.Services;
 using AnonymousEmotionDiary.Models;
+using AnonymousEmotionDiary.Services;
 
 namespace AnonymousEmotionDiary.Views
 {
     /// <summary>
-    /// Diary list view for displaying user's diary entries.
-    /// Shows diary summaries, emotion indices, and high-risk indicators.
-    /// Allows users to view details, delete, and create new diaries.
+    /// User diary dashboard.
     /// </summary>
     public partial class DiaryListView : Form
     {
         private readonly DiaryService _diaryService;
+        private readonly EmotionDetectionService _emotionDetectionService;
         private readonly User _currentUser;
         private readonly MainWindow _mainWindow;
         private List<Diary> _diaries;
-        private const int SummaryLength = 100;
+        private UserEmotionProfile _profile;
+        private DataGridView _grid;
+        private Label _summaryLabel;
+        private Label _actionLabel;
+        private Label _statsLabel;
+        private Label _loadingLabel;
 
         public DiaryListView(User currentUser, MainWindow mainWindow = null)
         {
             _currentUser = currentUser;
             _mainWindow = mainWindow;
             _diaryService = new DiaryService();
+            _emotionDetectionService = new EmotionDetectionService();
             _diaries = new List<Diary>();
             InitializeComponent();
         }
 
         private void InitializeComponent()
         {
-            this.SuspendLayout();
+            SuspendLayout();
 
-            // Form properties
-            string username = _currentUser?.Username ?? "Unknown";
-            this.Text = $"Anonymous Emotion Diary - Diary List ({username})";
-            this.Width = 800;
-            this.Height = 600;
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
+            BackColor = UiTheme.Background;
 
-            // Title label
-            Label titleLabel = new Label();
-            titleLabel.Text = "我的日记";
-            titleLabel.Font = new System.Drawing.Font("Arial", 16, System.Drawing.FontStyle.Bold);
-            titleLabel.Location = new System.Drawing.Point(20, 20);
-            titleLabel.Size = new System.Drawing.Size(200, 30);
-            this.Controls.Add(titleLabel);
+            Panel heroCard = UiTheme.CreateCard(24, 24, 1180, 180);
+            heroCard.BackColor = UiTheme.SurfaceStrong;
+            Controls.Add(heroCard);
 
-            // Diary count label
-            Label countLabel = new Label();
-            countLabel.Name = "CountLabel";
-            countLabel.Text = "总计: 0 篇日记";
-            countLabel.Font = new System.Drawing.Font("Arial", 10);
-            countLabel.ForeColor = System.Drawing.Color.Gray;
-            countLabel.Location = new System.Drawing.Point(600, 25);
-            countLabel.Size = new System.Drawing.Size(150, 20);
-            countLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.Controls.Add(countLabel);
+            Label titleLabel = new Label
+            {
+                Text = $"你好，{_currentUser?.Username}",
+                Font = UiTheme.TitleFont(26),
+                ForeColor = UiTheme.TextPrimary,
+                Location = new Point(30, 24),
+                Size = new Size(260, 38)
+            };
+            heroCard.Controls.Add(titleLabel);
 
-            // DataGridView for diary list
-            DataGridView diaryGridView = new DataGridView();
-            diaryGridView.Name = "DiaryGridView";
-            diaryGridView.Location = new System.Drawing.Point(20, 60);
-            diaryGridView.Size = new System.Drawing.Size(740, 400);
-            diaryGridView.AllowUserToAddRows = false;
-            diaryGridView.AllowUserToDeleteRows = false;
-            diaryGridView.ReadOnly = true;
-            diaryGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            diaryGridView.MultiSelect = false;
-            diaryGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            diaryGridView.RowHeadersVisible = false;
+            _statsLabel = new Label
+            {
+                Font = UiTheme.BodyFont(12, FontStyle.Bold),
+                ForeColor = UiTheme.Secondary,
+                Location = new Point(30, 72),
+                Size = new Size(560, 24)
+            };
+            heroCard.Controls.Add(_statsLabel);
 
-            // Configure columns
-            diaryGridView.Columns.Add("DiaryId", "ID");
-            diaryGridView.Columns.Add("Summary", "内容");
-            diaryGridView.Columns.Add("CreatedAt", "日期");
-            diaryGridView.Columns.Add("EmotionIndex", "情感指数");
-            diaryGridView.Columns.Add("HighRisk", "高风险");
+            _summaryLabel = new Label
+            {
+                Font = UiTheme.BodyFont(10.5f),
+                ForeColor = UiTheme.TextMuted,
+                Location = new Point(30, 106),
+                Size = new Size(760, 28)
+            };
+            heroCard.Controls.Add(_summaryLabel);
 
-            // Set column widths
-            diaryGridView.Columns["DiaryId"].Width = 50;
-            diaryGridView.Columns["Summary"].Width = 350;
-            diaryGridView.Columns["CreatedAt"].Width = 120;
-            diaryGridView.Columns["EmotionIndex"].Width = 70;
-            diaryGridView.Columns["HighRisk"].Width = 80;
+            _actionLabel = new Label
+            {
+                Font = UiTheme.BodyFont(10.5f, FontStyle.Bold),
+                ForeColor = UiTheme.Accent,
+                Location = new Point(30, 138),
+                Size = new Size(780, 24)
+            };
+            heroCard.Controls.Add(_actionLabel);
 
-            this.Controls.Add(diaryGridView);
+            _loadingLabel = new Label
+            {
+                Font = UiTheme.BodyFont(10),
+                ForeColor = UiTheme.TextMuted,
+                Location = new Point(850, 144),
+                Size = new Size(300, 24),
+                TextAlign = ContentAlignment.MiddleRight
+            };
+            heroCard.Controls.Add(_loadingLabel);
 
-            // Error message label
-            Label errorLabel = new Label();
-            errorLabel.Name = "ErrorLabel";
-            errorLabel.Text = "";
-            errorLabel.ForeColor = System.Drawing.Color.Red;
-            errorLabel.Location = new System.Drawing.Point(20, 470);
-            errorLabel.Size = new System.Drawing.Size(740, 30);
-            errorLabel.AutoSize = false;
-            this.Controls.Add(errorLabel);
+            Button newDiaryButton = new Button { Text = "写新日记", Location = new Point(876, 42), Size = new Size(130, 42) };
+            UiTheme.StylePrimaryButton(newDiaryButton);
+            newDiaryButton.Click += (s, e) => NavigateToDiaryEdit(null);
+            heroCard.Controls.Add(newDiaryButton);
 
-            // View Details button
-            Button viewButton = new Button();
-            viewButton.Name = "ViewButton";
-            viewButton.Text = "查看详情";
-            viewButton.Location = new System.Drawing.Point(200, 510);
-            viewButton.Size = new System.Drawing.Size(100, 30);
-            viewButton.Click += ViewButton_Click;
-            this.Controls.Add(viewButton);
+            Button refreshButton = new Button { Text = "刷新画像", Location = new Point(1022, 42), Size = new Size(130, 42) };
+            UiTheme.StyleSecondaryButton(refreshButton);
+            refreshButton.Click += async (s, e) => await LoadDiariesAsync();
+            heroCard.Controls.Add(refreshButton);
 
-            // Delete button
-            Button deleteButton = new Button();
-            deleteButton.Name = "DeleteButton";
-            deleteButton.Text = "删除";
-            deleteButton.Location = new System.Drawing.Point(320, 510);
-            deleteButton.Size = new System.Drawing.Size(100, 30);
+            Button logoutButton = new Button { Text = "退出", Location = new Point(1022, 98), Size = new Size(130, 42) };
+            UiTheme.StyleSecondaryButton(logoutButton);
+            logoutButton.Click += (s, e) => _mainWindow?.HandleLogout();
+            heroCard.Controls.Add(logoutButton);
+
+            Panel listCard = UiTheme.CreateCard(24, 224, 1180, 500);
+            Controls.Add(listCard);
+
+            listCard.Controls.Add(new Label
+            {
+                Text = "我的日记记录",
+                Font = UiTheme.TitleFont(18),
+                ForeColor = UiTheme.TextPrimary,
+                Location = new Point(24, 18),
+                Size = new Size(220, 30)
+            });
+
+            _grid = new DataGridView
+            {
+                Location = new Point(24, 60),
+                Size = new Size(1128, 360),
+                ReadOnly = true,
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                MultiSelect = false,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                RowHeadersVisible = false
+            };
+            UiTheme.StyleGrid(_grid);
+            _grid.Columns.Add("DiaryId", "ID");
+            _grid.Columns.Add("CreatedAt", "日期");
+            _grid.Columns.Add("EmotionIndex", "情绪指数");
+            _grid.Columns.Add("Risk", "风险状态");
+            _grid.Columns.Add("Summary", "内容摘要");
+            listCard.Controls.Add(_grid);
+
+            Button detailButton = new Button { Text = "查看详情", Location = new Point(744, 434), Size = new Size(120, 36) };
+            UiTheme.StyleSecondaryButton(detailButton);
+            detailButton.Click += DetailButton_Click;
+            listCard.Controls.Add(detailButton);
+
+            Button deleteButton = new Button { Text = "删除日记", Location = new Point(880, 434), Size = new Size(120, 36) };
+            UiTheme.StyleDangerButton(deleteButton);
             deleteButton.Click += DeleteButton_Click;
-            this.Controls.Add(deleteButton);
+            listCard.Controls.Add(deleteButton);
 
-            // New Diary button
-            Button newButton = new Button();
-            newButton.Name = "NewButton";
-            newButton.Text = "新建日记";
-            newButton.Location = new System.Drawing.Point(440, 510);
-            newButton.Size = new System.Drawing.Size(100, 30);
-            newButton.Click += NewButton_Click;
-            this.Controls.Add(newButton);
+            Button writeButton = new Button { Text = "继续书写", Location = new Point(1016, 434), Size = new Size(120, 36) };
+            UiTheme.StylePrimaryButton(writeButton);
+            writeButton.Click += ContinueWriteButton_Click;
+            listCard.Controls.Add(writeButton);
 
-            // Logout button
-            Button logoutButton = new Button();
-            logoutButton.Name = "LogoutButton";
-            logoutButton.Text = "注销";
-            logoutButton.Location = new System.Drawing.Point(660, 510);
-            logoutButton.Size = new System.Drawing.Size(100, 30);
-            logoutButton.Click += LogoutButton_Click;
-            this.Controls.Add(logoutButton);
+            Load += async (s, e) => await LoadDiariesAsync();
 
-            this.ResumeLayout(false);
-
-            // Load diaries when form loads
-            this.Load += DiaryListView_Load;
+            ResumeLayout(false);
         }
 
-        private void DiaryListView_Load(object sender, EventArgs e)
+        private async Task LoadDiariesAsync()
         {
-            LoadDiaries();
-        }
+            SetLoadingState(true, "正在加载情绪画像...");
 
-        private void LoadDiaries()
-        {
-            try
+            (List<Diary> diaries, UserEmotionProfile profile) result = await Task.Run(() =>
             {
-                if (_currentUser == null)
-                {
-                    return;
-                }
-                _diaries = _diaryService.GetUserDiaries(_currentUser.UserId);
-                RefreshDiaryGrid();
-            }
-            catch (Exception ex)
-            {
-                Label errorLabel = (Label)this.Controls["ErrorLabel"];
-                if (errorLabel != null)
-                {
-                    errorLabel.Text = $"加载日记时出错: {ex.Message}";
-                }
-            }
-        }
+                List<Diary> diaries = _currentUser == null ? new List<Diary>() : _diaryService.GetUserDiaries(_currentUser.UserId);
+                UserEmotionProfile profile = _emotionDetectionService.AnalyzeUserEmotionProfile(_currentUser, diaries);
+                return (diaries, profile);
+            });
 
-        private void RefreshDiaryGrid()
-        {
-            DataGridView diaryGridView = (DataGridView)this.Controls["DiaryGridView"];
-            Label countLabel = (Label)this.Controls["CountLabel"];
+            _diaries = result.diaries;
+            _profile = result.profile;
 
-            diaryGridView.Rows.Clear();
+            _statsLabel.Text = $"总情绪指数 {_profile.OverallEmotionIndex} / 100    风险等级 {_profile.RiskLevel}    日记 {_profile.DiaryCount} 篇";
+            _summaryLabel.Text = _profile.Summary;
+            _actionLabel.Text = $"建议：{_profile.SuggestedAction}";
 
+            _grid.Rows.Clear();
             foreach (Diary diary in _diaries)
             {
-                string summary = diary.Content.Length > SummaryLength
-                    ? diary.Content.Substring(0, SummaryLength) + "..."
-                    : diary.Content;
+                string preview = diary.Content.Length > 70 ? diary.Content.Substring(0, 70) + "..." : diary.Content;
+                string risk = diary.IsHighRisk ? "高风险" : "正常";
+                int rowIndex = _grid.Rows.Add(diary.DiaryId, diary.CreatedAt.ToString("yyyy-MM-dd HH:mm"), diary.EmotionIndex, risk, preview);
 
-                string riskStatus = diary.IsHighRisk ? "⚠ HIGH RISK" : "Normal";
-                System.Drawing.Color riskColor = diary.IsHighRisk
-                    ? System.Drawing.Color.Red
-                    : System.Drawing.Color.Black;
-
-                int rowIndex = diaryGridView.Rows.Add(
-                    diary.DiaryId,
-                    summary,
-                    diary.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
-                    diary.EmotionIndex,
-                    riskStatus
-                );
-
-                // Color high-risk rows
                 if (diary.IsHighRisk)
                 {
-                    diaryGridView.Rows[rowIndex].DefaultCellStyle.BackColor = System.Drawing.Color.LightPink;
-                    diaryGridView.Rows[rowIndex].DefaultCellStyle.ForeColor = System.Drawing.Color.DarkRed;
+                    _grid.Rows[rowIndex].DefaultCellStyle.BackColor = Color.FromArgb(255, 241, 237);
+                    _grid.Rows[rowIndex].DefaultCellStyle.ForeColor = UiTheme.Danger;
                 }
             }
 
-            countLabel.Text = $"总计: {_diaries.Count} 篇日记";
+            SetLoadingState(false, string.Empty);
         }
 
-        private void ViewButton_Click(object sender, EventArgs e)
+        private void DetailButton_Click(object sender, System.EventArgs e)
         {
-            DataGridView diaryGridView = (DataGridView)this.Controls["DiaryGridView"];
-            Label errorLabel = (Label)this.Controls["ErrorLabel"];
-
-            if (diaryGridView.SelectedRows.Count == 0)
+            Diary diary = GetSelectedDiary();
+            if (diary == null)
             {
-                errorLabel.Text = "请选择要查看的日记。";
                 return;
             }
 
-            int diaryId = (int)diaryGridView.SelectedRows[0].Cells["DiaryId"].Value;
-            Diary selectedDiary = _diaryService.GetDiaryById(diaryId);
-
-            if (selectedDiary != null)
+            if (_mainWindow != null)
             {
-                if (_mainWindow != null)
-                {
-                    _mainWindow.NavigateToDiaryDetail(selectedDiary);
-                }
-                else
-                {
-                    ShowDiaryDetail(selectedDiary);
-                }
+                _mainWindow.NavigateToDiaryDetail(diary);
             }
             else
             {
-                errorLabel.Text = "加载日记详情时出错。";
+                new DiaryDetailView(diary, _currentUser, _mainWindow).Show();
+                Hide();
             }
         }
 
-        private void DeleteButton_Click(object sender, EventArgs e)
+        private void DeleteButton_Click(object sender, System.EventArgs e)
         {
-            DataGridView diaryGridView = (DataGridView)this.Controls["DiaryGridView"];
-            Label errorLabel = (Label)this.Controls["ErrorLabel"];
-
-            if (diaryGridView.SelectedRows.Count == 0)
+            Diary diary = GetSelectedDiary();
+            if (diary == null)
             {
-                errorLabel.Text = "请选择要删除的日记。";
                 return;
             }
 
-            int diaryId = (int)diaryGridView.SelectedRows[0].Cells["DiaryId"].Value;
-
-            // Confirm deletion
-            DialogResult result = MessageBox.Show(
-                "你确定要删除此日记吗？此操作无法撤销。",
-                "确认删除",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning
-            );
-
-            if (result == DialogResult.Yes)
+            DialogResult result = MessageBox.Show("确认删除这篇日记？删除后不可恢复。", "删除确认", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result != DialogResult.Yes)
             {
-                if (_diaryService.DeleteDiary(diaryId))
-                {
-                    errorLabel.Text = "";
-                    MessageBox.Show("日记删除成功。", "成功");
-                    LoadDiaries();
-                }
-                else
-                {
-                    errorLabel.Text = "日记删除失败。";
-                }
+                return;
             }
-        }
 
-        private void NewButton_Click(object sender, EventArgs e)
-        {
-            if (_mainWindow != null)
+            if (_diaryService.DeleteDiary(diary.DiaryId))
             {
-                _mainWindow.NavigateToDiaryEdit();
+                _ = LoadDiariesAsync();
             }
             else
             {
-                DiaryEditView editView = new DiaryEditView(_currentUser);
-                editView.FormClosed += (s, args) =>
-                {
-                    LoadDiaries();
-                };
-                editView.Show();
-                this.Hide();
+                MessageBox.Show("删除失败，请重试。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void LogoutButton_Click(object sender, EventArgs e)
+        private void ContinueWriteButton_Click(object sender, System.EventArgs e)
+        {
+            Diary diary = GetSelectedDiary();
+            if (diary == null)
+            {
+                return;
+            }
+
+            NavigateToDiaryEdit(diary);
+        }
+
+        private Diary GetSelectedDiary()
+        {
+            if (_grid.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("请先选择一篇日记。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return null;
+            }
+
+            int diaryId = (int)_grid.SelectedRows[0].Cells["DiaryId"].Value;
+            return _diaries.FirstOrDefault(d => d.DiaryId == diaryId);
+        }
+
+        private void NavigateToDiaryEdit(Diary diary)
         {
             if (_mainWindow != null)
             {
-                _mainWindow.HandleLogout();
+                _mainWindow.NavigateToDiaryEdit(diary);
             }
             else
             {
-                DialogResult result = MessageBox.Show(
-                    "Are you sure you want to logout?",
-                    "Confirm Logout",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question
-                );
-
-                if (result == DialogResult.Yes)
-                {
-                    LoginView loginView = new LoginView();
-                    loginView.Show();
-                    this.Close();
-                }
+                new DiaryEditView(_currentUser, null, diary).Show();
+                Hide();
             }
         }
 
-        private void ShowDiaryDetail(Diary diary)
+        private void SetLoadingState(bool isLoading, string message)
         {
-            string riskWarning = diary.IsHighRisk
-                ? "\n\n⚠ HIGH RISK EMOTION DETECTED\nPlease consider reaching out for support."
-                : "";
-
-            string detailMessage = $"Diary ID: {diary.DiaryId}\n" +
-                                  $"Date: {diary.CreatedAt:yyyy-MM-dd HH:mm:ss}\n" +
-                                  $"Emotion Index: {diary.EmotionIndex}\n" +
-                                  $"---\n" +
-                                  $"{diary.Content}" +
-                                  riskWarning;
-
-            MessageBox.Show(detailMessage, "Diary Details", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Cursor = isLoading ? Cursors.WaitCursor : Cursors.Default;
+            UseWaitCursor = isLoading;
+            _loadingLabel.Text = message;
         }
     }
 }

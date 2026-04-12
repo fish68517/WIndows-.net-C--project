@@ -26,7 +26,7 @@ namespace AnonymousEmotionDiary.Services
         {
             _diaryDAO = new DiaryDAO();
             _logService = new LogService();
-            _emotionDetectionService = emotionDetectionService;
+            _emotionDetectionService = emotionDetectionService ?? new EmotionDetectionService();
         }
 
         /// <summary>
@@ -73,16 +73,8 @@ namespace AnonymousEmotionDiary.Services
                 }
 
                 // Analyze emotion
-                int emotionIndex = 0;
-                if (_emotionDetectionService != null)
-                {
-                    emotionIndex = _emotionDetectionService.AnalyzeEmotion(content);
-                    _logService.LogDebug($"Emotion analysis completed for user {userId}: emotion index = {emotionIndex}");
-                }
-                else
-                {
-                    _logService.LogDebug($"Emotion detection service not available, using default emotion index 0");
-                }
+                int emotionIndex = _emotionDetectionService.AnalyzeEmotion(content);
+                _logService.LogDebug($"Emotion analysis completed for user {userId}: emotion index = {emotionIndex}");
 
                 // Create diary object
                 Diary diary = new Diary(userId, content, emotionIndex);
@@ -185,6 +177,58 @@ namespace AnonymousEmotionDiary.Services
             {
                 _logService.LogError($"Error deleting diary: {diaryId}", ex);
                 return false;
+            }
+        }
+
+        public Diary UpdateDiary(int diaryId, string content)
+        {
+            try
+            {
+                if (!ValidateDiaryContent(content))
+                {
+                    _logService.LogDebug($"Diary update failed: invalid content for diary {diaryId}");
+                    return null;
+                }
+
+                Diary existingDiary = _diaryDAO.SelectDiaryById(diaryId);
+                if (existingDiary == null)
+                {
+                    _logService.LogDebug($"Diary update failed: diary {diaryId} not found");
+                    return null;
+                }
+
+                int emotionIndex = _emotionDetectionService.AnalyzeEmotion(content);
+                existingDiary.Content = content;
+                existingDiary.EmotionIndex = emotionIndex;
+                existingDiary.IsHighRisk = _emotionDetectionService.IsHighRisk(emotionIndex);
+
+                bool updateSuccess = _diaryDAO.UpdateDiary(existingDiary);
+                if (!updateSuccess)
+                {
+                    _logService.LogDebug($"Diary update failed: database update failed for diary {diaryId}");
+                    return null;
+                }
+
+                _logService.LogDebug($"Diary updated successfully: DiaryId {diaryId}, EmotionIndex={emotionIndex}, HighRisk={existingDiary.IsHighRisk}");
+                return _diaryDAO.SelectDiaryById(diaryId);
+            }
+            catch (Exception ex)
+            {
+                _logService.LogError($"Error updating diary: {diaryId}", ex);
+                return null;
+            }
+        }
+
+        public List<Diary> GetAllDiaries()
+        {
+            try
+            {
+                return _diaryDAO.SelectAllDiaries();
+            }
+            catch (Exception ex)
+            {
+                _logService.LogError("Error retrieving all diaries.", ex);
+                return new List<Diary>();
             }
         }
     }

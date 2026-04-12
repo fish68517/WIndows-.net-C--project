@@ -1,198 +1,197 @@
-using System;
+using System.Drawing;
 using System.Windows.Forms;
-using AnonymousEmotionDiary.Services;
 using AnonymousEmotionDiary.Models;
+using AnonymousEmotionDiary.Services;
 
 namespace AnonymousEmotionDiary.Views
 {
     /// <summary>
-    /// Register view for user account creation.
-    /// Allows users to create new accounts with username and password validation.
+    /// Registration screen.
     /// </summary>
     public partial class RegisterView : Form
     {
         private readonly UserService _userService;
         private readonly MainWindow _mainWindow;
+        private TextBox _usernameTextBox;
+        private TextBox _contactTextBox;
+        private TextBox _passwordTextBox;
+        private TextBox _confirmPasswordTextBox;
+        private Label _errorLabel;
 
         public RegisterView(MainWindow mainWindow = null)
         {
-            InitializeComponent();
             _userService = new UserService();
             _mainWindow = mainWindow;
+            InitializeComponent();
         }
 
         private void InitializeComponent()
         {
-            this.SuspendLayout();
+            SuspendLayout();
 
-            // Form properties
-            this.Text = "Anonymous Emotion Diary - Register";
-            this.Width = 400;
-            this.Height = 380;
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
+            BackColor = UiTheme.Background;
 
-            // Title label
-            Label titleLabel = new Label();
-            titleLabel.Text = "注册";
-            titleLabel.Font = new System.Drawing.Font("Arial", 16, System.Drawing.FontStyle.Bold);
-            titleLabel.Location = new System.Drawing.Point(140, 20);
-            titleLabel.Size = new System.Drawing.Size(120, 30);
-            this.Controls.Add(titleLabel);
+            Panel registerCard = UiTheme.CreateCard(290, 60, 700, 640);
+            Controls.Add(registerCard);
 
-            // Username label
-            Label usernameLabel = new Label();
-            usernameLabel.Text = "用户名:";
-            usernameLabel.Location = new System.Drawing.Point(30, 70);
-            usernameLabel.Size = new System.Drawing.Size(80, 20);
-            this.Controls.Add(usernameLabel);
+            Label titleLabel = new Label
+            {
+                Text = "创建匿名账号",
+                Font = UiTheme.TitleFont(24),
+                ForeColor = UiTheme.TextPrimary,
+                Location = new Point(46, 34),
+                Size = new Size(280, 40)
+            };
+            registerCard.Controls.Add(titleLabel);
 
-            // Username textbox
-            TextBox usernameTextBox = new TextBox();
-            usernameTextBox.Name = "UsernameTextBox";
-            usernameTextBox.Location = new System.Drawing.Point(120, 70);
-            usernameTextBox.Size = new System.Drawing.Size(230, 20);
-            this.Controls.Add(usernameTextBox);
+            Label subtitleLabel = new Label
+            {
+                Text = "用户名用于登录；联系方式为可选项，仅在管理员发现高风险情绪时进行人工联系。",
+                Font = UiTheme.BodyFont(10.5f),
+                ForeColor = UiTheme.TextMuted,
+                Location = new Point(46, 84),
+                Size = new Size(570, 36)
+            };
+            registerCard.Controls.Add(subtitleLabel);
 
-            // Username hint label
-            Label usernameHintLabel = new Label();
-            usernameHintLabel.Text = "(3-20个字符，仅限字母数字和下划线)";
-            usernameHintLabel.Font = new System.Drawing.Font("Arial", 8);
-            usernameHintLabel.ForeColor = System.Drawing.Color.Gray;
-            usernameHintLabel.Location = new System.Drawing.Point(120, 90);
-            usernameHintLabel.Size = new System.Drawing.Size(230, 15);
-            this.Controls.Add(usernameHintLabel);
+            registerCard.Controls.Add(CreateLabel("用户名", 46, 146));
+            _usernameTextBox = new TextBox { Location = new Point(46, 176), Size = new Size(600, 34) };
+            UiTheme.StyleTextBox(_usernameTextBox);
+            registerCard.Controls.Add(_usernameTextBox);
 
-            // Password label
-            Label passwordLabel = new Label();
-            passwordLabel.Text = "密码:";
-            passwordLabel.Location = new System.Drawing.Point(30, 120);
-            passwordLabel.Size = new System.Drawing.Size(80, 20);
-            this.Controls.Add(passwordLabel);
+            Label usernameHint = new Label
+            {
+                Text = "3-20 位，仅允许字母、数字和下划线",
+                Font = UiTheme.BodyFont(9f),
+                ForeColor = UiTheme.TextMuted,
+                Location = new Point(46, 214),
+                Size = new Size(280, 20)
+            };
+            registerCard.Controls.Add(usernameHint);
 
-            // Password textbox
-            TextBox passwordTextBox = new TextBox();
-            passwordTextBox.Name = "PasswordTextBox";
-            passwordTextBox.Location = new System.Drawing.Point(120, 120);
-            passwordTextBox.Size = new System.Drawing.Size(230, 20);
-            passwordTextBox.UseSystemPasswordChar = true;
-            this.Controls.Add(passwordTextBox);
+            registerCard.Controls.Add(CreateLabel("联系方式（可选）", 46, 256));
+            _contactTextBox = new TextBox { Location = new Point(46, 286), Size = new Size(600, 34) };
+            UiTheme.StyleTextBox(_contactTextBox);
+            registerCard.Controls.Add(_contactTextBox);
 
-            // Password hint label
-            Label passwordHintLabel = new Label();
-            passwordHintLabel.Text = "(至少 8 个字符)";
-            passwordHintLabel.Font = new System.Drawing.Font("Arial", 8);
-            passwordHintLabel.ForeColor = System.Drawing.Color.Gray;
-            passwordHintLabel.Location = new System.Drawing.Point(120, 140);
-            passwordHintLabel.Size = new System.Drawing.Size(230, 15);
-            this.Controls.Add(passwordHintLabel);
+            Label contactHint = new Label
+            {
+                Text = "可填写手机号、邮箱、QQ 或微信号，便于管理员在高风险情况下联系你",
+                Font = UiTheme.BodyFont(9f),
+                ForeColor = UiTheme.TextMuted,
+                Location = new Point(46, 324),
+                Size = new Size(500, 20)
+            };
+            registerCard.Controls.Add(contactHint);
 
-            // Confirm password label
-            Label confirmPasswordLabel = new Label();
-            confirmPasswordLabel.Text = "确认密码:";
-            confirmPasswordLabel.Location = new System.Drawing.Point(30, 170);
-            confirmPasswordLabel.Size = new System.Drawing.Size(80, 20);
-            this.Controls.Add(confirmPasswordLabel);
+            registerCard.Controls.Add(CreateLabel("密码", 46, 366));
+            _passwordTextBox = new TextBox
+            {
+                Location = new Point(46, 396),
+                Size = new Size(600, 34),
+                UseSystemPasswordChar = true
+            };
+            UiTheme.StyleTextBox(_passwordTextBox);
+            registerCard.Controls.Add(_passwordTextBox);
 
-            // Confirm password textbox
-            TextBox confirmPasswordTextBox = new TextBox();
-            confirmPasswordTextBox.Name = "ConfirmPasswordTextBox";
-            confirmPasswordTextBox.Location = new System.Drawing.Point(120, 170);
-            confirmPasswordTextBox.Size = new System.Drawing.Size(230, 20);
-            confirmPasswordTextBox.UseSystemPasswordChar = true;
-            this.Controls.Add(confirmPasswordTextBox);
+            registerCard.Controls.Add(CreateLabel("确认密码", 46, 456));
+            _confirmPasswordTextBox = new TextBox
+            {
+                Location = new Point(46, 486),
+                Size = new Size(600, 34),
+                UseSystemPasswordChar = true
+            };
+            UiTheme.StyleTextBox(_confirmPasswordTextBox);
+            registerCard.Controls.Add(_confirmPasswordTextBox);
 
-            // Error message label
-            Label errorLabel = new Label();
-            errorLabel.Name = "ErrorLabel";
-            errorLabel.Text = "";
-            errorLabel.ForeColor = System.Drawing.Color.Red;
-            errorLabel.Location = new System.Drawing.Point(30, 210);
-            errorLabel.Size = new System.Drawing.Size(320, 50);
-            errorLabel.AutoSize = false;
-            this.Controls.Add(errorLabel);
+            _errorLabel = new Label
+            {
+                ForeColor = UiTheme.Danger,
+                Font = UiTheme.BodyFont(),
+                Location = new Point(46, 534),
+                Size = new Size(600, 40)
+            };
+            registerCard.Controls.Add(_errorLabel);
 
-            // Register button
-            Button registerButton = new Button();
-            registerButton.Name = "RegisterButton";
-            registerButton.Text = "注册";
-            registerButton.Location = new System.Drawing.Point(120, 280);
-            registerButton.Size = new System.Drawing.Size(100, 30);
+            Button registerButton = new Button
+            {
+                Text = "完成注册",
+                Location = new Point(46, 580),
+                Size = new Size(286, 40)
+            };
+            UiTheme.StylePrimaryButton(registerButton);
             registerButton.Click += RegisterButton_Click;
-            this.Controls.Add(registerButton);
+            registerCard.Controls.Add(registerButton);
 
-            // Back button
-            Button backButton = new Button();
-            backButton.Name = "BackButton";
-            backButton.Text = "返回";
-            backButton.Location = new System.Drawing.Point(250, 280);
-            backButton.Size = new System.Drawing.Size(100, 30);
+            Button backButton = new Button
+            {
+                Text = "返回登录",
+                Location = new Point(360, 580),
+                Size = new Size(286, 40)
+            };
+            UiTheme.StyleSecondaryButton(backButton);
             backButton.Click += BackButton_Click;
-            this.Controls.Add(backButton);
+            registerCard.Controls.Add(backButton);
 
-            this.ResumeLayout(false);
+            ResumeLayout(false);
         }
 
-        private void RegisterButton_Click(object sender, EventArgs e)
+        private static Label CreateLabel(string text, int left, int top)
         {
-            TextBox usernameTextBox = (TextBox)this.Controls["UsernameTextBox"];
-            TextBox passwordTextBox = (TextBox)this.Controls["PasswordTextBox"];
-            TextBox confirmPasswordTextBox = (TextBox)this.Controls["ConfirmPasswordTextBox"];
-            Label errorLabel = (Label)this.Controls["ErrorLabel"];
-
-            string username = usernameTextBox.Text.Trim();
-            string password = passwordTextBox.Text;
-            string confirmPassword = confirmPasswordTextBox.Text;
-
-            // Validate input
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confirmPassword))
+            return new Label
             {
-                errorLabel.Text = "请填写所有字段。";
+                Text = text,
+                Font = UiTheme.BodyFont(10.5f, FontStyle.Bold),
+                ForeColor = UiTheme.TextPrimary,
+                Location = new Point(left, top),
+                Size = new Size(180, 22)
+            };
+        }
+
+        private void RegisterButton_Click(object sender, System.EventArgs e)
+        {
+            string username = _usernameTextBox.Text.Trim();
+            string contactInfo = _contactTextBox.Text.Trim();
+            string password = _passwordTextBox.Text;
+            string confirmPassword = _confirmPasswordTextBox.Text;
+
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(confirmPassword))
+            {
+                _errorLabel.Text = "请完整填写用户名和密码。";
                 return;
             }
 
-            // Validate username format
             if (!_userService.ValidateUsername(username))
             {
-                errorLabel.Text = "用户名必须是 3-20 个字符，并且只能包含字母数字和下划线。";
+                _errorLabel.Text = "用户名格式不合法。";
                 return;
             }
 
-            // Validate password format
             if (!_userService.ValidatePassword(password))
             {
-                errorLabel.Text = "密码必须至少 8 个字符。";
+                _errorLabel.Text = "密码至少需要 8 位。";
                 return;
             }
 
-            // Check if passwords match
             if (password != confirmPassword)
             {
-                errorLabel.Text = "密码不匹配。";
+                _errorLabel.Text = "两次输入的密码不一致。";
                 return;
             }
 
-            // Attempt registration
-            User newUser = _userService.RegisterUser(username, password);
+            User newUser = _userService.RegisterUser(username, password, contactInfo);
+            if (newUser == null)
+            {
+                _errorLabel.Text = "注册失败，用户名可能已存在。";
+                return;
+            }
 
-            if (newUser != null)
-            {
-                errorLabel.Text = "";
-                MessageBox.Show($"注册成功！欢迎，{newUser.Username}。您现在可以登录。", "成功");
-                // Navigate back to login view
-                NavigateToLogin();
-            }
-            else
-            {
-                errorLabel.Text = "注册失败。用户名可能已存在或发生错误。";
-            }
+            MessageBox.Show("注册成功，现可返回登录。", "注册成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            NavigateToLogin();
         }
 
-        private void BackButton_Click(object sender, EventArgs e)
+        private void BackButton_Click(object sender, System.EventArgs e)
         {
-            // Navigate back to login view
             NavigateToLogin();
         }
 
@@ -204,9 +203,8 @@ namespace AnonymousEmotionDiary.Views
             }
             else
             {
-                LoginView loginView = new LoginView();
-                loginView.Show();
-                this.Close();
+                new LoginView().Show();
+                Close();
             }
         }
     }

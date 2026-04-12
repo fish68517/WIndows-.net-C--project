@@ -1,13 +1,11 @@
-using System;
+using System.Drawing;
 using System.Windows.Forms;
 using AnonymousEmotionDiary.Models;
 
 namespace AnonymousEmotionDiary.Views
 {
     /// <summary>
-    /// Diary detail view for displaying the complete content of a diary entry.
-    /// Shows diary content, creation time, emotion index, and high-risk indicators.
-    /// Allows users to return to the diary list.
+    /// Diary detail page.
     /// </summary>
     public partial class DiaryDetailView : Form
     {
@@ -25,88 +23,67 @@ namespace AnonymousEmotionDiary.Views
 
         private void InitializeComponent()
         {
-            this.SuspendLayout();
+            SuspendLayout();
 
-            // Form properties
-            this.Text = "Anonymous Emotion Diary - Diary Detail";
-            this.Width = 800;
-            this.Height = 600;
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.Padding = new Padding(20);
+            BackColor = UiTheme.Background;
 
-            // Title label
-            Label titleLabel = new Label();
-            titleLabel.Text = "日记详情";
-            titleLabel.Font = new System.Drawing.Font("Arial", 16, System.Drawing.FontStyle.Bold);
-            titleLabel.Location = new System.Drawing.Point(20, 20);
-            titleLabel.Size = new System.Drawing.Size(200, 30);
-            this.Controls.Add(titleLabel);
+            Panel card = UiTheme.CreateCard(120, 40, 980, 660);
+            Controls.Add(card);
 
-            // Date label
-            Label dateLabel = new Label();
-            dateLabel.Text = $"日期: {_diary.CreatedAt:yyyy-MM-dd HH:mm:ss}";
-            dateLabel.Font = new System.Drawing.Font("Arial", 10);
-            dateLabel.ForeColor = System.Drawing.Color.Gray;
-            dateLabel.Location = new System.Drawing.Point(20, 60);
-            dateLabel.Size = new System.Drawing.Size(300, 20);
-            this.Controls.Add(dateLabel);
-
-            // Emotion index label
-            Label emotionLabel = new Label();
-            emotionLabel.Text = $"Emotion Index: {_diary.EmotionIndex}";
-            emotionLabel.Font = new System.Drawing.Font("Arial", 10);
-            emotionLabel.ForeColor = System.Drawing.Color.Gray;
-            emotionLabel.Location = new System.Drawing.Point(350, 60);
-            emotionLabel.Size = new System.Drawing.Size(200, 20);
-            this.Controls.Add(emotionLabel);
-
-            // High-risk indicator
-            if (_diary.IsHighRisk)
+            card.Controls.Add(new Label
             {
-                Label riskLabel = new Label();
-                riskLabel.Text = "⚠ HIGH RISK EMOTION";
-                riskLabel.Font = new System.Drawing.Font("Arial", 10, System.Drawing.FontStyle.Bold);
-                riskLabel.ForeColor = System.Drawing.Color.Red;
-                riskLabel.Location = new System.Drawing.Point(600, 60);
-                riskLabel.Size = new System.Drawing.Size(150, 20);
-                this.Controls.Add(riskLabel);
-            }
+                Text = "日记详情",
+                Font = UiTheme.TitleFont(24),
+                ForeColor = UiTheme.TextPrimary,
+                Location = new Point(34, 24),
+                Size = new Size(180, 38)
+            });
 
-            // Content label
-            Label contentLabel = new Label();
-            contentLabel.Text = "Content:";
-            contentLabel.Location = new System.Drawing.Point(20, 100);
-            contentLabel.Size = new System.Drawing.Size(100, 20);
-            this.Controls.Add(contentLabel);
+            card.Controls.Add(new Label
+            {
+                Text = $"日期：{_diary.CreatedAt:yyyy-MM-dd HH:mm:ss}",
+                Font = UiTheme.BodyFont(10.5f, FontStyle.Bold),
+                ForeColor = UiTheme.Secondary,
+                Location = new Point(34, 80),
+                Size = new Size(280, 24)
+            });
 
-            // Content textbox (read-only)
-            TextBox contentTextBox = new TextBox();
-            contentTextBox.Name = "ContentTextBox";
-            contentTextBox.Location = new System.Drawing.Point(20, 125);
-            contentTextBox.Size = new System.Drawing.Size(740, 350);
-            contentTextBox.Multiline = true;
-            contentTextBox.ScrollBars = ScrollBars.Vertical;
-            contentTextBox.WordWrap = true;
-            contentTextBox.ReadOnly = true;
-            contentTextBox.Text = _diary.Content;
-            this.Controls.Add(contentTextBox);
+            card.Controls.Add(new Label
+            {
+                Text = $"情绪指数：{_diary.EmotionIndex}",
+                Font = UiTheme.BodyFont(10.5f, FontStyle.Bold),
+                ForeColor = _diary.IsHighRisk ? UiTheme.Danger : UiTheme.Success,
+                Location = new Point(360, 80),
+                Size = new Size(180, 24)
+            });
 
-            // Return button
-            Button returnButton = new Button();
-            returnButton.Name = "ReturnButton";
-            returnButton.Text = "返回到列表";
-            returnButton.Location = new System.Drawing.Point(660, 490);
-            returnButton.Size = new System.Drawing.Size(100, 30);
-            returnButton.Click += ReturnButton_Click;
-            this.Controls.Add(returnButton);
+            card.Controls.Add(new Label
+            {
+                Text = _diary.IsHighRisk ? "状态：高风险，需要关注" : "状态：正常",
+                Font = UiTheme.BodyFont(10.5f, FontStyle.Bold),
+                ForeColor = _diary.IsHighRisk ? UiTheme.Danger : UiTheme.TextMuted,
+                Location = new Point(560, 80),
+                Size = new Size(220, 24)
+            });
 
-            this.ResumeLayout(false);
-        }
+            TextBox contentBox = new TextBox
+            {
+                Location = new Point(34, 124),
+                Size = new Size(910, 460),
+                Multiline = true,
+                ReadOnly = true,
+                ScrollBars = ScrollBars.Vertical,
+                Text = _diary.Content
+            };
+            UiTheme.StyleTextBox(contentBox, true);
+            card.Controls.Add(contentBox);
 
-        private void ReturnButton_Click(object sender, EventArgs e)
-        {
-            _mainWindow.NavigateToDiaryList(_currentUser);
+            Button backButton = new Button { Text = "返回列表", Location = new Point(824, 604), Size = new Size(120, 40) };
+            UiTheme.StyleSecondaryButton(backButton);
+            backButton.Click += (s, e) => _mainWindow.NavigateToDiaryList(_currentUser);
+            card.Controls.Add(backButton);
+
+            ResumeLayout(false);
         }
     }
 }

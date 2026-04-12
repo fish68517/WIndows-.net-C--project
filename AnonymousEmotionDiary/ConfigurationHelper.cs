@@ -17,14 +17,26 @@ namespace AnonymousEmotionDiary
             ConfigurationManager.AppSettings["DatabasePath"] ?? "AnonymousEmotionDiary.db";
 
         // API Configuration
+        public static string LLMProvider =>
+            ConfigurationManager.AppSettings["LLMProvider"] ?? "Generic";
+
+        public static string LLMBaseUrl =>
+            ConfigurationManager.AppSettings["LLMBaseUrl"] ?? "https://api.siliconflow.cn/v1";
+
+        public static string LLMApiKey =>
+            ConfigurationManager.AppSettings["LLMApiKey"] ?? string.Empty;
+
         public static string LLMAPIEndpoint => 
-            ConfigurationManager.AppSettings["LLMAPIEndpoint"] ?? "http://localhost:11434/api/generate";
+            ConfigurationManager.AppSettings["LLMAPIEndpoint"] ?? "https://api.siliconflow.cn/v1/chat/completions";
 
         public static string LLMAPIModel => 
-            ConfigurationManager.AppSettings["LLMAPIModel"] ?? "llama2";
+            ConfigurationManager.AppSettings["LLMAPIModel"] ?? "tencent/Hunyuan-MT-7B";
 
         public static int LLMAPITimeout => 
             int.Parse(ConfigurationManager.AppSettings["LLMAPITimeout"] ?? "30000");
+
+        public static int LLMUserProfileMaxChars =>
+            int.Parse(ConfigurationManager.AppSettings["LLMUserProfileMaxChars"] ?? "12000");
 
         // Emotion Detection Configuration
         public static int EmotionHighRiskThreshold => 
@@ -55,6 +67,12 @@ namespace AnonymousEmotionDiary
 
         public static int PasswordMinLength => 
             int.Parse(ConfigurationManager.AppSettings["PasswordMinLength"] ?? "8");
+
+        public static string AdminDefaultUsername =>
+            ConfigurationManager.AppSettings["AdminDefaultUsername"] ?? "admin";
+
+        public static string AdminDefaultPassword =>
+            ConfigurationManager.AppSettings["AdminDefaultPassword"] ?? "Admin@12345";
 
         // Logging Configuration
         public static string LogFilePath => 

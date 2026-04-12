@@ -1,12 +1,12 @@
-using System;
+using System.Drawing;
 using System.Windows.Forms;
 using AnonymousEmotionDiary.Models;
+using AnonymousEmotionDiary.Services;
 
 namespace AnonymousEmotionDiary.Views
 {
     /// <summary>
-    /// High-risk warning view for displaying emotion analysis alerts.
-    /// Shows warning information and psychological support resources when high-risk emotions are detected.
+    /// High-risk warning page.
     /// </summary>
     public partial class HighRiskWarningView : Form
     {
@@ -24,148 +24,70 @@ namespace AnonymousEmotionDiary.Views
 
         private void InitializeComponent()
         {
-            this.SuspendLayout();
+            SuspendLayout();
 
-            // Form properties
-            this.Text = "高风险情绪警告 - Anonymous Emotion Diary";
-            this.Width = 700;
-            this.Height = 650;
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.BackColor = System.Drawing.Color.White;
+            BackColor = UiTheme.Background;
 
-            // Warning icon and title panel
-            Panel headerPanel = new Panel();
-            headerPanel.BackColor = System.Drawing.Color.FromArgb(255, 200, 0); // Warning yellow
-            headerPanel.Location = new System.Drawing.Point(0, 0);
-            headerPanel.Size = new System.Drawing.Size(700, 80);
-            this.Controls.Add(headerPanel);
+            Panel card = UiTheme.CreateCard(180, 60, 860, 560);
+            card.BackColor = Color.FromArgb(255, 248, 245);
+            Controls.Add(card);
 
-            // Warning title
-            Label warningTitle = new Label();
-            warningTitle.Text = "⚠ 高风险情绪检测到";
-            warningTitle.Font = new System.Drawing.Font("Arial", 18, System.Drawing.FontStyle.Bold);
-            warningTitle.ForeColor = System.Drawing.Color.DarkRed;
-            warningTitle.Location = new System.Drawing.Point(20, 15);
-            warningTitle.Size = new System.Drawing.Size(660, 40);
-            warningTitle.AutoSize = false;
-            warningTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            headerPanel.Controls.Add(warningTitle);
-
-            // Emotion index display
-            Label emotionLabel = new Label();
-            emotionLabel.Text = $"情绪指数: {_diary.EmotionIndex}/100";
-            emotionLabel.Font = new System.Drawing.Font("Arial", 12, System.Drawing.FontStyle.Bold);
-            emotionLabel.ForeColor = System.Drawing.Color.DarkRed;
-            emotionLabel.Location = new System.Drawing.Point(20, 50);
-            emotionLabel.Size = new System.Drawing.Size(300, 20);
-            headerPanel.Controls.Add(emotionLabel);
-
-            // Main content panel
-            Panel contentPanel = new Panel();
-            contentPanel.Location = new System.Drawing.Point(20, 100);
-            contentPanel.Size = new System.Drawing.Size(660, 480);
-            contentPanel.AutoScroll = true;
-            this.Controls.Add(contentPanel);
-
-            // Alert message
-            Label alertMessage = new Label();
-            alertMessage.Text = "您的日记条目已被检测为包含高风险情绪。 " +
-                               "如果您正在经历情绪困扰，请考虑寻求支持。";
-            alertMessage.Font = new System.Drawing.Font("Arial", 11);
-            alertMessage.ForeColor = System.Drawing.Color.Black;
-            alertMessage.Location = new System.Drawing.Point(0, 0);
-            alertMessage.Size = new System.Drawing.Size(640, 60);
-            alertMessage.AutoSize = false;
-            contentPanel.Controls.Add(alertMessage);
-
-            // Support resources section
-            Label resourcesTitle = new Label();
-            resourcesTitle.Text = "📞 心理支持资源:";
-            resourcesTitle.Font = new System.Drawing.Font("Arial", 12, System.Drawing.FontStyle.Bold);
-            resourcesTitle.ForeColor = System.Drawing.Color.DarkBlue;
-            resourcesTitle.Location = new System.Drawing.Point(0, 70);
-            resourcesTitle.Size = new System.Drawing.Size(640, 25);
-            contentPanel.Controls.Add(resourcesTitle);
-
-            // Hotline resources
-            Label hotlineLabel = new Label();
-            hotlineLabel.Text = "危机热线:\n" +
-                               "• National Mental Health Hotline: 400-161-9995\n" +
-                               "• Life Support Hotline: 400-821-1215\n" +
-                               "• Crisis Text Line: Text HOME to 741741";
-            hotlineLabel.Font = new System.Drawing.Font("Arial", 10);
-            hotlineLabel.ForeColor = System.Drawing.Color.Black;
-            hotlineLabel.Location = new System.Drawing.Point(0, 100);
-            hotlineLabel.Size = new System.Drawing.Size(640, 80);
-            hotlineLabel.AutoSize = false;
-            contentPanel.Controls.Add(hotlineLabel);
-
-            // Online resources
-            Label onlineLabel = new Label();
-            onlineLabel.Text = "在线咨询服务:\n" +
-                              "• Mental Health Support Platform: https://www.xinli.com\n" +
-                              "• Psychological Consultation Services: https://www.xlzx.cn\n" +
-                              "• Campus Counseling Center (if available)";
-            onlineLabel.Font = new System.Drawing.Font("Arial", 10);
-            onlineLabel.ForeColor = System.Drawing.Color.Black;
-            onlineLabel.Location = new System.Drawing.Point(0, 190);
-            onlineLabel.Size = new System.Drawing.Size(640, 80);
-            onlineLabel.AutoSize = false;
-            contentPanel.Controls.Add(onlineLabel);
-
-            // Professional help
-            Label professionalLabel = new Label();
-            professionalLabel.Text = "专业医疗帮助:\n" +
-                                    "• Contact your local hospital's psychology or psychiatry department\n" +
-                                    "• Visit your campus counseling center\n" +
-                                    "• Schedule an appointment with a mental health professional";
-            professionalLabel.Font = new System.Drawing.Font("Arial", 10);
-            professionalLabel.ForeColor = System.Drawing.Color.Black;
-            professionalLabel.Location = new System.Drawing.Point(0, 280);
-            professionalLabel.Size = new System.Drawing.Size(640, 80);
-            professionalLabel.AutoSize = false;
-            contentPanel.Controls.Add(professionalLabel);
-
-            // Encouragement message
-            Label encouragementLabel = new Label();
-            encouragementLabel.Text = "Remember: Seeking help is a sign of strength, not weakness. " +
-                                     "You are not alone, and support is available.";
-            encouragementLabel.Font = new System.Drawing.Font("Arial", 10, System.Drawing.FontStyle.Italic);
-            encouragementLabel.ForeColor = System.Drawing.Color.DarkGreen;
-            encouragementLabel.Location = new System.Drawing.Point(0, 370);
-            encouragementLabel.Size = new System.Drawing.Size(640, 60);
-            encouragementLabel.AutoSize = false;
-            contentPanel.Controls.Add(encouragementLabel);
-
-            // Close button
-            Button closeButton = new Button();
-            closeButton.Name = "CloseButton";
-            closeButton.Text = "返回到列表";
-            closeButton.Location = new System.Drawing.Point(280, 600);
-            closeButton.Size = new System.Drawing.Size(140, 35);
-            closeButton.Font = new System.Drawing.Font("Arial", 11);
-            closeButton.BackColor = System.Drawing.Color.FromArgb(70, 130, 180); // Steel blue
-            closeButton.ForeColor = System.Drawing.Color.White;
-            closeButton.Click += CloseButton_Click;
-            this.Controls.Add(closeButton);
-
-            this.ResumeLayout(false);
-        }
-
-        private void CloseButton_Click(object sender, EventArgs e)
-        {
-            // Close the warning view and return to diary list
-            if (_mainWindow != null)
+            card.Controls.Add(new Label
             {
-                _mainWindow.NavigateToDiaryList(_currentUser);
-            }
-            else
+                Text = "高风险情绪提醒",
+                Font = UiTheme.TitleFont(26),
+                ForeColor = UiTheme.Danger,
+                Location = new Point(34, 28),
+                Size = new Size(300, 40)
+            });
+
+            card.Controls.Add(new Label
             {
-                this.Close();
-            }
+                Text = $"系统检测到本篇日记情绪指数为 {_diary.EmotionIndex}/100，已达到高风险阈值。",
+                Font = UiTheme.BodyFont(12, FontStyle.Bold),
+                ForeColor = UiTheme.TextPrimary,
+                Location = new Point(34, 84),
+                Size = new Size(620, 26)
+            });
+
+            TextBox warningBox = new TextBox
+            {
+                Location = new Point(34, 130),
+                Size = new Size(792, 310),
+                Multiline = true,
+                ReadOnly = true,
+                ScrollBars = ScrollBars.Vertical,
+                Text = new EmotionDetectionService().GetRiskWarning(_diary.EmotionIndex)
+            };
+            UiTheme.StyleTextBox(warningBox, true);
+            card.Controls.Add(warningBox);
+
+            Label footer = new Label
+            {
+                Text = "如果你有持续的自伤、自杀念头，请优先联系身边可信赖的人，并尽快寻求线下专业帮助。",
+                Font = UiTheme.BodyFont(10.5f, FontStyle.Bold),
+                ForeColor = UiTheme.Danger,
+                Location = new Point(34, 458),
+                Size = new Size(720, 24)
+            };
+            card.Controls.Add(footer);
+
+            Button backButton = new Button { Text = "返回列表", Location = new Point(706, 496), Size = new Size(120, 40) };
+            UiTheme.StylePrimaryButton(backButton);
+            backButton.Click += (s, e) =>
+            {
+                if (_mainWindow != null)
+                {
+                    _mainWindow.NavigateToDiaryList(_currentUser);
+                }
+                else
+                {
+                    Close();
+                }
+            };
+            card.Controls.Add(backButton);
+
+            ResumeLayout(false);
         }
     }
 }

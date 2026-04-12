@@ -2,110 +2,44 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using AnonymousEmotionDiary.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AnonymousEmotionDiary.Services
 {
     /// <summary>
-    /// 用于检测并分析日记内容情绪的服务。
-    /// 结合关键词提取与 LLM API 分析生成情绪指数。
+    /// Emotion analysis service with keyword scoring and optional remote LLM enhancement.
     /// </summary>
     public class EmotionDetectionService : IEmotionDetectionService
     {
         private readonly LogService _logService;
         private readonly HttpClient _httpClient;
 
-         // 情绪关键词映射：关键词 -> 情绪强度（0-100）
         private static readonly Dictionary<string, int> NegativeEmotionKeywords = new Dictionary<string, int>
         {
-            // 悲伤与抑郁
-            { "难过", 75 },
-            { "伤心", 75 },
-            { "悲伤", 80 },
-            { "抑郁", 85 },
-            { "绝望", 90 },
-            { "失望", 70 },
-            { "沮丧", 75 },
-            { "郁闷", 70 },
-            
-            // 焦虑与担忧
-            { "焦虑", 75 },
-            { "担心", 60 },
-            { "害怕", 75 },
-            { "恐惧", 80 },
-            { "紧张", 65 },
-            { "不安", 70 },
-            { "惶恐", 80 },
-            
-            // 愤怒与挫败
-            { "生气", 75 },
-            { "愤怒", 80 },
-            { "恼怒", 75 },
-            { "烦躁", 70 },
-            { "气愤", 80 },
-            { "怨恨", 85 },
-            { "厌烦", 65 },
-            
-            // 孤独与疏离
-            { "孤独", 75 },
-            { "寂寞", 70 },
-            { "孤单", 70 },
-            { "被遗弃", 85 },
-            { "无人理解", 80 },
-            
-            // 压力与紧张
-            { "压力", 70 },
-            { "压抑", 75 },
-            { "疲惫", 65 },
-            { "疲劳", 60 },
-            { "累", 55 },
-            
-            // 自伤与自杀意念
-            { "自杀", 95 },
-            { "自伤", 90 },
-            { "死亡", 85 },
-            { "活着没意义", 90 },
-            { "不想活", 90 },
-            { "想死", 90 }
+            { "难过", 78 }, { "伤心", 80 }, { "悲伤", 82 }, { "抑郁", 90 }, { "绝望", 95 },
+            { "失望", 70 }, { "崩溃", 92 }, { "糟糕", 78 }, { "糟糕透顶", 92 }, { "心情差", 82 },
+            { "心情太差", 88 }, { "痛苦", 88 }, { "压抑", 82 }, { "烦", 66 }, { "烦躁", 74 },
+            { "郁闷", 72 }, { "焦虑", 80 }, { "担心", 68 }, { "害怕", 76 }, { "恐惧", 86 },
+            { "紧张", 65 }, { "不安", 74 }, { "委屈", 72 }, { "生气", 76 }, { "愤怒", 84 },
+            { "孤独", 80 }, { "寂寞", 74 }, { "压力", 72 }, { "累", 60 }, { "疲惫", 66 },
+            { "失眠", 72 }, { "自残", 98 }, { "自杀", 100 }, { "想死", 100 }, { "不想活", 100 },
+            { "活着没意义", 100 }, { "sad", 74 }, { "upset", 72 }, { "angry", 80 }, { "hopeless", 94 }
         };
 
         private static readonly Dictionary<string, int> PositiveEmotionKeywords = new Dictionary<string, int>
         {
-            // 快乐与喜悦
-            { "开心", 20 },
-            { "高兴", 20 },
-            { "快乐", 15 },
-            { "喜悦", 15 },
-            { "兴奋", 25 },
-            { "欣喜", 20 },
-
-            // 满足与满意
-            { "满足", 25 },
-            { "满意", 25 },
-            { "舒适", 30 },
-            { "放松", 30 },
-            { "平静", 35 },
-            { "安心", 30 },
-            
-            // 希望与乐观
-            { "希望", 25 },
-            { "乐观", 20 },
-            { "期待", 25 },
-            { "憧憬", 20 },
-            
-            // 爱与连接感
-            { "爱", 20 },
-            { "喜欢", 25 },
-            { "感谢", 25 },
-            { "感恩", 20 },
-            { "温暖", 25 }
+            { "开心", 18 }, { "高兴", 18 }, { "快乐", 16 }, { "愉快", 18 }, { "喜悦", 16 },
+            { "幸福", 14 }, { "满足", 24 }, { "满意", 24 }, { "轻松", 28 }, { "放松", 28 },
+            { "平静", 30 }, { "安心", 28 }, { "温暖", 22 }, { "感恩", 20 }, { "感谢", 22 },
+            { "希望", 24 }, { "期待", 24 }, { "很好", 24 }, { "不错", 28 }, { "顺利", 24 },
+            { "天气很好", 20 }, { "郊游", 18 }, { "游玩", 18 }, { "旅行", 20 }, { "散步", 26 },
+            { "happy", 16 }, { "calm", 28 }, { "great", 18 }, { "good", 24 }, { "relaxed", 26 }
         };
-
-         /// <summary>
-        /// 初始化 EmotionDetectionService 类的新实例。
-        /// </summary>
 
         public EmotionDetectionService()
         {
@@ -114,242 +48,419 @@ namespace AnonymousEmotionDiary.Services
             {
                 Timeout = TimeSpan.FromMilliseconds(ConfigurationHelper.LLMAPITimeout)
             };
+
+            if (!string.IsNullOrWhiteSpace(ConfigurationHelper.LLMApiKey))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", ConfigurationHelper.LLMApiKey);
+            }
         }
 
-               /// <summary>
-        /// 分析给定内容中的情绪并返回情绪指数。
-        /// 结合关键词提取与 LLM API 分析。
-        /// 当 API 调用失败时回退为仅基于关键词的分析。
-        /// </summary>
-        /// <param name="content">要分析的日记内容。</param>
-        /// <returns>返回 0 到 100 之间的情绪指数值。</returns>
         public int AnalyzeEmotion(string content)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(content))
                 {
-                    _logService.LogDebug("Emotion analysis: content is empty, returning neutral emotion index 50");
                     return 50;
                 }
 
-                // 步骤 1：提取关键词并计算基于关键词的情绪指数
-                int keywordEmotionIndex = ExtractKeywords(content);
-                _logService.LogDebug($"Emotion analysis: keyword-based emotion index = {keywordEmotionIndex}");
+                KeywordAnalysisResult keywordResult = AnalyzeKeywords(content);
+                int llmEmotionIndex = CallLLMForSingleEntryAsync(content).GetAwaiter().GetResult();
 
-                // 步骤 2：尝试调用 LLM API 进行更深入的分析
-                int llmEmotionIndex = CallLLMAPI(content).Result;
+                int finalIndex = llmEmotionIndex >= 0
+                    ? Clamp((int)Math.Round(keywordResult.EmotionIndex * 0.4 + llmEmotionIndex * 0.6))
+                    : keywordResult.EmotionIndex;
 
-                if (llmEmotionIndex >= 0)
-                {
-                    // 成功获取 LLM 结果，与关键词分析进行融合
-                    // 权重：关键词 40%，LLM 60%
-                    int combinedIndex = (int)Math.Round(keywordEmotionIndex * 0.4 + llmEmotionIndex * 0.6);
-                    combinedIndex = Math.Max(0, Math.Min(100, combinedIndex)); // Clamp to 0-100
-                    
-                    _logService.LogEmotionAnalysis(
-                        diaryId: 0,
-                        emotionIndex: combinedIndex,
-                        analysisTime: DateTime.Now,
-                        modelVersion: "keyword+llm"
-                    );
-                    
-                    return combinedIndex;
-                }
-                else
-                {
-                    // LLM API 调用失败，使用仅关键词分析
-                    _logService.LogDebug("Emotion analysis: LLM API failed, using keyword-only analysis");
-                    _logService.LogEmotionAnalysis(
-                        diaryId: 0,
-                        emotionIndex: keywordEmotionIndex,
-                        analysisTime: DateTime.Now,
-                        modelVersion: "keyword-only"
-                    );
-                    
-                    return keywordEmotionIndex;
-                }
+                _logService.LogDebug(
+                    $"Emotion analysis result: keyword={keywordResult.EmotionIndex}, llm={llmEmotionIndex}, final={finalIndex}, matched=[{string.Join(", ", keywordResult.MatchedKeywords)}]");
+                _logService.LogEmotionAnalysis(0, finalIndex, DateTime.Now, llmEmotionIndex >= 0 ? "keyword+llm" : "keyword-only");
+
+                return finalIndex;
             }
             catch (Exception ex)
             {
-                _logService.LogError("Error during emotion analysis", ex);
-                // Return neutral emotion index on error
+                _logService.LogError("Error during single diary emotion analysis.", ex);
                 return 50;
             }
         }
 
-                /// <summary>
-        /// 从内容中提取情绪关键词，并基于关键词计算情绪指数。
-        /// </summary>
-        /// <param name="content">要分析的日记内容。</param>
-        /// <returns>基于关键词分析得到的情绪指数（0-100）。</returns>
+        public UserEmotionProfile AnalyzeUserEmotionProfile(User user, IEnumerable<Diary> diaries)
+        {
+            List<Diary> diaryList = diaries?.OrderByDescending(d => d.CreatedAt).ToList() ?? new List<Diary>();
+            UserEmotionProfile profile = new UserEmotionProfile
+            {
+                UserId = user?.UserId ?? 0,
+                Username = user?.Username ?? "未知用户",
+                ContactInfo = user?.ContactInfo ?? string.Empty,
+                DiaryCount = diaryList.Count,
+                LastDiaryAt = diaryList.FirstOrDefault()?.CreatedAt
+            };
+
+            if (diaryList.Count == 0)
+            {
+                profile.AverageEmotionIndex = 50;
+                profile.LatestEmotionIndex = 50;
+                profile.OverallEmotionIndex = 50;
+                profile.RiskLevel = "低";
+                profile.Summary = "该用户暂未写入日记，暂无可分析的情绪数据。";
+                profile.SuggestedAction = "建议提醒用户持续记录，以便形成趋势分析。";
+                return profile;
+            }
+
+            profile.HighRiskCount = diaryList.Count(d => d.IsHighRisk);
+            profile.LatestEmotionIndex = diaryList.First().EmotionIndex;
+            profile.AverageEmotionIndex = Clamp((int)Math.Round(diaryList.Average(d => d.EmotionIndex)));
+
+            int heuristicIndex = BuildHeuristicProfileIndex(diaryList);
+            LlmUserProfileResult llmResult = CallLLMForUserProfileAsync(user, diaryList).GetAwaiter().GetResult();
+
+            profile.OverallEmotionIndex = llmResult != null ? Clamp(llmResult.OverallEmotionIndex) : heuristicIndex;
+            profile.RiskLevel = !string.IsNullOrWhiteSpace(llmResult?.RiskLevel)
+                ? llmResult.RiskLevel
+                : ResolveRiskLevel(profile.OverallEmotionIndex, profile.HighRiskCount);
+            profile.Summary = !string.IsNullOrWhiteSpace(llmResult?.Summary)
+                ? llmResult.Summary
+                : BuildFallbackSummary(profile);
+            profile.SuggestedAction = !string.IsNullOrWhiteSpace(llmResult?.SuggestedAction)
+                ? llmResult.SuggestedAction
+                : BuildFallbackSuggestion(profile);
+
+            _logService.LogEmotionAnalysis(0, profile.OverallEmotionIndex, DateTime.Now, llmResult != null ? "user-profile-llm" : "user-profile-heuristic");
+            return profile;
+        }
+
         public int ExtractKeywords(string content)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(content))
-                {
-                    return 50; // Neutral
-                }
-
-                string lowerContent = content.ToLower();
-                List<int> foundEmotionValues = new List<int>();
-
-                // Search for negative emotion keywords
-                foreach (var keyword in NegativeEmotionKeywords.Keys)
-                {
-                    if (lowerContent.Contains(keyword.ToLower()))
-                    {
-                        foundEmotionValues.Add(NegativeEmotionKeywords[keyword]);
-                    }
-                }
-
-                // Search for positive emotion keywords
-                foreach (var keyword in PositiveEmotionKeywords.Keys)
-                {
-                    if (lowerContent.Contains(keyword.ToLower()))
-                    {
-                        foundEmotionValues.Add(PositiveEmotionKeywords[keyword]);
-                    }
-                }
-
-                // Calculate average emotion index from found keywords
-                if (foundEmotionValues.Count > 0)
-                {
-                    int averageIndex = (int)Math.Round(foundEmotionValues.Average());
-                    _logService.LogDebug($"Keyword extraction: found {foundEmotionValues.Count} emotion keywords, average index = {averageIndex}");
-                    return Math.Max(0, Math.Min(100, averageIndex));
-                }
-
-                // No keywords found, return neutral
-                _logService.LogDebug("Keyword extraction: no emotion keywords found, returning neutral index 50");
-                return 50;
-            }
-            catch (Exception ex)
-            {
-                _logService.LogError("Error during keyword extraction", ex);
-                return 50;
-            }
+            return AnalyzeKeywords(content).EmotionIndex;
         }
 
-               /// <summary>
-        /// 调用 LLM API 对内容进行深度情绪分析。
-        /// 若 API 调用失败则返回 -1。
-        /// </summary>
-        /// <param name="content">要分析的日记内容。</param>
-        /// <returns>LLM 分析得到的情绪指数（0-100）；若 API 调用失败则返回 -1。</returns>
-        public async Task<int> CallLLMAPI(string content)
-        {
-            try
-            {
-                string apiEndpoint = ConfigurationHelper.LLMAPIEndpoint;
-                string modelName = ConfigurationHelper.LLMAPIModel;
-
-                // Prepare the prompt for emotion analysis
-                string prompt = $@"Analyze the emotional tone of the following diary entry and provide an emotion index from 0 to 100, where 0 is very positive and 100 is very negative. 
-Only respond with a single number between 0 and 100.
-
-Diary entry:
-{content}
-
-Emotion index:";
-
-                // Create request payload
-                var requestPayload = new
-                {
-                    model = modelName,
-                    prompt = prompt,
-                    stream = false
-                };
-
-                string jsonPayload = JsonConvert.SerializeObject(requestPayload);
-                var content_http = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-
-                _logService.LogDebug($"Calling LLM API at {apiEndpoint} with model {modelName}");
-
-                // Make the API call
-                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, content_http);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    _logService.LogDebug($"LLM API call failed with status code: {response.StatusCode}");
-                    return -1;
-                }
-
-                string responseContent = await response.Content.ReadAsStringAsync();
-                _logService.LogDebug($"LLM API response received: {responseContent.Substring(0, Math.Min(100, responseContent.Length))}...");
-
-                // Parse the response
-                dynamic responseObject = JsonConvert.DeserializeObject(responseContent);
-                string responseText = responseObject.response;
-
-                // Extract emotion index from response
-                if (int.TryParse(responseText.Trim(), out int emotionIndex))
-                {
-                    emotionIndex = Math.Max(0, Math.Min(100, emotionIndex)); // Clamp to 0-100
-                    _logService.LogDebug($"LLM API emotion index extracted: {emotionIndex}");
-                    return emotionIndex;
-                }
-
-                _logService.LogDebug($"Failed to parse emotion index from LLM response: {responseText}");
-                return -1;
-            }
-            catch (HttpRequestException ex)
-            {
-                _logService.LogDebug($"LLM API HTTP request failed: {ex.Message}");
-                return -1;
-            }
-            catch (TaskCanceledException ex)
-            {
-                _logService.LogDebug($"LLM API request timeout: {ex.Message}");
-                return -1;
-            }
-            catch (Exception ex)
-            {
-                _logService.LogError("Error calling LLM API", ex);
-                return -1;
-            }
-        }
-
-            /// <summary>
-        /// 判断情绪指数是否指示高风险情绪状态。
-        /// </summary>
-        /// <param name="emotionIndex">要检查的情绪指数。</param>
-        /// <returns>若情绪指数超过高风险阈值则返回 True，否则返回 False。</returns>
         public bool IsHighRisk(int emotionIndex)
         {
-            return emotionIndex > ConfigurationHelper.EmotionHighRiskThreshold;
+            return emotionIndex >= ConfigurationHelper.EmotionHighRiskThreshold;
         }
 
-             /// <summary>
-        /// 为高风险情绪生成风险提示信息。
-        /// 包含心理支持资源信息。
-        /// </summary>
-        /// <param name="emotionIndex">触发提示的情绪指数。</param>
-        /// <returns>包含支持资源的提示信息。</returns>
         public string GetRiskWarning(int emotionIndex)
         {
-            string warning = $@"⚠️ 情绪预警提示
+            return
+                $"情绪预警\n\n系统检测到当前情绪指数为 {emotionIndex}/100，已达到高风险阈值。\n\n" +
+                "如果你正在经历持续的压抑、绝望、自伤或轻生想法，请尽快联系家人、老师、辅导员或专业心理咨询机构。\n\n" +
+                "建议资源：\n" +
+                "1. 校园心理咨询中心或辅导员\n" +
+                "2. 当地医院心理科 / 精神卫生中心\n" +
+                "3. 可信赖的亲友，优先进行线下陪伴与陪诊";
+        }
 
-我们检测到您的日记内容反映出较为负面的情绪状态（情绪指数: {emotionIndex}/100）。
+        private KeywordAnalysisResult AnalyzeKeywords(string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                return new KeywordAnalysisResult(50, Array.Empty<string>());
+            }
 
-如果您正在经历困难或有任何心理健康方面的顾虑，请不要犹豫寻求帮助。以下是一些可用的心理援助资源：
+            string normalized = content.ToLowerInvariant();
+            List<int> scores = new List<int>();
+            List<string> matched = new List<string>();
 
-📞 心理援助热线:
-- 全国心理援助热线: 400-161-9995
-- 生命热线: 400-821-1215
+            CollectMatches(normalized, NegativeEmotionKeywords, scores, matched);
+            CollectMatches(normalized, PositiveEmotionKeywords, scores, matched);
 
-💻 在线心理咨询:
-- 心理援助平台: https://www.xinli.com
-- 心理咨询服务: https://www.xlzx.cn
+            int emotionIndex = scores.Count == 0 ? 50 : Clamp((int)Math.Round(scores.Average()));
+            return new KeywordAnalysisResult(emotionIndex, matched);
+        }
 
-🏥 专业医疗机构:
-- 请联系当地医院心理科或精神卫生中心
-- 校内心理咨询中心（如适用）
+        private static void CollectMatches(string normalizedContent, Dictionary<string, int> source, List<int> scores, List<string> matched)
+        {
+            foreach (KeyValuePair<string, int> item in source)
+            {
+                if (normalizedContent.Contains(item.Key.ToLowerInvariant()))
+                {
+                    scores.Add(item.Value);
+                    matched.Add(item.Key);
+                }
+            }
+        }
 
-记住：寻求帮助是勇敢的表现，您不必独自承受。";
+        private async Task<int> CallLLMForSingleEntryAsync(string content)
+        {
+            try
+            {
+                string prompt =
+                    "Please rate the emotional tone of the diary entry on a 0-100 scale, where 0 is very positive and 100 is very negative. " +
+                    "Return only one integer.\n\n" +
+                    $"Diary Entry:\n{content}\n\nEmotion Index:";
 
-            return warning;
+                string responseText = await SendPromptAsync(prompt);
+                if (int.TryParse(responseText.Trim(), out int emotionIndex))
+                {
+                    return Clamp(emotionIndex);
+                }
+
+                _logService.LogDebug($"LLM single-entry analysis returned non-integer content: {responseText}");
+            }
+            catch (Exception ex)
+            {
+                _logService.LogDebug($"LLM single-entry analysis failed: {ex.Message}");
+            }
+
+            return -1;
+        }
+
+        private async Task<LlmUserProfileResult> CallLLMForUserProfileAsync(User user, List<Diary> diaries)
+        {
+            try
+            {
+                string history = BuildUserHistoryPrompt(diaries);
+                string prompt =
+                    "You are an emotion profiling assistant. Analyze the user's diary history and output strict JSON only.\n" +
+                    "Schema:\n" +
+                    "{\"overallEmotionIndex\":0,\"riskLevel\":\"low|medium|high|critical\",\"summary\":\"...\",\"suggestedAction\":\"...\"}\n" +
+                    "Rules: overallEmotionIndex must be 0-100; summary under 80 Chinese characters or 160 English chars; suggestedAction under 60 Chinese chars or 120 English chars.\n\n" +
+                    $"Username: {user?.Username}\n" +
+                    $"Contact: {(string.IsNullOrWhiteSpace(user?.ContactInfo) ? "N/A" : user.ContactInfo)}\n" +
+                    $"Diary History:\n{history}";
+
+                string responseText = await SendPromptAsync(prompt);
+                string json = ExtractJsonObject(responseText);
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    _logService.LogDebug($"LLM user-profile analysis returned invalid JSON: {responseText}");
+                    return null;
+                }
+
+                JObject parsed = JObject.Parse(json);
+                return new LlmUserProfileResult
+                {
+                    OverallEmotionIndex = Clamp(parsed.Value<int?>("overallEmotionIndex") ?? 50),
+                    RiskLevel = NormalizeRiskLevel(parsed.Value<string>("riskLevel")),
+                    Summary = parsed.Value<string>("summary") ?? string.Empty,
+                    SuggestedAction = parsed.Value<string>("suggestedAction") ?? string.Empty
+                };
+            }
+            catch (Exception ex)
+            {
+                _logService.LogDebug($"LLM user-profile analysis failed: {ex.Message}");
+                return null;
+            }
+        }
+
+        private async Task<string> SendPromptAsync(string prompt)
+        {
+            if (IsSiliconFlow())
+            {
+                return await SendSiliconFlowPromptAsync(prompt);
+            }
+
+            var requestPayload = new
+            {
+                model = ConfigurationHelper.LLMAPIModel,
+                prompt,
+                stream = false
+            };
+
+            string payload = JsonConvert.SerializeObject(requestPayload);
+            using StringContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
+            using HttpResponseMessage response = await _httpClient.PostAsync(ConfigurationHelper.LLMAPIEndpoint, httpContent);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException($"LLM API returned status {(int)response.StatusCode}.");
+            }
+
+            string rawResponse = await response.Content.ReadAsStringAsync();
+            JObject parsed = JObject.Parse(rawResponse);
+            return parsed.Value<string>("response") ?? string.Empty;
+        }
+
+        private async Task<string> SendSiliconFlowPromptAsync(string prompt)
+        {
+            string endpoint = string.IsNullOrWhiteSpace(ConfigurationHelper.LLMAPIEndpoint)
+                ? ConfigurationHelper.LLMBaseUrl.TrimEnd('/') + "/chat/completions"
+                : ConfigurationHelper.LLMAPIEndpoint;
+
+            var requestPayload = new
+            {
+                model = ConfigurationHelper.LLMAPIModel,
+                stream = false,
+                temperature = 0.2,
+                messages = new object[]
+                {
+                    new
+                    {
+                        role = "system",
+                        content = "You are a precise assistant that must follow output format strictly."
+                    },
+                    new
+                    {
+                        role = "user",
+                        content = prompt
+                    }
+                }
+            };
+
+            string payload = JsonConvert.SerializeObject(requestPayload);
+            using StringContent httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
+            using HttpResponseMessage response = await _httpClient.PostAsync(endpoint, httpContent);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string errorText = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"SiliconFlow API returned status {(int)response.StatusCode}: {errorText}");
+            }
+
+            string rawResponse = await response.Content.ReadAsStringAsync();
+            JObject parsed = JObject.Parse(rawResponse);
+            return parsed["choices"]?.FirstOrDefault()?["message"]?["content"]?.ToString() ?? string.Empty;
+        }
+
+        private static bool IsSiliconFlow()
+        {
+            return string.Equals(ConfigurationHelper.LLMProvider, "SiliconFlow", StringComparison.OrdinalIgnoreCase)
+                || ConfigurationHelper.LLMAPIEndpoint.Contains("siliconflow.cn", StringComparison.OrdinalIgnoreCase)
+                || ConfigurationHelper.LLMBaseUrl.Contains("siliconflow.cn", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string ExtractJsonObject(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return string.Empty;
+            }
+
+            int start = text.IndexOf('{');
+            int end = text.LastIndexOf('}');
+
+            if (start < 0 || end <= start)
+            {
+                return string.Empty;
+            }
+
+            return text.Substring(start, end - start + 1);
+        }
+
+        private static int BuildHeuristicProfileIndex(List<Diary> diaries)
+        {
+            int latest = diaries.First().EmotionIndex;
+            int average = Clamp((int)Math.Round(diaries.Average(d => d.EmotionIndex)));
+            int highRiskBoost = Math.Min(15, diaries.Count(d => d.IsHighRisk) * 4);
+            return Clamp((int)Math.Round(average * 0.55 + latest * 0.35 + highRiskBoost));
+        }
+
+        private static string BuildUserHistoryPrompt(List<Diary> diaries)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine($"Total Diaries: {diaries.Count}");
+            builder.AppendLine($"Average Emotion Index: {Clamp((int)Math.Round(diaries.Average(d => d.EmotionIndex)))}");
+            builder.AppendLine($"High Risk Diaries: {diaries.Count(d => d.IsHighRisk)}");
+
+            int totalLength = builder.Length;
+            foreach (Diary diary in diaries)
+            {
+                string preview = diary.Content.Length > 240 ? diary.Content.Substring(0, 240) + "..." : diary.Content;
+                string line = $"[{diary.CreatedAt:yyyy-MM-dd HH:mm}] emotion={diary.EmotionIndex}, highRisk={diary.IsHighRisk}, content={preview}";
+
+                if (totalLength + line.Length > ConfigurationHelper.LLMUserProfileMaxChars)
+                {
+                    builder.AppendLine("...remaining diary samples omitted due to prompt length limit.");
+                    break;
+                }
+
+                builder.AppendLine(line);
+                totalLength += line.Length;
+            }
+
+            return builder.ToString();
+        }
+
+        private static string NormalizeRiskLevel(string riskLevel)
+        {
+            if (string.IsNullOrWhiteSpace(riskLevel))
+            {
+                return string.Empty;
+            }
+
+            string normalized = riskLevel.Trim().ToLowerInvariant();
+            return normalized switch
+            {
+                "low" => "低",
+                "medium" => "中",
+                "high" => "高",
+                "critical" => "极高",
+                "低" => "低",
+                "中" => "中",
+                "高" => "高",
+                "极高" => "极高",
+                _ => riskLevel
+            };
+        }
+
+        private static string ResolveRiskLevel(int overallEmotionIndex, int highRiskCount)
+        {
+            if (overallEmotionIndex >= 85 || highRiskCount >= 3)
+            {
+                return "极高";
+            }
+
+            if (overallEmotionIndex >= 70 || highRiskCount >= 1)
+            {
+                return "高";
+            }
+
+            if (overallEmotionIndex >= 55)
+            {
+                return "中";
+            }
+
+            return "低";
+        }
+
+        private static string BuildFallbackSummary(UserEmotionProfile profile)
+        {
+            return $"共分析 {profile.DiaryCount} 篇日记，平均情绪指数 {profile.AverageEmotionIndex}，最近一次为 {profile.LatestEmotionIndex}，综合风险等级为 {profile.RiskLevel}。";
+        }
+
+        private static string BuildFallbackSuggestion(UserEmotionProfile profile)
+        {
+            if (profile.RiskLevel == "极高" || profile.RiskLevel == "高")
+            {
+                return "建议管理员优先联系并确认用户当前状态，必要时联动线下支持资源。";
+            }
+
+            if (profile.RiskLevel == "中")
+            {
+                return "建议持续观察近期日记趋势，并鼓励用户保持稳定记录。";
+            }
+
+            return "当前总体情绪较稳定，可继续通过日记追踪变化。";
+        }
+
+        private static int Clamp(int value)
+        {
+            return Math.Max(ConfigurationHelper.EmotionIndexMin, Math.Min(ConfigurationHelper.EmotionIndexMax, value));
+        }
+
+        private sealed class KeywordAnalysisResult
+        {
+            public KeywordAnalysisResult(int emotionIndex, IReadOnlyList<string> matchedKeywords)
+            {
+                EmotionIndex = emotionIndex;
+                MatchedKeywords = matchedKeywords;
+            }
+
+            public int EmotionIndex { get; }
+
+            public IReadOnlyList<string> MatchedKeywords { get; }
+        }
+
+        private sealed class LlmUserProfileResult
+        {
+            public int OverallEmotionIndex { get; set; }
+
+            public string RiskLevel { get; set; }
+
+            public string Summary { get; set; }
+
+            public string SuggestedAction { get; set; }
         }
     }
 }

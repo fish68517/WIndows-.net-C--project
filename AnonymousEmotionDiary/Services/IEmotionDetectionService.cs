@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using AnonymousEmotionDiary.Models;
+
 namespace AnonymousEmotionDiary.Services
 {
     /// <summary>
@@ -12,6 +15,11 @@ namespace AnonymousEmotionDiary.Services
         /// <param name="content">The diary content to analyze.</param>
         /// <returns>An emotion index value between 0 and 100, where higher values indicate more negative emotions.</returns>
         int AnalyzeEmotion(string content);
+
+        /// <summary>
+        /// Aggregates a user's diary history and returns a user-level emotion profile.
+        /// </summary>
+        UserEmotionProfile AnalyzeUserEmotionProfile(User user, IEnumerable<Diary> diaries);
 
         /// <summary>
         /// Determines if an emotion index indicates high-risk emotional state.

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
 using AnonymousEmotionDiary.Models;
 
@@ -15,13 +16,15 @@ namespace AnonymousEmotionDiary.DAOs
                 using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
-                        INSERT INTO Users (Username, PasswordHash, CreatedAt, LastLoginAt)
-                        VALUES (@Username, @PasswordHash, @CreatedAt, @LastLoginAt);";
+                        INSERT INTO Users (Username, PasswordHash, Role, ContactInfo, CreatedAt, LastLoginAt)
+                        VALUES (@Username, @PasswordHash, @Role, @ContactInfo, @CreatedAt, @LastLoginAt);";
 
                     using (SQLiteCommand command = new SQLiteCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@Username", user.Username);
                         command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
+                        command.Parameters.AddWithValue("@Role", string.IsNullOrWhiteSpace(user.Role) ? "User" : user.Role);
+                        command.Parameters.AddWithValue("@ContactInfo", string.IsNullOrWhiteSpace(user.ContactInfo) ? (object)DBNull.Value : user.ContactInfo);
                         command.Parameters.AddWithValue("@CreatedAt", user.CreatedAt);
                         command.Parameters.AddWithValue("@LastLoginAt", user.LastLoginAt ?? (object)DBNull.Value);
 
@@ -44,7 +47,7 @@ namespace AnonymousEmotionDiary.DAOs
                 using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
-                        SELECT UserId, Username, PasswordHash, CreatedAt, LastLoginAt
+                        SELECT UserId, Username, PasswordHash, Role, ContactInfo, CreatedAt, LastLoginAt
                         FROM Users
                         WHERE Username = @Username;";
 
@@ -61,6 +64,8 @@ namespace AnonymousEmotionDiary.DAOs
                                     UserId = Convert.ToInt32(reader["UserId"]),
                                     Username = reader["Username"].ToString(),
                                     PasswordHash = reader["PasswordHash"].ToString(),
+                                    Role = reader["Role"]?.ToString() ?? "User",
+                                    ContactInfo = reader["ContactInfo"] != DBNull.Value ? reader["ContactInfo"].ToString() : string.Empty,
                                     CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
                                     LastLoginAt = reader["LastLoginAt"] != DBNull.Value ? Convert.ToDateTime(reader["LastLoginAt"]) : (DateTime?)null
                                 };
@@ -85,7 +90,7 @@ namespace AnonymousEmotionDiary.DAOs
                 using (SQLiteConnection connection = DatabaseManager.CreateConnection())
                 {
                     string query = @"
-                        SELECT UserId, Username, PasswordHash, CreatedAt, LastLoginAt
+                        SELECT UserId, Username, PasswordHash, Role, ContactInfo, CreatedAt, LastLoginAt
                         FROM Users
                         WHERE UserId = @UserId;";
 
@@ -102,6 +107,8 @@ namespace AnonymousEmotionDiary.DAOs
                                     UserId = Convert.ToInt32(reader["UserId"]),
                                     Username = reader["Username"].ToString(),
                                     PasswordHash = reader["PasswordHash"].ToString(),
+                                    Role = reader["Role"]?.ToString() ?? "User",
+                                    ContactInfo = reader["ContactInfo"] != DBNull.Value ? reader["ContactInfo"].ToString() : string.Empty,
                                     CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
                                     LastLoginAt = reader["LastLoginAt"] != DBNull.Value ? Convert.ToDateTime(reader["LastLoginAt"]) : (DateTime?)null
                                 };
@@ -145,6 +152,47 @@ namespace AnonymousEmotionDiary.DAOs
                 Console.WriteLine($"Error updating last login: {ex.Message}");
                 return false;
             }
+        }
+
+        public List<User> SelectAllRegularUsers()
+        {
+            List<User> users = new List<User>();
+
+            try
+            {
+                using (SQLiteConnection connection = DatabaseManager.CreateConnection())
+                {
+                    string query = @"
+                        SELECT UserId, Username, PasswordHash, Role, ContactInfo, CreatedAt, LastLoginAt
+                        FROM Users
+                        WHERE Role <> 'Admin'
+                        ORDER BY CreatedAt DESC;";
+
+                    using (SQLiteCommand command = new SQLiteCommand(query, connection))
+                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            users.Add(new User
+                            {
+                                UserId = Convert.ToInt32(reader["UserId"]),
+                                Username = reader["Username"].ToString(),
+                                PasswordHash = reader["PasswordHash"].ToString(),
+                                Role = reader["Role"]?.ToString() ?? "User",
+                                ContactInfo = reader["ContactInfo"] != DBNull.Value ? reader["ContactInfo"].ToString() : string.Empty,
+                                CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
+                                LastLoginAt = reader["LastLoginAt"] != DBNull.Value ? Convert.ToDateTime(reader["LastLoginAt"]) : (DateTime?)null
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving all users: {ex.Message}");
+            }
+
+            return users;
         }
     }
 }
