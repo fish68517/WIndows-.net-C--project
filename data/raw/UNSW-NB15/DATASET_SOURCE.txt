@@ -1,0 +1,8 @@
+﻿UNSW-NB15 dataset collection record
+CollectedAt=2026-06-05
+OfficialDatasetPage=https://research.unsw.edu.au/projects/unsw-nb15-dataset
+DownloadMirror=https://zenodo.org/records/3768048
+Reason=Official UNSW page points to SharePoint download that requires login in this environment; Zenodo mirror provides public direct downloads of the same named training/testing CSV files.
+Files:
+- UNSW_NB15_training-set.csv md5=b5a3168217dee84d94574e697130c8aa
+- UNSW_NB15_testing-set.csv md5=07a1566e74e89f4c970fd1dc3b5d554b

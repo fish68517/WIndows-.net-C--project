@@ -1,0 +1,6 @@
+﻿UNSW-NB15 demo subset generated from data/processed/UNSW-NB15.
+GeneratedAt=2026-06-05
+TrainingRows=3000 normal rows
+TestingRows=400 normal + 400 anomaly rows
+RealtimeRows=30 normal + 30 anomaly rows
+Purpose=Fast GUI classroom demonstration while keeping provenance from the public UNSW-NB15 dataset.

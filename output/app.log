@@ -1,0 +1,617 @@
+
+2026-06-05 16:32:18 [INFO] ============================================================
+2026-06-05 16:32:18 [INFO] program started
+2026-06-05 16:32:18 [INFO] program_path=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:32:18 [INFO] working_directory=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥
+2026-06-05 16:32:18 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:32:18 [INFO] argc=1
+2026-06-05 16:32:18 [INFO] argv[0]=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:32:18 [INFO] no command argument provided; starting gui
+2026-06-05 16:32:18 [INFO] gui window created
+2026-06-05 16:32:18 [INFO] gui message loop started
+2026-06-05 16:32:20 [INFO] gui window destroyed
+2026-06-05 16:32:20 [INFO] gui message loop stopped
+2026-06-05 16:32:20 [INFO] exit_code=0
+2026-06-05 16:32:20 [INFO] program stopped
+
+2026-06-05 16:32:21 [INFO] ============================================================
+2026-06-05 16:32:21 [INFO] program started
+2026-06-05 16:32:21 [INFO] program_path=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:32:21 [INFO] working_directory=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥
+2026-06-05 16:32:21 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:32:21 [INFO] argc=3
+2026-06-05 16:32:21 [INFO] argv[0]=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:32:21 [INFO] argv[1]=detect
+2026-06-05 16:32:21 [INFO] argv[2]=data/processed/UNSW-NB15-demo/realtime_sample.csv
+2026-06-05 16:32:21 [INFO] mode=detect csv=data/processed/UNSW-NB15-demo/realtime_sample.csv
+2026-06-05 16:32:21 [INFO] directory ready: model
+2026-06-05 16:32:21 [INFO] directory ready: output
+2026-06-05 16:32:21 [INFO] directory ready: build
+2026-06-05 16:32:21 [INFO] detect started csv=data/processed/UNSW-NB15-demo/realtime_sample.csv
+2026-06-05 16:32:21 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:32:21 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:32:21 [INFO] detect csv loaded rows=60 features=16 has_label=1
+2026-06-05 16:32:21 [INFO] detection completed rows=60 alarms=46 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:32:21 [INFO] exit_code=0
+2026-06-05 16:32:21 [INFO] program stopped
+
+2026-06-05 16:33:28 [INFO] ============================================================
+2026-06-05 16:33:28 [INFO] program started
+2026-06-05 16:33:28 [INFO] program_path=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:33:28 [INFO] working_directory=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥
+2026-06-05 16:33:28 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:33:28 [INFO] argc=1
+2026-06-05 16:33:28 [INFO] argv[0]=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:33:28 [INFO] no command argument provided; starting gui
+2026-06-05 16:33:28 [INFO] gui window created
+2026-06-05 16:33:28 [INFO] gui message loop started
+2026-06-05 16:34:02 [INFO] data directory selected: data/raw/UNSW-NB15
+2026-06-05 16:34:06 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:34:06 [INFO] directory ready: model
+2026-06-05 16:34:06 [INFO] directory ready: output
+2026-06-05 16:34:06 [INFO] directory ready: build
+2026-06-05 16:34:06 [INFO] train started csv=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:34:06 [ERROR] failed to load train csv: data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:34:06 [INFO] gui train action exit_code=1 path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:34:10 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:34:10 [INFO] directory ready: model
+2026-06-05 16:34:10 [INFO] directory ready: output
+2026-06-05 16:34:10 [INFO] directory ready: build
+2026-06-05 16:34:10 [INFO] test started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:34:10 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:34:10 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:34:10 [ERROR] failed to load test csv: data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:34:10 [INFO] gui test action exit_code=1 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:34:12 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:34:12 [INFO] directory ready: model
+2026-06-05 16:34:12 [INFO] directory ready: output
+2026-06-05 16:34:12 [INFO] directory ready: build
+2026-06-05 16:34:12 [INFO] detect started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:34:12 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:34:12 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:34:12 [ERROR] failed to load detect csv: data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:34:12 [INFO] chart loaded points=60 threshold=0.0086048788
+2026-06-05 16:34:12 [INFO] gui detect action exit_code=1 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:34:16 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:34:16 [INFO] directory ready: model
+2026-06-05 16:34:16 [INFO] directory ready: output
+2026-06-05 16:34:16 [INFO] directory ready: build
+2026-06-05 16:34:16 [INFO] detect started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:34:16 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:34:16 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:34:16 [ERROR] failed to load detect csv: data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:34:17 [INFO] chart loaded points=60 threshold=0.0086048788
+2026-06-05 16:34:17 [INFO] gui detect action exit_code=1 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:34:58 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:34:58 [INFO] directory ready: model
+2026-06-05 16:34:58 [INFO] directory ready: output
+2026-06-05 16:34:58 [INFO] directory ready: build
+2026-06-05 16:34:58 [INFO] train started csv=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:34:58 [ERROR] failed to load train csv: data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:34:59 [INFO] gui train action exit_code=1 path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:35:20 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:35:20 [INFO] directory ready: model
+2026-06-05 16:35:20 [INFO] directory ready: output
+2026-06-05 16:35:20 [INFO] directory ready: build
+2026-06-05 16:35:20 [INFO] test started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:35:20 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:35:20 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:35:20 [ERROR] failed to load test csv: data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:35:20 [INFO] gui test action exit_code=1 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:35:24 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:35:24 [INFO] directory ready: model
+2026-06-05 16:35:24 [INFO] directory ready: output
+2026-06-05 16:35:24 [INFO] directory ready: build
+2026-06-05 16:35:24 [INFO] detect started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:35:24 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:35:24 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:35:24 [ERROR] failed to load detect csv: data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:35:24 [INFO] chart loaded points=60 threshold=0.0086048788
+2026-06-05 16:35:24 [INFO] gui detect action exit_code=1 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:35:29 [INFO] gui window destroyed
+2026-06-05 16:35:29 [INFO] gui message loop stopped
+2026-06-05 16:35:29 [INFO] exit_code=0
+2026-06-05 16:35:29 [INFO] program stopped
+
+2026-06-05 16:36:20 [INFO] ============================================================
+2026-06-05 16:36:20 [INFO] program started
+2026-06-05 16:36:20 [INFO] program_path=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:36:20 [INFO] working_directory=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥
+2026-06-05 16:36:20 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:36:20 [INFO] argc=1
+2026-06-05 16:36:20 [INFO] argv[0]=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:36:20 [INFO] no command argument provided; starting gui
+2026-06-05 16:36:20 [INFO] gui window created
+2026-06-05 16:36:20 [INFO] gui message loop started
+2026-06-05 16:36:24 [INFO] gui action started data_dir=data/processed/UNSW-NB15-demo
+2026-06-05 16:36:24 [INFO] directory ready: model
+2026-06-05 16:36:24 [INFO] directory ready: output
+2026-06-05 16:36:24 [INFO] directory ready: build
+2026-06-05 16:36:24 [INFO] train started csv=data/processed/UNSW-NB15-demo/UNSW_NB15_training-set.csv
+2026-06-05 16:36:24 [INFO] train csv loaded rows=3000 features=16 has_label=1
+2026-06-05 16:36:24 [INFO] normalizer saved: model/normalize_params.txt
+2026-06-05 16:36:24 [INFO] threshold percentile=0.95 threshold=0.0086048788
+2026-06-05 16:36:24 [INFO] train completed model=model/autoencoder_model.bin normalizer=model/normalize_params.txt train_log=output/train_log.txt
+2026-06-05 16:36:24 [INFO] gui train action exit_code=0 path=data/processed/UNSW-NB15-demo/UNSW_NB15_training-set.csv
+2026-06-05 16:36:50 [INFO] gui action started data_dir=data/processed/UNSW-NB15-demo
+2026-06-05 16:36:50 [INFO] directory ready: model
+2026-06-05 16:36:50 [INFO] directory ready: output
+2026-06-05 16:36:50 [INFO] directory ready: build
+2026-06-05 16:36:50 [INFO] test started csv=data/processed/UNSW-NB15-demo/UNSW_NB15_testing-set.csv
+2026-06-05 16:36:50 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:36:50 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:36:50 [INFO] test csv loaded rows=800 features=16 has_label=1
+2026-06-05 16:36:50 [INFO] detection completed rows=800 alarms=566 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:36:50 [INFO] metrics TP=326 TN=160 FP=240 FN=74
+2026-06-05 16:36:50 [INFO] gui test action exit_code=0 path=data/processed/UNSW-NB15-demo/UNSW_NB15_testing-set.csv
+2026-06-05 16:36:51 [INFO] gui action started data_dir=data/processed/UNSW-NB15-demo
+2026-06-05 16:36:51 [INFO] directory ready: model
+2026-06-05 16:36:51 [INFO] directory ready: output
+2026-06-05 16:36:51 [INFO] directory ready: build
+2026-06-05 16:36:51 [INFO] detect started csv=data/processed/UNSW-NB15-demo/realtime_sample.csv
+2026-06-05 16:36:51 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:36:51 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:36:51 [INFO] detect csv loaded rows=60 features=16 has_label=1
+2026-06-05 16:36:51 [INFO] detection completed rows=60 alarms=46 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:36:51 [INFO] chart loaded points=60 threshold=0.0086048788
+2026-06-05 16:36:51 [INFO] gui detect action exit_code=0 path=data/processed/UNSW-NB15-demo/realtime_sample.csv
+2026-06-05 16:37:38 [INFO] data directory selected: data/raw/UNSW-NB15
+2026-06-05 16:37:44 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:37:44 [INFO] directory ready: model
+2026-06-05 16:37:44 [INFO] directory ready: output
+2026-06-05 16:37:44 [INFO] directory ready: build
+2026-06-05 16:37:44 [INFO] train started csv=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:37:44 [ERROR] failed to load train csv: data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:37:44 [INFO] gui train action exit_code=1 path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:38:19 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:38:19 [INFO] directory ready: model
+2026-06-05 16:38:19 [INFO] directory ready: output
+2026-06-05 16:38:19 [INFO] directory ready: build
+2026-06-05 16:38:19 [INFO] train started csv=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:38:19 [ERROR] failed to load train csv: data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:38:19 [INFO] gui train action exit_code=1 path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:38:21 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:38:21 [INFO] directory ready: model
+2026-06-05 16:38:21 [INFO] directory ready: output
+2026-06-05 16:38:21 [INFO] directory ready: build
+2026-06-05 16:38:21 [INFO] test started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:38:21 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:38:21 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:38:21 [ERROR] failed to load test csv: data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:38:21 [INFO] gui test action exit_code=1 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:38:22 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:38:22 [INFO] directory ready: model
+2026-06-05 16:38:22 [INFO] directory ready: output
+2026-06-05 16:38:22 [INFO] directory ready: build
+2026-06-05 16:38:22 [INFO] detect started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:38:22 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:38:22 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:38:22 [ERROR] failed to load detect csv: data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:38:22 [INFO] chart loaded points=60 threshold=0.0086048788
+2026-06-05 16:38:22 [INFO] gui detect action exit_code=1 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:39:19 [INFO] gui window destroyed
+2026-06-05 16:39:19 [INFO] gui message loop stopped
+2026-06-05 16:39:19 [INFO] exit_code=0
+2026-06-05 16:39:19 [INFO] program stopped
+
+2026-06-05 16:39:26 [INFO] ============================================================
+2026-06-05 16:39:26 [INFO] program started
+2026-06-05 16:39:26 [INFO] program_path=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:39:26 [INFO] working_directory=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥
+2026-06-05 16:39:26 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:39:26 [INFO] argc=1
+2026-06-05 16:39:26 [INFO] argv[0]=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:39:26 [INFO] no command argument provided; starting gui
+2026-06-05 16:39:26 [INFO] gui window created
+2026-06-05 16:39:26 [INFO] gui message loop started
+2026-06-05 16:40:04 [INFO] gui action started data_dir=data/processed/UNSW-NB15-demo
+2026-06-05 16:40:04 [INFO] directory ready: model
+2026-06-05 16:40:04 [INFO] directory ready: output
+2026-06-05 16:40:04 [INFO] directory ready: build
+2026-06-05 16:40:04 [INFO] train started csv=data/processed/UNSW-NB15-demo/UNSW_NB15_training-set.csv
+2026-06-05 16:40:04 [INFO] train csv loaded rows=3000 features=16 has_label=1
+2026-06-05 16:40:04 [INFO] normalizer saved: model/normalize_params.txt
+2026-06-05 16:40:05 [INFO] threshold percentile=0.95 threshold=0.0086048788
+2026-06-05 16:40:05 [INFO] train completed model=model/autoencoder_model.bin normalizer=model/normalize_params.txt train_log=output/train_log.txt
+2026-06-05 16:40:05 [INFO] gui train action exit_code=0 path=data/processed/UNSW-NB15-demo/UNSW_NB15_training-set.csv
+2026-06-05 16:40:06 [INFO] gui action started data_dir=data/processed/UNSW-NB15-demo
+2026-06-05 16:40:06 [INFO] directory ready: model
+2026-06-05 16:40:06 [INFO] directory ready: output
+2026-06-05 16:40:06 [INFO] directory ready: build
+2026-06-05 16:40:06 [INFO] test started csv=data/processed/UNSW-NB15-demo/UNSW_NB15_testing-set.csv
+2026-06-05 16:40:06 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:40:06 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:40:07 [INFO] test csv loaded rows=800 features=16 has_label=1
+2026-06-05 16:40:07 [INFO] detection completed rows=800 alarms=566 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:40:07 [INFO] metrics TP=326 TN=160 FP=240 FN=74
+2026-06-05 16:40:07 [INFO] gui test action exit_code=0 path=data/processed/UNSW-NB15-demo/UNSW_NB15_testing-set.csv
+2026-06-05 16:40:09 [INFO] gui action started data_dir=data/processed/UNSW-NB15-demo
+2026-06-05 16:40:09 [INFO] directory ready: model
+2026-06-05 16:40:09 [INFO] directory ready: output
+2026-06-05 16:40:09 [INFO] directory ready: build
+2026-06-05 16:40:09 [INFO] detect started csv=data/processed/UNSW-NB15-demo/realtime_sample.csv
+2026-06-05 16:40:09 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:40:09 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:40:09 [INFO] detect csv loaded rows=60 features=16 has_label=1
+2026-06-05 16:40:09 [INFO] detection completed rows=60 alarms=46 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:40:09 [INFO] chart loaded points=60 threshold=0.0086048788
+2026-06-05 16:40:09 [INFO] gui detect action exit_code=0 path=data/processed/UNSW-NB15-demo/realtime_sample.csv
+
+2026-06-05 16:42:50 [INFO] ============================================================
+2026-06-05 16:42:50 [INFO] program started
+2026-06-05 16:42:50 [INFO] program_path=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:42:50 [INFO] working_directory=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥
+2026-06-05 16:42:50 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:42:50 [INFO] argc=3
+2026-06-05 16:42:50 [INFO] argv[0]=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:42:50 [INFO] argv[1]=train
+2026-06-05 16:42:50 [INFO] argv[2]=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:42:50 [INFO] mode=train csv=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:42:50 [INFO] directory ready: model
+2026-06-05 16:42:50 [INFO] directory ready: output
+2026-06-05 16:42:50 [INFO] directory ready: build
+2026-06-05 16:42:50 [INFO] train started csv=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:42:51 [INFO] train csv loaded rows=36999 features=16 has_label=1
+2026-06-05 16:42:51 [INFO] normalizer saved: model/normalize_params.txt
+2026-06-05 16:42:59 [INFO] threshold percentile=0.95 threshold=0.0006202863
+2026-06-05 16:42:59 [INFO] train completed model=model/autoencoder_model.bin normalizer=model/normalize_params.txt train_log=output/train_log.txt
+2026-06-05 16:42:59 [INFO] exit_code=0
+2026-06-05 16:42:59 [INFO] program stopped
+
+2026-06-05 16:43:00 [INFO] ============================================================
+2026-06-05 16:43:00 [INFO] program started
+2026-06-05 16:43:00 [INFO] program_path=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:43:00 [INFO] working_directory=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥
+2026-06-05 16:43:00 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:43:00 [INFO] argc=3
+2026-06-05 16:43:00 [INFO] argv[0]=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:43:00 [INFO] argv[1]=test
+2026-06-05 16:43:00 [INFO] argv[2]=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:43:00 [INFO] mode=test csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:43:00 [INFO] directory ready: model
+2026-06-05 16:43:00 [INFO] directory ready: output
+2026-06-05 16:43:00 [INFO] directory ready: build
+2026-06-05 16:43:00 [INFO] test started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:43:00 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:43:00 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0006202863
+2026-06-05 16:43:15 [INFO] test csv loaded rows=175340 features=16 has_label=1
+2026-06-05 16:43:15 [INFO] detection completed rows=175340 alarms=10941 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:43:15 [INFO] metrics TP=7759 TN=52817 FP=3182 FN=111582
+2026-06-05 16:43:15 [INFO] exit_code=0
+2026-06-05 16:43:15 [INFO] program stopped
+
+2026-06-05 16:43:16 [INFO] ============================================================
+2026-06-05 16:43:16 [INFO] program started
+2026-06-05 16:43:16 [INFO] program_path=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:43:16 [INFO] working_directory=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥
+2026-06-05 16:43:16 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:43:16 [INFO] argc=3
+2026-06-05 16:43:16 [INFO] argv[0]=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:43:16 [INFO] argv[1]=detect
+2026-06-05 16:43:16 [INFO] argv[2]=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:43:16 [INFO] mode=detect csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:43:16 [INFO] directory ready: model
+2026-06-05 16:43:16 [INFO] directory ready: output
+2026-06-05 16:43:16 [INFO] directory ready: build
+2026-06-05 16:43:16 [INFO] detect started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:43:16 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:43:16 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0006202863
+2026-06-05 16:43:30 [INFO] detect csv loaded rows=175340 features=16 has_label=1
+2026-06-05 16:43:30 [INFO] detection completed rows=175340 alarms=10941 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:43:30 [INFO] exit_code=0
+2026-06-05 16:43:30 [INFO] program stopped
+
+2026-06-05 16:49:08 [INFO] ============================================================
+2026-06-05 16:49:08 [INFO] program started
+2026-06-05 16:49:08 [INFO] program_path=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:49:08 [INFO] working_directory=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥
+2026-06-05 16:49:08 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:49:08 [INFO] argc=3
+2026-06-05 16:49:08 [INFO] argv[0]=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:49:08 [INFO] argv[1]=train
+2026-06-05 16:49:08 [INFO] argv[2]=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:49:08 [INFO] mode=train csv=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:49:08 [INFO] directory ready: model
+2026-06-05 16:49:08 [INFO] directory ready: output
+2026-06-05 16:49:08 [INFO] directory ready: build
+2026-06-05 16:49:08 [INFO] train started csv=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:49:08 [INFO] csv format detected: raw UNSW-NB15 TSV without header path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:49:09 [INFO] csv load completed rows=36999 features=16 has_label=1 normal_only=1 path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:49:09 [INFO] train csv loaded rows=36999 features=16 has_label=1
+2026-06-05 16:49:09 [INFO] normalizer saved: model/normalize_params.txt
+2026-06-05 16:49:17 [INFO] threshold percentile=0.95 threshold=0.0006202863
+2026-06-05 16:49:17 [INFO] train completed model=model/autoencoder_model.bin normalizer=model/normalize_params.txt train_log=output/train_log.txt
+2026-06-05 16:49:17 [INFO] exit_code=0
+2026-06-05 16:49:17 [INFO] program stopped
+
+2026-06-05 16:49:18 [INFO] ============================================================
+2026-06-05 16:49:18 [INFO] program started
+2026-06-05 16:49:18 [INFO] program_path=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:49:18 [INFO] working_directory=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥
+2026-06-05 16:49:18 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:49:18 [INFO] argc=3
+2026-06-05 16:49:18 [INFO] argv[0]=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:49:18 [INFO] argv[1]=test
+2026-06-05 16:49:18 [INFO] argv[2]=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:49:18 [INFO] mode=test csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:49:18 [INFO] directory ready: model
+2026-06-05 16:49:18 [INFO] directory ready: output
+2026-06-05 16:49:18 [INFO] directory ready: build
+2026-06-05 16:49:18 [INFO] test started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:49:18 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:49:18 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0006202863
+2026-06-05 16:49:18 [INFO] csv format detected: raw UNSW-NB15 TSV without header path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:49:33 [INFO] csv load completed rows=175340 features=16 has_label=1 normal_only=0 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:49:33 [INFO] test csv loaded rows=175340 features=16 has_label=1
+2026-06-05 16:49:34 [INFO] detection completed rows=175340 alarms=10941 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:49:34 [INFO] metrics TP=7759 TN=52817 FP=3182 FN=111582
+2026-06-05 16:49:34 [INFO] exit_code=0
+2026-06-05 16:49:34 [INFO] program stopped
+
+2026-06-05 16:49:35 [INFO] ============================================================
+2026-06-05 16:49:35 [INFO] program started
+2026-06-05 16:49:35 [INFO] program_path=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:49:35 [INFO] working_directory=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥
+2026-06-05 16:49:35 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:49:35 [INFO] argc=3
+2026-06-05 16:49:35 [INFO] argv[0]=E:\œÓƒø\C++C\…Ó∂»—ßœ∞Õ¯¬Á“Ï≥£¡˜¡øºÏ≤‚œµÕ≥\build\network_anomaly_detector.exe
+2026-06-05 16:49:35 [INFO] argv[1]=detect
+2026-06-05 16:49:35 [INFO] argv[2]=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:49:35 [INFO] mode=detect csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:49:35 [INFO] directory ready: model
+2026-06-05 16:49:35 [INFO] directory ready: output
+2026-06-05 16:49:35 [INFO] directory ready: build
+2026-06-05 16:49:35 [INFO] detect started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:49:35 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:49:35 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0006202863
+2026-06-05 16:49:35 [INFO] csv format detected: raw UNSW-NB15 TSV without header path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:49:51 [INFO] csv load completed rows=175340 features=16 has_label=1 normal_only=0 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:49:51 [INFO] detect csv loaded rows=175340 features=16 has_label=1
+2026-06-05 16:49:52 [INFO] detection completed rows=175340 alarms=10941 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:49:52 [INFO] exit_code=0
+2026-06-05 16:49:52 [INFO] program stopped
+
+2026-06-05 16:51:58 [INFO] ============================================================
+2026-06-05 16:51:58 [INFO] program started
+2026-06-05 16:51:58 [INFO] program_path=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü\build\network_anomaly_detector.exe
+2026-06-05 16:51:58 [INFO] working_directory=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:51:58 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:51:58 [INFO] argc=3
+2026-06-05 16:51:58 [INFO] argv[0]=(see program_path)
+2026-06-05 16:51:58 [INFO] argv[1]=train
+2026-06-05 16:51:58 [INFO] argv[2]=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:51:58 [INFO] mode=train csv=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:51:58 [INFO] directory ready: model
+2026-06-05 16:51:58 [INFO] directory ready: output
+2026-06-05 16:51:58 [INFO] directory ready: build
+2026-06-05 16:51:58 [INFO] train started csv=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:51:58 [INFO] csv format detected: raw UNSW-NB15 TSV without header path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:51:59 [INFO] csv load completed rows=36999 features=16 has_label=1 normal_only=1 path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:51:59 [INFO] train csv loaded rows=36999 features=16 has_label=1
+2026-06-05 16:51:59 [INFO] normalizer saved: model/normalize_params.txt
+2026-06-05 16:52:07 [INFO] threshold percentile=0.95 threshold=0.0006202863
+2026-06-05 16:52:07 [INFO] train completed model=model/autoencoder_model.bin normalizer=model/normalize_params.txt train_log=output/train_log.txt
+2026-06-05 16:52:07 [INFO] exit_code=0
+2026-06-05 16:52:07 [INFO] program stopped
+
+2026-06-05 16:52:07 [INFO] ============================================================
+2026-06-05 16:52:07 [INFO] program started
+2026-06-05 16:52:07 [INFO] program_path=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü\build\network_anomaly_detector.exe
+2026-06-05 16:52:07 [INFO] working_directory=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:52:07 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:52:07 [INFO] argc=3
+2026-06-05 16:52:07 [INFO] argv[0]=(see program_path)
+2026-06-05 16:52:07 [INFO] argv[1]=test
+2026-06-05 16:52:07 [INFO] argv[2]=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:07 [INFO] mode=test csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:07 [INFO] directory ready: model
+2026-06-05 16:52:07 [INFO] directory ready: output
+2026-06-05 16:52:07 [INFO] directory ready: build
+2026-06-05 16:52:07 [INFO] test started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:07 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:52:07 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0006202863
+2026-06-05 16:52:07 [INFO] csv format detected: raw UNSW-NB15 TSV without header path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:23 [INFO] csv load completed rows=175340 features=16 has_label=1 normal_only=0 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:23 [INFO] test csv loaded rows=175340 features=16 has_label=1
+2026-06-05 16:52:23 [INFO] detection completed rows=175340 alarms=10941 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:52:23 [INFO] metrics TP=7759 TN=52817 FP=3182 FN=111582
+2026-06-05 16:52:23 [INFO] exit_code=0
+2026-06-05 16:52:23 [INFO] program stopped
+
+2026-06-05 16:52:24 [INFO] ============================================================
+2026-06-05 16:52:24 [INFO] program started
+2026-06-05 16:52:24 [INFO] program_path=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü\build\network_anomaly_detector.exe
+2026-06-05 16:52:24 [INFO] working_directory=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:52:24 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:52:24 [INFO] argc=3
+2026-06-05 16:52:24 [INFO] argv[0]=(see program_path)
+2026-06-05 16:52:24 [INFO] argv[1]=detect
+2026-06-05 16:52:24 [INFO] argv[2]=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:24 [INFO] mode=detect csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:24 [INFO] directory ready: model
+2026-06-05 16:52:24 [INFO] directory ready: output
+2026-06-05 16:52:24 [INFO] directory ready: build
+2026-06-05 16:52:24 [INFO] detect started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:24 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:52:24 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0006202863
+2026-06-05 16:52:24 [INFO] csv format detected: raw UNSW-NB15 TSV without header path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:40 [INFO] csv load completed rows=175340 features=16 has_label=1 normal_only=0 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:40 [INFO] detect csv loaded rows=175340 features=16 has_label=1
+2026-06-05 16:52:41 [INFO] detection completed rows=175340 alarms=10941 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:52:41 [INFO] exit_code=0
+2026-06-05 16:52:41 [INFO] program stopped
+
+2026-06-05 16:52:54 [INFO] ============================================================
+2026-06-05 16:52:54 [INFO] program started
+2026-06-05 16:52:54 [INFO] program_path=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü\build\network_anomaly_detector.exe
+2026-06-05 16:52:54 [INFO] working_directory=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:52:54 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:52:54 [INFO] argc=3
+2026-06-05 16:52:54 [INFO] argv[0]=(see program_path)
+2026-06-05 16:52:54 [INFO] argv[1]=train
+2026-06-05 16:52:54 [INFO] argv[2]=data/processed/UNSW-NB15-demo/UNSW_NB15_training-set.csv
+2026-06-05 16:52:54 [INFO] mode=train csv=data/processed/UNSW-NB15-demo/UNSW_NB15_training-set.csv
+2026-06-05 16:52:54 [INFO] directory ready: model
+2026-06-05 16:52:54 [INFO] directory ready: output
+2026-06-05 16:52:54 [INFO] directory ready: build
+2026-06-05 16:52:54 [INFO] train started csv=data/processed/UNSW-NB15-demo/UNSW_NB15_training-set.csv
+2026-06-05 16:52:54 [INFO] csv format detected: header CSV path=data/processed/UNSW-NB15-demo/UNSW_NB15_training-set.csv has_label=1
+2026-06-05 16:52:54 [INFO] csv load completed rows=3000 features=16 has_label=1 normal_only=1 path=data/processed/UNSW-NB15-demo/UNSW_NB15_training-set.csv
+2026-06-05 16:52:54 [INFO] train csv loaded rows=3000 features=16 has_label=1
+2026-06-05 16:52:54 [INFO] normalizer saved: model/normalize_params.txt
+2026-06-05 16:52:54 [INFO] threshold percentile=0.95 threshold=0.0086048788
+2026-06-05 16:52:54 [INFO] train completed model=model/autoencoder_model.bin normalizer=model/normalize_params.txt train_log=output/train_log.txt
+2026-06-05 16:52:54 [INFO] exit_code=0
+2026-06-05 16:52:54 [INFO] program stopped
+
+2026-06-05 16:52:55 [INFO] ============================================================
+2026-06-05 16:52:55 [INFO] program started
+2026-06-05 16:52:55 [INFO] program_path=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü\build\network_anomaly_detector.exe
+2026-06-05 16:52:55 [INFO] working_directory=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:52:55 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:52:55 [INFO] argc=3
+2026-06-05 16:52:55 [INFO] argv[0]=(see program_path)
+2026-06-05 16:52:55 [INFO] argv[1]=test
+2026-06-05 16:52:55 [INFO] argv[2]=data/processed/UNSW-NB15-demo/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:55 [INFO] mode=test csv=data/processed/UNSW-NB15-demo/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:55 [INFO] directory ready: model
+2026-06-05 16:52:55 [INFO] directory ready: output
+2026-06-05 16:52:55 [INFO] directory ready: build
+2026-06-05 16:52:55 [INFO] test started csv=data/processed/UNSW-NB15-demo/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:55 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:52:55 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:52:55 [INFO] csv format detected: header CSV path=data/processed/UNSW-NB15-demo/UNSW_NB15_testing-set.csv has_label=1
+2026-06-05 16:52:55 [INFO] csv load completed rows=800 features=16 has_label=1 normal_only=0 path=data/processed/UNSW-NB15-demo/UNSW_NB15_testing-set.csv
+2026-06-05 16:52:55 [INFO] test csv loaded rows=800 features=16 has_label=1
+2026-06-05 16:52:55 [INFO] detection completed rows=800 alarms=566 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:52:55 [INFO] metrics TP=326 TN=160 FP=240 FN=74
+2026-06-05 16:52:55 [INFO] exit_code=0
+2026-06-05 16:52:55 [INFO] program stopped
+
+2026-06-05 16:52:56 [INFO] ============================================================
+2026-06-05 16:52:56 [INFO] program started
+2026-06-05 16:52:56 [INFO] program_path=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü\build\network_anomaly_detector.exe
+2026-06-05 16:52:56 [INFO] working_directory=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:52:56 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:52:56 [INFO] argc=3
+2026-06-05 16:52:56 [INFO] argv[0]=(see program_path)
+2026-06-05 16:52:56 [INFO] argv[1]=detect
+2026-06-05 16:52:56 [INFO] argv[2]=data/processed/UNSW-NB15-demo/realtime_sample.csv
+2026-06-05 16:52:56 [INFO] mode=detect csv=data/processed/UNSW-NB15-demo/realtime_sample.csv
+2026-06-05 16:52:56 [INFO] directory ready: model
+2026-06-05 16:52:56 [INFO] directory ready: output
+2026-06-05 16:52:56 [INFO] directory ready: build
+2026-06-05 16:52:56 [INFO] detect started csv=data/processed/UNSW-NB15-demo/realtime_sample.csv
+2026-06-05 16:52:56 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:52:56 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0086048788
+2026-06-05 16:52:56 [INFO] csv format detected: header CSV path=data/processed/UNSW-NB15-demo/realtime_sample.csv has_label=1
+2026-06-05 16:52:56 [INFO] csv load completed rows=60 features=16 has_label=1 normal_only=0 path=data/processed/UNSW-NB15-demo/realtime_sample.csv
+2026-06-05 16:52:56 [INFO] detect csv loaded rows=60 features=16 has_label=1
+2026-06-05 16:52:56 [INFO] detection completed rows=60 alarms=46 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:52:56 [INFO] exit_code=0
+2026-06-05 16:52:56 [INFO] program stopped
+
+2026-06-05 16:53:10 [INFO] ============================================================
+2026-06-05 16:53:10 [INFO] program started
+2026-06-05 16:53:10 [INFO] program_path=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü\build\network_anomaly_detector.exe
+2026-06-05 16:53:10 [INFO] working_directory=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:53:10 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:53:10 [INFO] argc=1
+2026-06-05 16:53:10 [INFO] argv[0]=(see program_path)
+2026-06-05 16:53:10 [INFO] no command argument provided; starting gui
+2026-06-05 16:53:10 [INFO] gui window created
+2026-06-05 16:53:10 [INFO] gui message loop started
+
+2026-06-05 16:54:22 [INFO] ============================================================
+2026-06-05 16:54:22 [INFO] program started
+2026-06-05 16:54:22 [INFO] program_path=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü\build\network_anomaly_detector.exe
+2026-06-05 16:54:22 [INFO] working_directory=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:54:22 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:54:22 [INFO] argc=1
+2026-06-05 16:54:22 [INFO] argv[0]=(see program_path)
+2026-06-05 16:54:22 [INFO] no command argument provided; starting gui
+2026-06-05 16:54:22 [INFO] gui window created
+2026-06-05 16:54:22 [INFO] gui message loop started
+2026-06-05 16:54:24 [INFO] gui window destroyed
+2026-06-05 16:54:24 [INFO] gui message loop stopped
+2026-06-05 16:54:24 [INFO] exit_code=0
+2026-06-05 16:54:24 [INFO] program stopped
+
+2026-06-05 16:55:12 [INFO] ============================================================
+2026-06-05 16:55:12 [INFO] program started
+2026-06-05 16:55:12 [INFO] program_path=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü\build\network_anomaly_detector.exe
+2026-06-05 16:55:12 [INFO] working_directory=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:55:12 [INFO] project_root=E:\È°πÁõÆ\C++C\Ê∑±Â∫¶Â≠¶‰π†ÁΩëÁªúÂºÇÂ∏∏ÊµÅÈáèÊ£ÄÊµãÁ≥ªÁªü
+2026-06-05 16:55:12 [INFO] argc=1
+2026-06-05 16:55:12 [INFO] argv[0]=(see program_path)
+2026-06-05 16:55:12 [INFO] no command argument provided; starting gui
+2026-06-05 16:55:12 [INFO] gui window created
+2026-06-05 16:55:12 [INFO] gui message loop started
+2026-06-05 16:55:28 [INFO] data directory selected: data/raw/UNSW-NB15
+2026-06-05 16:55:31 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:55:31 [INFO] directory ready: model
+2026-06-05 16:55:31 [INFO] directory ready: output
+2026-06-05 16:55:31 [INFO] directory ready: build
+2026-06-05 16:55:31 [INFO] train started csv=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:55:31 [INFO] csv format detected: raw UNSW-NB15 TSV without header path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:55:32 [INFO] csv load completed rows=36999 features=16 has_label=1 normal_only=1 path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:55:32 [INFO] train csv loaded rows=36999 features=16 has_label=1
+2026-06-05 16:55:32 [INFO] normalizer saved: model/normalize_params.txt
+2026-06-05 16:55:39 [INFO] threshold percentile=0.95 threshold=0.0006202863
+2026-06-05 16:55:39 [INFO] train completed model=model/autoencoder_model.bin normalizer=model/normalize_params.txt train_log=output/train_log.txt
+2026-06-05 16:55:39 [INFO] gui train action exit_code=0 path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:55:43 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:55:43 [INFO] directory ready: model
+2026-06-05 16:55:43 [INFO] directory ready: output
+2026-06-05 16:55:43 [INFO] directory ready: build
+2026-06-05 16:55:43 [INFO] test started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:55:43 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:55:43 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0006202863
+2026-06-05 16:55:43 [INFO] csv format detected: raw UNSW-NB15 TSV without header path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:55:57 [INFO] csv load completed rows=175340 features=16 has_label=1 normal_only=0 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:55:57 [INFO] test csv loaded rows=175340 features=16 has_label=1
+2026-06-05 16:55:58 [INFO] detection completed rows=175340 alarms=10941 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:55:58 [INFO] metrics TP=7759 TN=52817 FP=3182 FN=111582
+2026-06-05 16:55:58 [INFO] gui test action exit_code=0 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:56:01 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:56:01 [INFO] directory ready: model
+2026-06-05 16:56:01 [INFO] directory ready: output
+2026-06-05 16:56:01 [INFO] directory ready: build
+2026-06-05 16:56:01 [INFO] train started csv=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:56:01 [INFO] csv format detected: raw UNSW-NB15 TSV without header path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:56:01 [INFO] csv load completed rows=36999 features=16 has_label=1 normal_only=1 path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:56:01 [INFO] train csv loaded rows=36999 features=16 has_label=1
+2026-06-05 16:56:02 [INFO] normalizer saved: model/normalize_params.txt
+2026-06-05 16:56:09 [INFO] threshold percentile=0.95 threshold=0.0006202863
+2026-06-05 16:56:09 [INFO] train completed model=model/autoencoder_model.bin normalizer=model/normalize_params.txt train_log=output/train_log.txt
+2026-06-05 16:56:09 [INFO] gui train action exit_code=0 path=data/raw/UNSW-NB15/UNSW_NB15_training-set.csv
+2026-06-05 16:56:12 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:56:12 [INFO] directory ready: model
+2026-06-05 16:56:12 [INFO] directory ready: output
+2026-06-05 16:56:12 [INFO] directory ready: build
+2026-06-05 16:56:12 [INFO] test started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:56:12 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:56:12 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0006202863
+2026-06-05 16:56:12 [INFO] csv format detected: raw UNSW-NB15 TSV without header path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:56:26 [INFO] csv load completed rows=175340 features=16 has_label=1 normal_only=0 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:56:26 [INFO] test csv loaded rows=175340 features=16 has_label=1
+2026-06-05 16:56:26 [INFO] detection completed rows=175340 alarms=10941 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:56:26 [INFO] metrics TP=7759 TN=52817 FP=3182 FN=111582
+2026-06-05 16:56:27 [INFO] gui test action exit_code=0 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:56:29 [INFO] gui action started data_dir=data/raw/UNSW-NB15
+2026-06-05 16:56:29 [INFO] directory ready: model
+2026-06-05 16:56:29 [INFO] directory ready: output
+2026-06-05 16:56:29 [INFO] directory ready: build
+2026-06-05 16:56:29 [INFO] detect started csv=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:56:29 [INFO] normalizer loaded: model/normalize_params.txt
+2026-06-05 16:56:29 [INFO] model loaded: model/autoencoder_model.bin threshold=0.0006202863
+2026-06-05 16:56:29 [INFO] csv format detected: raw UNSW-NB15 TSV without header path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:56:44 [INFO] csv load completed rows=175340 features=16 has_label=1 normal_only=0 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:56:44 [INFO] detect csv loaded rows=175340 features=16 has_label=1
+2026-06-05 16:56:44 [INFO] detection completed rows=175340 alarms=10941 result=output/detect_result.csv alarm_log=output/alarm_log.txt
+2026-06-05 16:56:44 [INFO] chart loaded points=5000 threshold=0.0006202863
+2026-06-05 16:56:44 [INFO] gui detect action exit_code=0 path=data/raw/UNSW-NB15/UNSW_NB15_testing-set.csv
+2026-06-05 16:57:11 [INFO] gui window destroyed
+2026-06-05 16:57:11 [INFO] gui message loop stopped
+2026-06-05 16:57:11 [INFO] exit_code=0
+2026-06-05 16:57:11 [INFO] program stopped

@@ -1,0 +1,5 @@
+﻿Processed UNSW-NB15 CSV files
+GeneratedAt=2026-06-05
+SourceRawDirectory=data/raw/UNSW-NB15
+Processing=Added standard UNSW-NB15 header and converted tab-delimited rows to comma-delimited CSV.
+Note=Zenodo mirror file names were mapped by official split sizes: 175341 rows -> training, 82332 rows -> testing.
